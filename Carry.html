@@ -10,7 +10,7 @@
 
     <div class="mobile-frame">
         
-        <div id="view-welcome" class="view active">
+        <div id="view-welcome" class="view ">
             <h1 style="text-align: center; margin-top: 20px;">Equilibrium</h1>
             <p style="text-align: center;">Welcome! Before we start balancing your schedule, we need to establish your baseline load.</p>
             
@@ -279,22 +279,26 @@
         <div id="main-dashboard" class="view" style="padding-top: 30px; padding-bottom: 90px;">
             
             <!-- Dark Hero Card -->
-            <div class="dark-hero-card">
-                <div style="font-size: 10px; font-weight: 700; color: #a8a29e; letter-spacing: 1px; margin-bottom: 5px;">BURNOUT RISK</div>
+            <div class="dark-hero-card" style="min-height: 145px; display: flex; flex-direction: column; justify-content: center; position: relative;">
+                
+                <div style="font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: 1.5px; margin-bottom: 8px;">BURNOUT RISK</div>
                 
                 <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px;">
-                    <div id="dashScore" style="font-size: 48px; font-family: Georgia, serif; color: white;">61</div>
+                    <div id="dashScore" style="font-size: 48px; font-family: Georgia, serif; color: white; line-height: 1;">61</div>
                     <div id="dashStatus" style="font-size: 14px; font-weight: 700; color: #d97706;">Elevated</div>
                 </div>
                 
-                <p style="font-size: 12px; color: #a8a29e; max-width: 70%; margin: 0; line-height: 1.4;">
+                <p style="font-size: 12px; color: #d6d3d1; max-width: 65%; margin: 0; line-height: 1.4;">
                     You're carrying a lot. Check the Rebalance tab for targeted relief.
                 </p>
 
                 <!-- Interactive Dashboard Robot -->
                 <div class="dash-speech-bubble" id="dashSpeechBubble">Tap me for a quick check-in!</div>
-                <div class="robot-scaler" style="position: absolute; top: 15px; right: 15px; transform: scale(0.35); transform-origin: top right; cursor: pointer;">
-                    <div class="robot-wrapper" id="dashCompanion" onclick="interactDashRobot()">
+                
+                <!-- Updated: Scaled up to 0.28 and anchored to the bottom-right corner -->
+                <div class="robot-scaler" style="position: absolute; bottom: 15px; right: 15px; transform: scale(0.40); transform-origin: bottom right; cursor: pointer;">
+                    <!-- Added height: 110px so the bottom anchor sticks exactly to the chin -->
+                    <div class="robot-wrapper" id="dashCompanion" onclick="interactDashRobot()" style="height: 110px;">
                         <div class="antenna-ball"></div><div class="antenna"></div>
                         <div class="ear left"></div><div class="ear right"></div>
                         <div class="robot-head">
@@ -385,80 +389,254 @@
 
         </div>
 
-        <div id="main-rebalance" class="view">
-            <h1>Rebalance</h1>
-            <p>Actions to lower your stress levels.</p>
-
-            <div class="card" style="border-left: 4px solid var(--urgent);">
-                <h2>🚨 Urgent Actions (Do Today)</h2>
-                <div class="task-item">
-                    <div><div style="font-size:14px; font-weight:600;">4-7-8 Breathing Exercise</div><p style="margin:0; font-size:12px;">Takes 3 minutes. High mental load detected.</p></div>
-                    <button style="background:var(--primary); color:white; border:none; padding:8px 12px; border-radius:8px;">Start</button>
-                </div>
-                <div class="task-item">
-                    <div><div style="font-size:14px; font-weight:600;">Do Nothing for 15 Min</div><p style="margin:0; font-size:12px;">Mandatory circuit breaker.</p></div>
-                    <button style="background:var(--primary); color:white; border:none; padding:8px 12px; border-radius:8px;">Start</button>
-                </div>
-            </div>
-
-            <div class="card" style="border-left: 4px solid var(--normal);">
-                <h2>🌱 Normal Actions (This Week)</h2>
-                <div class="task-item"><div><div style="font-size:14px; font-weight:600;">Step outside for 10 min</div><span class="tag tag-area">💪 Physical</span></div></div>
-                <div class="task-item"><div><div style="font-size:14px; font-weight:600;">Clear two small errands</div><span class="tag tag-area">🛍️ Errands</span></div></div>
-            </div>
-        </div>
-
-        <div id="main-log" class="view">
-            <h1>Log Load</h1>
-            <p>Add a new task to your schedule.</p>
+        <div id="main-rebalance" class="view" style="padding-top: 40px; padding-bottom: 90px;">
             
-            <div class="card">
-                <div class="input-group"><label>Task Name</label><input type="text" placeholder="e.g. Study for AI Midterm"></div>
-                <div class="input-group"><label>Category Area</label><select><option>Mental</option><option>Time</option><option>Physical</option><option>Social</option><option>Errands</option></select></div>
-                <div class="input-group"><label>Urgency Level</label><select><option>Normal</option><option>Urgent</option></select></div>
-                <div class="input-group"><label>Estimated Stress (1-10)</label><input type="number" placeholder="8"></div>
-                <div class="input-group"><label>Deadline</label><input type="date"></div>
-                <button class="btn">Add to Schedule</button>
+            <!-- Header Layout with Robot -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
+                
+                <!-- Left Text Container -->
+                <div style="max-width: 65%;">
+                    <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Today's Flow</p>
+                    <h1 style="margin-top: 0; margin-bottom: 10px; font-size: 28px;">Smart Schedule</h1>
+                    <p style="margin-bottom: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+                        We've interleaved your urgent deadlines with active recovery to keep you at your best.
+                    </p>
+                </div>
+                
+                <!-- Right Robot Head -->
+                <div class="robot-stage" style="position: relative; width: 80px; height: 80px; flex-shrink: 0;">
+                    <div class="rebalance-speech-bubble">Rest is productive too! 💤</div>
+                    <div class="robot-scaler" style="position: absolute; top: 20px; right: 25px; transform: scale(0.30); transform-origin: top right;">
+                        <div class="robot-wrapper" id="rebalanceCompanion">
+                            <div class="antenna-ball"></div><div class="antenna"></div>
+                            <div class="ear left"></div><div class="ear right"></div>
+                            <div class="robot-head">
+                                <div class="robot-face">
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <h2>Current Log</h2>
-            <div class="card">
-                <div class="task-item"><div><strong>APU Atrium Prep</strong> <br><span class="tag tag-area">👥 Social</span></div><span>Due Friday</span></div>
-                <div class="task-item"><div><strong>Laundry</strong> <br><span class="tag tag-area">🛍️ Errands</span></div><span>Due Sunday</span></div>
+            <div class="smart-timeline">
+                
+                <!-- Urgent Task -->
+                <div class="timeline-event">
+                    <div class="event-time">09:00 AM</div>
+                    <div class="event-marker task-urgent"></div>
+                    <div class="event-card task-card">
+                        <div class="event-header">
+                            <span class="tag" style="background: #fee2e2; color: #b91c1c;">Urgent Task</span>
+                        </div>
+                        <div class="event-title">Anti-Scam Chatbot Risk Scoring Module</div>
+                        <div class="event-desc">2 Hours • Deep Work</div>
+                    </div>
+                </div>
+
+                <!-- Rebalance Activity -->
+                <div class="timeline-event">
+                    <div class="event-time">11:00 AM</div>
+                    <div class="event-marker activity-recovery"></div>
+                    <div class="event-card recovery-card">
+                        <div class="event-header">
+                            <span class="tag" style="background: #dcfce7; color: #15803d;">🍃 Rebalance</span>
+                        </div>
+                        <div class="event-title">Screen Break & Short Walk</div>
+                        <div class="event-desc">20 Mins • Step away from the desk</div>
+                    </div>
+                </div>
+
+                <!-- Normal Task -->
+                <div class="timeline-event">
+                    <div class="event-time">01:00 PM</div>
+                    <div class="event-marker task-normal"></div>
+                    <div class="event-card task-card">
+                        <div class="event-header">
+                            <span class="tag" style="background: #e2e8f0; color: #475569;">Task</span>
+                        </div>
+                        <div class="event-title">Tour Management System Prototype</div>
+                        <div class="event-desc">1.5 Hours • Medium Focus</div>
+                    </div>
+                </div>
+
+                <!-- Rebalance Activity -->
+                <div class="timeline-event">
+                    <div class="event-time">02:30 PM</div>
+                    <div class="event-marker activity-recovery"></div>
+                    <div class="event-card recovery-card">
+                        <div class="event-header">
+                            <span class="tag" style="background: #fef3c7; color: #b45309;">☕ Rebalance</span>
+                        </div>
+                        <div class="event-title">Grab a snack (Nuggets & fries?)</div>
+                        <div class="event-desc">30 Mins • Mental reset</div>
+                    </div>
+                </div>
+
             </div>
+        </div>  
+
+        <div id="main-log" class="view" style="padding-top: 40px; padding-bottom: 90px;">
+            
+            <!-- Header Layout with Robot -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
+                <div style="max-width: 65%;">
+                    <h1 style="margin-top: 0; margin-bottom: 8px; font-size: 28px;">Log Load</h1>
+                    <p style="margin-bottom: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+                        Add a new task. Equilibrium's AI will automatically assign its category and urgency.
+                    </p>
+                </div>
+                
+                <!-- Right Robot Head -->
+                <div class="robot-stage" style="position: relative; width: 100px; height: 110px; flex-shrink: 0;">
+                    <div class="log-speech-bubble">Let me analyze that! 🧠</div>
+                    <div class="robot-scaler" style="position: absolute; top: 20px; right: -25px; transform: scale(0.30); transform-origin: top center;">
+                        <div class="robot-wrapper" id="logCompanion">
+                            <div class="antenna-ball"></div><div class="antenna"></div>
+                            <div class="ear left"></div><div class="ear right"></div>
+                            <div class="robot-head">
+                                <div class="robot-face">
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Input Form -->
+            <div class="card" style="padding: 20px; margin-bottom: 30px;">
+                <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">TASK NAME</label>
+                <input type="text" id="taskNameInput" placeholder="e.g. Study for AI Midterm" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; font-family: inherit; font-size: 14px; box-sizing: border-box;">
+                
+                <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">DESCRIPTION</label>
+                <textarea id="taskDescInput" rows="2" placeholder="Briefly describe the task..." style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; font-family: inherit; font-size: 14px; box-sizing: border-box; resize: none;"></textarea>
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <label style="font-size: 10px; font-weight: 700; color: var(--text-muted);">ESTIMATED STRESS (1-10)</label>
+                    <span id="stressDisplay" style="font-size: 12px; font-weight: 700; color: var(--primary);">5</span>
+                </div>
+                
+                <!-- Added dynamic inline variable and percentage calculation -->
+                <input type="range" id="taskStressInput" min="1" max="10" value="5" class="stress-slider" 
+                       style="--fill-pct: 44.4%;"
+                       oninput="
+                           document.getElementById('stressDisplay').innerText = this.value;
+                           this.style.setProperty('--fill-pct', ((this.value - this.min) / (this.max - this.min)) * 100 + '%');
+                       ">
+                
+                <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; margin-top: 15px;">DEADLINE</label>
+                <input type="date" id="taskDateInput" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px; font-family: inherit; font-size: 14px; box-sizing: border-box;">
+                
+                <button class="btn" style="margin-top: 0; width: 100%;" onclick="analyzeAndShowModal()">Add to Schedule</button>
+            </div>
+
+            <!-- Current Log List -->
+            <h2 style="font-size: 16px; margin-bottom: 15px; color: var(--text-dark);">Current Log</h2>
+            <div class="card" id="currentLogContainer" style="padding: 10px 20px;">
+                <!-- Pre-populated Task -->
+                <div style="padding: 12px 0; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">APU Atrium Prep</div>
+                        <span class="tag" style="background: #e0e7ff; color: #4338ca; font-size: 10px;">👥 Social</span>
+                        <span class="tag" style="background: #fee2e2; color: #b91c1c; font-size: 10px;">Urgent</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Due Friday</div>
+                </div>
+                <!-- Pre-populated Activity -->
+                <div style="padding: 12px 0; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">Gym / Light Cardio</div>
+                        <span class="tag" style="background: #dcfce7; color: #15803d; font-size: 10px;">🍃 Activity</span>
+                        <span class="tag" style="background: #ecfccb; color: #3f6212; font-size: 10px;">Physical</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Today</div>
+                </div>
+            </div>
+
+            <!-- AI Confirmation Modal (Hidden by default) -->
+            <div id="aiConfirmModal" class="ai-modal-overlay">
+                <div class="ai-modal-card">
+                    <div style="text-align: center; margin-bottom: 15px; font-size: 24px;">✨</div>
+                    <h3 style="text-align: center; margin-top: 0; margin-bottom: 20px; font-size: 18px;">AI Assessment Complete</h3>
+                    
+                    <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left;">
+                        <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 12px;" id="modalTaskName">Task Name</div>
+                        
+                        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                            <span id="modalCategory" class="tag" style="background: #e2e8f0; color: #475569;">Category</span>
+                            <span id="modalUrgency" class="tag" style="background: #e2e8f0; color: #475569;">Urgency</span>
+                        </div>
+                        
+                        <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Deadline: <span id="modalDeadline" style="color: var(--text-dark);"></span></div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-outline" style="flex: 1; margin: 0; padding: 12px;" onclick="closeAiModal()">Edit</button>
+                        <button class="btn" style="flex: 1; margin: 0; padding: 12px;" onclick="confirmAndLogTask()">Confirm & Add</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <div id="main-profile" class="view">
-            <h1>Profile</h1>
-            <div class="card">
-                <h2>Demographics</h2>
-                <p style="margin-bottom: 5px;"><strong>Name:</strong> Demo User</p>
-                <p style="margin-bottom: 5px;"><strong>University:</strong> APU</p>
-                <p style="margin-bottom: 5px;"><strong>Program:</strong> BSc Computer Science (AI)</p>
-                <p style="margin-bottom: 5px;"><strong>CGPA Record:</strong> 4.0</p>
-            </div>
-
-            <div class="card">
-                <h2>Stress Baseline</h2>
-                <p>Your current baseline risk is <strong>65%</strong>.</p>
-                <button class="btn btn-outline" onclick="startRetest()">Re-test Stress Level</button>
-            </div>
-
-            <div class="card">
-                <h2>Weekly Schedule Load</h2>
-                <div style="display:flex; align-items:flex-end; height:100px; gap:8px; margin-top:20px;">
-                    <div style="flex:1; background:var(--c-time); height:60%; border-radius:4px 4px 0 0;"></div>
-                    <div style="flex:1; background:var(--c-time); height:80%; border-radius:4px 4px 0 0;"></div>
-                    <div style="flex:1; background:var(--urgent); height:95%; border-radius:4px 4px 0 0;"></div>
-                    <div style="flex:1; background:var(--c-time); height:70%; border-radius:4px 4px 0 0;"></div>
-                    <div style="flex:1; background:var(--c-time); height:50%; border-radius:4px 4px 0 0;"></div>
-                    <div style="flex:1; background:var(--c-social); height:30%; border-radius:4px 4px 0 0;"></div>
-                    <div style="flex:1; background:var(--c-social); height:40%; border-radius:4px 4px 0 0;"></div>
+        <div id="main-profile" class="view active" style="padding-top: 40px; padding-bottom: 90px;">
+            <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Account</p>
+            <h1 style="margin-top: 0; margin-bottom: 20px; font-size: 28px;">Profile</h1>
+            
+            <!-- Personalized Dark Hero Card -->
+            <div class="dark-hero-card" style="padding: 20px; display: flex; align-items: center; gap: 15px; min-height: auto; margin-bottom: 25px;">
+                <div style="width: 55px; height: 55px; border-radius: 16px; background: #292524; border: 1px solid #44403c; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">
+                    <span style="font-size: 22px;">👨‍💻</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:10px; font-weight:bold; color:var(--text-muted);">
-                    <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                <div>
+                    <div style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px;">Alex Wong</div>
+                    <div style="font-size: 12px; color: #d6d3d1;">BSc Computer Science (AI)</div>
+                    <div style="font-size: 11px; color: #a8a29e; margin-top: 4px; font-weight: 600;">Latest CGPA: 4.0</div>
                 </div>
             </div>
+
+            <!-- Stress Baseline -->
+            <div class="card" style="padding: 20px; margin-bottom: 25px;">
+                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px;">Stress Baseline</div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="profileStressBadge" style="width: 65px; height: 65px; border-radius: 50%; background: #1c1917; color: #ea580c; display: flex; justify-content: center; align-items: center; font-size: 22px; font-family: Georgia, serif; flex-shrink: 0;">90</div>
+                    <div>
+                        <div id="profileStressLabel" style="font-size: 16px; font-weight: 700; color: #ea580c; margin-bottom: 4px;">High</div>
+                        <div id="profileStressDesc" style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">You're already carrying a lot. Your Rebalance tab will be important — check it daily.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Schedule -->
+            <div class="card" style="padding: 20px; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 25px;">
+                    <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">Weekly Schedule</div>
+                    <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);"><span id="profileWeeklyTotal">0</span>h / week</div>
+                </div>
+                
+                <!-- NEW: Mini Bar Chart Container -->
+                <div id="profileWeeklyChart" style="display: flex; justify-content: space-between; align-items: flex-end; height: 45px; margin-bottom: 20px; gap: 8px;">
+                    <!-- JS will inject the bars here -->
+                </div>
+                
+                <!-- Your existing Accordion Container -->
+                <div id="profileScheduleAccordion"></div>
+            </div>
+
+            <!-- ICS Import -->
+            <div class="card" style="padding: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">Class Schedule (.ICS)</div>
+                <button class="btn" style="margin: 0; padding: 6px 16px; font-size: 12px; background: #eff6ff; color: #1e40af; border-radius: 20px; box-shadow: none;" onclick="goTo('view-calendar')">Import</button>
+            </div>
+
+            <!-- Retest Button -->
+            <button class="btn btn-outline" style="width: 100%; border: 2px solid #fee2e2; color: #ef4444; background: #fff5f5; font-weight: 700;" onclick="startRetest()">Re-do setup & quiz</button>
         </div>
 
         <div id="main-robot" class="view">

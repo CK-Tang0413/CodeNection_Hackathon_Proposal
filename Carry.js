@@ -76,6 +76,8 @@ function selectAvatar() {
         document.getElementById('surveyCompanion').classList.add('alt-robot');
         document.getElementById('overviewCompanion').classList.add('alt-robot');
         document.getElementById('dashCompanion').classList.add('alt-robot');
+        document.getElementById('rebalanceCompanion').classList.add('alt-robot');
+        document.getElementById('logCompanion').classList.add('alt-robot');
     } else {
         document.getElementById('miniCompanion').classList.remove('alt-robot');
     }
@@ -105,6 +107,7 @@ function goTo(viewId) {
 
 function launchApp() {
     document.getElementById('appNav').classList.add('active');
+    syncProfileData();
     goTo('main-dashboard');
 }
 
@@ -502,4 +505,265 @@ function interactDashRobot() {
         bubble.classList.remove('active');
         robot.classList.remove('dizzy');
     }, 3000);
+}
+
+
+// --- LOG ENTRY & AI LOGIC ---
+let pendingTaskData = {};
+
+function analyzeAndShowModal() {
+    const name = document.getElementById('taskNameInput').value;
+    const desc = document.getElementById('taskDescInput').value;
+    const stress = parseInt(document.getElementById('taskStressInput').value);
+    const dateStr = document.getElementById('taskDateInput').value;
+
+    if (!name || !dateStr) {
+        alert("Please enter a task name and deadline.");
+        return;
+    }
+
+    // 1. Mock AI Category Assignment based on keywords
+    let category = "Time"; 
+    let catColor = "#e2e8f0"; let catText = "#475569"; let catIcon = "⏱️";
+    const textToAnalyze = (name + " " + desc).toLowerCase();
+
+    if (textToAnalyze.includes('study') || textToAnalyze.includes('exam') || textToAnalyze.includes('code')) {
+        category = "Mental"; catColor = "#dbeafe"; catText = "#1e40af"; catIcon = "🧠";
+    } else if (textToAnalyze.includes('walk') || textToAnalyze.includes('gym') || textToAnalyze.includes('sport')) {
+        category = "Physical"; catColor = "#dcfce7"; catText = "#15803d"; catIcon = "💪";
+    } else if (textToAnalyze.includes('friend') || textToAnalyze.includes('party') || textToAnalyze.includes('club')) {
+        category = "Social"; catColor = "#ffedd5"; catText = "#c2410c"; catIcon = "👥";
+    } else if (textToAnalyze.includes('laundry') || textToAnalyze.includes('groceries') || textToAnalyze.includes('clean')) {
+        category = "Errands"; catColor = "#f3f4f6"; catText = "#374151"; catIcon = "🛒";
+    }
+
+    // 2. Mock AI Urgency Calculation (Combines Deadline proximity + Stress level)
+    let urgency = "Normal";
+    let urgColor = "#fef3c7"; let urgText = "#b45309";
+    
+    const today = new Date();
+    const deadline = new Date(dateStr);
+    const daysUntil = Math.ceil((deadline - today) / (1000 * 60 * 60 * 24));
+
+    if (daysUntil <= 2 || stress >= 8) {
+        urgency = "Urgent"; urgColor = "#fee2e2"; urgText = "#b91c1c";
+    } else if (daysUntil > 7 && stress < 5) {
+        urgency = "Low"; urgColor = "#e2e8f0"; urgText = "#475569";
+    }
+
+    // Store globally for the Confirm step
+    pendingTaskData = { 
+        name, dateStr, category, catIcon, catColor, catText, urgency, urgColor, urgText 
+    };
+
+    // Populate Modal
+    document.getElementById('modalTaskName').innerText = name;
+    
+    const catBadge = document.getElementById('modalCategory');
+    catBadge.innerText = `${catIcon} ${category}`;
+    catBadge.style.background = catColor; catBadge.style.color = catText;
+
+    const urgBadge = document.getElementById('modalUrgency');
+    urgBadge.innerText = urgency;
+    urgBadge.style.background = urgColor; urgBadge.style.color = urgText;
+    
+    document.getElementById('modalDeadline').innerText = dateStr;
+
+    // Show Modal
+    document.getElementById('aiConfirmModal').classList.add('active');
+}
+
+function closeAiModal() {
+    document.getElementById('aiConfirmModal').classList.remove('active');
+}
+
+function confirmAndLogTask() {
+    const container = document.getElementById('currentLogContainer');
+    
+    // Create new list item HTML
+    const newItem = document.createElement('div');
+    newItem.style.cssText = "padding: 12px 0; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;";
+    
+    newItem.innerHTML = `
+        <div>
+            <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">${pendingTaskData.name}</div>
+            <span class="tag" style="background: ${pendingTaskData.catColor}; color: ${pendingTaskData.catText}; font-size: 10px;">${pendingTaskData.catIcon} ${pendingTaskData.category}</span>
+            <span class="tag" style="background: ${pendingTaskData.urgColor}; color: ${pendingTaskData.urgText}; font-size: 10px;">${pendingTaskData.urgency}</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">${pendingTaskData.dateStr}</div>
+    `;
+    
+    // Append to list
+    container.appendChild(newItem);
+    
+    // Reset Form & Close Modal
+    document.getElementById('taskNameInput').value = '';
+    document.getElementById('taskDescInput').value = '';
+    document.getElementById('taskStressInput').value = 5;
+    document.getElementById('stressDisplay').innerText = '5';
+    document.getElementById('taskDateInput').value = '';
+    closeAiModal();
+}
+
+
+// --- PROFILE PAGE LOGIC ---
+
+// 1. Build a duplicate accordion AND bar chart specifically for the Profile page
+function buildProfileScheduleUI() {
+    const accordionContainer = document.getElementById('profileScheduleAccordion');
+    const chartContainer = document.getElementById('profileWeeklyChart');
+    if (!accordionContainer || !chartContainer) return;
+    
+    accordionContainer.innerHTML = ''; 
+    chartContainer.innerHTML = '';
+    
+    // Calculate the highest hour day to scale the chart properly (minimum scale of 8 hours)
+    let maxHours = 8;
+    daysOfWeek.forEach(day => {
+        if(scheduleData[day].active) {
+            const total = scheduleData[day].class + scheduleData[day].work + scheduleData[day].study;
+            if (total > maxHours) maxHours = total;
+        }
+    });
+
+    let weeklyTotal = 0;
+
+    daysOfWeek.forEach(day => {
+        const data = scheduleData[day];
+        const total = data.active ? (data.class + data.work + data.study) : 0;
+        if (data.active) weeklyTotal += total;
+        
+        // --- BUILD THE MINI BAR CHART ---
+        let heightPct = '3px'; // Default for inactive days
+        let bgColor = '#e2e8f0'; // Light grey for inactive
+        
+        if (data.active && total > 0) {
+            heightPct = Math.max((total / maxHours) * 100, 15) + '%';
+            bgColor = '#293a34'; // Dark green from your design
+        } else if (data.active && total === 0) {
+            heightPct = '6px'; // Tiny bump for an active day with 0 hours
+            bgColor = '#293a34';
+        }
+
+        const barColumn = document.createElement('div');
+        barColumn.style.cssText = "display: flex; flex-direction: column; align-items: center; flex: 1;";
+        barColumn.innerHTML = `
+            <div style="width: 100%; height: 25px; display: flex; align-items: flex-end; margin-bottom: 8px;">
+                <div style="width: 100%; background: ${bgColor}; height: ${heightPct}; border-radius: 4px; transition: height 0.3s ease;"></div>
+            </div>
+            <div style="font-size: 9px; font-weight: 700; color: ${data.active ? 'var(--text-dark)' : 'var(--text-muted)'};">${day}</div>
+        `;
+        chartContainer.appendChild(barColumn);
+
+        // --- BUILD THE ACCORDION ---
+        const card = document.createElement('div');
+        card.className = `day-card ${data.expanded ? 'expanded' : ''} ${!data.active ? 'inactive' : ''}`;
+        card.id = `p-card-${day}`; 
+        
+        card.innerHTML = `
+            <div class="day-header" onclick="toggleProfileDayExpand('${day}')">
+                <div class="day-toggle">
+                    <input type="checkbox" id="p-toggle-${day}" ${data.active ? 'checked' : ''} onclick="event.stopPropagation(); toggleProfileDayActive('${day}', this.checked)">
+                    <label for="p-toggle-${day}" class="toggle-label"></label>
+                </div>
+                <span class="day-name">${day}</span>
+                <div class="day-summary">
+                    <span class="day-total" id="p-total-${day}">${data.active ? total + 'h total' : ''}</span>
+                    <span class="day-arrow">▼</span>
+                </div>
+            </div>
+            <div class="day-body">
+                <div class="hour-row"><span class="dot" style="background: #3b82f6;"></span> Class hours
+                    <div class="hour-controls">
+                        <button onclick="updateProfileHours('${day}', 'class', -1)">-</button>
+                        <span id="p-${day}-class">${data.class}</span>
+                        <button onclick="updateProfileHours('${day}', 'class', 1)">+</button>
+                    </div>
+                </div>
+                <div class="hour-row"><span class="dot" style="background: #a8a29e;"></span> Work / part-time
+                    <div class="hour-controls">
+                        <button onclick="updateProfileHours('${day}', 'work', -1)">-</button>
+                        <span id="p-${day}-work">${data.work}</span>
+                        <button onclick="updateProfileHours('${day}', 'work', 1)">+</button>
+                    </div>
+                </div>
+                <div class="hour-row"><span class="dot" style="background: #84cc16;"></span> Self-study
+                    <div class="hour-controls">
+                        <button onclick="updateProfileHours('${day}', 'study', -1)">-</button>
+                        <span id="p-${day}-study">${data.study}</span>
+                        <button onclick="updateProfileHours('${day}', 'study', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        accordionContainer.appendChild(card);
+    });
+    
+    // Update the total hours number in the profile header
+    document.getElementById('profileWeeklyTotal').innerText = weeklyTotal;
+}
+
+// Profile Accordion Interactions
+function toggleProfileDayExpand(day) {
+    if(!scheduleData[day].active) return;
+    scheduleData[day].expanded = !scheduleData[day].expanded;
+    document.getElementById(`p-card-${day}`).classList.toggle('expanded');
+    
+    // Sync the original setup accordion so they match perfectly
+    document.getElementById(`card-${day}`).className = document.getElementById(`p-card-${day}`).className;
+}
+
+function toggleProfileDayActive(day, isActive) {
+    scheduleData[day].active = isActive;
+    const card = document.getElementById(`p-card-${day}`);
+    
+    if(!isActive) {
+        card.classList.add('inactive');
+        card.classList.remove('expanded');
+        scheduleData[day].expanded = false;
+        document.getElementById(`p-total-${day}`).innerText = '';
+    } else {
+        card.classList.remove('inactive');
+        const total = scheduleData[day].class + scheduleData[day].work + scheduleData[day].study;
+        document.getElementById(`p-total-${day}`).innerText = total + 'h total';
+    }
+    
+    buildScheduleUI(); // Sync back to the main setup UI
+    buildProfileScheduleUI(); // Re-render this UI to update totals
+}
+
+function updateProfileHours(day, category, change) {
+    let newVal = scheduleData[day][category] + change;
+    if(newVal < 0) newVal = 0;
+    scheduleData[day][category] = newVal;
+    
+    buildScheduleUI(); // Sync back
+    buildProfileScheduleUI(); // Re-render
+}
+
+// 2. Sync Survey Data to the Profile Page
+function syncProfileData() {
+    const score = document.getElementById('dashScore').innerText;
+    const statusText = document.getElementById('dashStatus').innerText;
+    const statusColor = document.getElementById('dashStatus').style.color;
+    
+    const badge = document.getElementById('profileStressBadge');
+    const label = document.getElementById('profileStressLabel');
+    const desc = document.getElementById('profileStressDesc');
+    
+    badge.innerText = score;
+    badge.style.color = statusColor;
+    label.innerText = statusText;
+    label.style.color = statusColor;
+    
+    if (parseInt(score) >= 70) {
+        desc.innerText = "You're already carrying a lot. Your Rebalance tab will be important — check it daily.";
+    } else if (parseInt(score) >= 50) {
+        desc.innerText = "You have an elevated load. Don't skip your designated rest blocks.";
+    } else {
+        desc.innerText = "Your baseline is healthy! Let's keep your schedule balanced.";
+    }
+    
+    // Render the accordion when data syncs
+    buildProfileScheduleUI();
 }
