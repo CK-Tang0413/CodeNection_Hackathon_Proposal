@@ -20,6 +20,12 @@
     --robot-teal: #a2d5c6;
     --robot-pink: #ff8fb3;
     --robot-dark: #1a1a24;
+
+    /* Cat Colors */
+    --cat-orange: #ffb38a;
+    --cat-pink: #ff8fb3;
+    --cat-dark: #1a1a24;
+    --cat-white: #ffffff;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -169,6 +175,65 @@ p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 
 .alt-robot .robot-head { background: #ffd166; }
 .alt-robot .ear, .alt-robot .antenna-ball, .alt-robot .smile { background: #ef476f; border-bottom-color: #ef476f; box-shadow: none; }
 .alt-robot .eye { box-shadow: 0 0 15px rgba(239, 71, 111, 0.4); }
+
+
+
+
+
+/* --- Cat Base Animations --- */
+.cat-wrapper { position: relative; animation: float 4s ease-in-out infinite; cursor: pointer; }
+.cat-wrapper.dizzy { animation: shake 0.5s ease-in-out infinite; }
+.cat-wrapper.dizzy .pupil { animation: cycle-eye 0.5s linear infinite !important; background: var(--cat-dark); }
+.cat-wrapper .eye { box-shadow: 0 0 15px rgba(255, 179, 138, 0.4); } /* Orange glow for cat eyes */
+
+/* --- Cat Ears --- */
+.cat-ear { width: 50px; height: 50px; background: var(--cat-orange); position: absolute; top: -15px; z-index: 1; box-shadow: inset -3px -3px 8px rgba(0,0,0,0.15); }
+.cat-ear.left { left: 10px; border-radius: 15px 40px 15px 15px; transform: rotate(-15deg); }
+.cat-ear.right { right: 10px; border-radius: 40px 15px 15px 15px; transform: rotate(15deg); }
+
+.cat-ear-inner { width: 30px; height: 30px; background: var(--cat-pink); position: absolute; bottom: 5px; }
+.cat-ear.left .cat-ear-inner { right: 5px; border-radius: 10px 25px 10px 10px; }
+.cat-ear.right .cat-ear-inner { left: 5px; border-radius: 25px 10px 10px 10px; }
+
+/* --- Cat Head & Face --- */
+.cat-head { width: 160px; height: 130px; background: var(--cat-orange); border-radius: 65px 65px 50px 50px; position: relative; box-shadow: inset -5px -10px 20px rgba(0,0,0,0.15), 0 15px 25px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; z-index: 3; }
+.cat-face { width: 130px; height: 75px; background: var(--cat-dark); border-radius: 35px; display: flex; justify-content: center; align-items: center; gap: 25px; position: relative; }
+
+/* --- Nose, Mouth, Whiskers --- */
+.cat-nose { width: 14px; height: 8px; background: var(--cat-pink); border-radius: 10px 10px 20px 20px; position: absolute; top: 40px; left: 50%; transform: translateX(-50%); }
+.cat-mouth { position: absolute; top: 48px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; }
+.cat-mouth-line { width: 10px; height: 7px; border-bottom: 2px solid var(--cat-pink); border-radius: 0 0 10px 10px; }
+
+.cat-whisker-group { position: absolute; top: 35px; display: flex; flex-direction: column; gap: 8px; }
+.cat-whisker-group.left { left: -15px; }
+.cat-whisker-group.right { right: -15px; }
+.cat-whisker { width: 22px; height: 2px; background: rgba(255, 255, 255, 0.35); border-radius: 2px; }
+.cat-whisker-group.left .cat-whisker:nth-child(1) { transform: rotate(10deg); }
+.cat-whisker-group.left .cat-whisker:nth-child(2) { transform: rotate(-5deg); }
+.cat-whisker-group.right .cat-whisker:nth-child(1) { transform: rotate(-10deg); }
+.cat-whisker-group.right .cat-whisker:nth-child(2) { transform: rotate(5deg); }
+
+/* --- Cat Body --- */
+.cat-body { width: 105px; height: 85px; background: var(--cat-orange); border-radius: 40px 40px 35px 35px; position: absolute; top: 120px; left: 50%; transform: translateX(-50%); z-index: 2; box-shadow: inset -5px -10px 20px rgba(0,0,0,0.15), 0 10px 15px rgba(0,0,0,0.05); overflow: hidden; }
+.cat-belly { width: 60px; height: 50px; background: rgba(255, 255, 255, 0.3); border-radius: 30px 30px 0 0; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); }
+
+/* --- Paws (Arms & Legs) --- */
+.cat-arm { width: 26px; height: 60px; background: var(--cat-orange); border-radius: 13px; position: absolute; top: 135px; z-index: 4; box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2); overflow: hidden; }
+.cat-arm::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 16px; background: var(--cat-white); border-radius: 0 0 13px 13px; }
+.cat-arm.left { left: -10px; transform: rotate(20deg); }
+.cat-arm.right { right: -10px; transform: rotate(-20deg); }
+
+.cat-leg { width: 24px; height: 40px; background: var(--cat-orange); border-radius: 12px; position: absolute; top: 195px; z-index: 1; box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2); overflow: hidden; }
+.cat-leg::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 14px; background: var(--cat-white); border-radius: 0 0 12px 12px; }
+.cat-leg.left { left: 45px; }
+.cat-leg.right { right: 45px; }
+
+/* --- Wagging Tail --- */
+.cat-tail { width: 20px; height: 80px; background: var(--cat-orange); border-radius: 10px; position: absolute; top: 130px; left: 70%; z-index: 1; transform-origin: top center; box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2); animation: tail-wag 3s ease-in-out infinite; overflow: hidden; }
+.cat-tail::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 25px; background: var(--cat-white); border-radius: 0 0 10px 10px; }
+
+
+
 /* ======================================================== */
 
 /* Dashboard Specifics */

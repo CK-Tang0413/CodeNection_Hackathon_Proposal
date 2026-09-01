@@ -298,16 +298,48 @@
                 <!-- Updated: Scaled up to 0.28 and anchored to the bottom-right corner -->
                 <div class="robot-scaler" style="position: absolute; bottom: 15px; right: 15px; transform: scale(0.40); transform-origin: bottom right; cursor: pointer;">
                     <!-- Added height: 110px so the bottom anchor sticks exactly to the chin -->
-                    <div class="robot-wrapper" id="dashCompanion" onclick="interactDashRobot()" style="height: 110px;">
-                        <div class="antenna-ball"></div><div class="antenna"></div>
-                        <div class="ear left"></div><div class="ear right"></div>
-                        <div class="robot-head">
-                            <div class="robot-face">
+                    <div class="cat-wrapper" id="dashCompanion" onclick="interactDashRobot()" style="width: 160px; height: 130px;">
+        
+                        <!-- Ears -->
+                        <div class="cat-ear left"><div class="cat-ear-inner"></div></div>
+                        <div class="cat-ear right"><div class="cat-ear-inner"></div></div>
+                        
+                        <!-- Head & Face -->
+                        <div class="cat-head">
+                            <div class="cat-face">
+                                <div class="cat-whisker-group left">
+                                    <div class="cat-whisker"></div>
+                                    <div class="cat-whisker"></div>
+                                </div>
+                                
                                 <div class="eye"><div class="pupil"></div></div>
+                                
+                                <!-- Cute Cat Snout -->
+                                <div class="cat-nose"></div>
+                                <div class="cat-mouth">
+                                    <div class="cat-mouth-line"></div>
+                                    <div class="cat-mouth-line"></div>
+                                </div>
+                                
                                 <div class="eye"><div class="pupil"></div></div>
-                                <div class="smile"></div>
+                                
+                                <div class="cat-whisker-group right">
+                                    <div class="cat-whisker"></div>
+                                    <div class="cat-whisker"></div>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- Body & Tail (This will cleanly clip below the dark card to create a "peeking" effect) -->
+                        <div class="cat-tail"></div>
+                        <div class="cat-body">
+                            <div class="cat-belly"></div>
+                        </div>
+                        <div class="cat-arm left"></div>
+                        <div class="cat-arm right"></div>
+                        <div class="cat-leg left"></div>
+                        <div class="cat-leg right"></div>
+                        
                     </div>
                 </div>
             </div>
