@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equilibrium - Dashboard & Companion</title>
+    <link rel="stylesheet" href="test4.css">
+</head>
+<body>
+
+    <div class="mobile-frame">
+        
+        <!-- Global Persistent Robot -->
+        <div class="robot-wrapper loc-checkin" id="global-robot">
+            <div class="antenna-ball"></div><div class="antenna"></div>
+            <div class="ear left"></div><div class="ear right"></div>
+            <div class="robot-head">
+                <div class="robot-face">
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="eye"><div class="pupil"></div></div>
+                    <div class="smile"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View 1: Check-in -->
+        <div id="view-checkin" class="app-view active">
+            <div class="speech-bubble" id="speechBubble">Hi! Let's check your load today.</div>
+            
+            <div class="chat-section">
+                <div class="step-indicator" id="stepIndicator">Step 1 of 5</div>
+                <div class="question-header">
+                    <div class="cat-title"><span id="catIcon">🧠</span> <span id="catName">Mental</span></div>
+                    <div class="cat-score" id="scoreDisplay">5/10</div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-fill" id="sliderFill" style="width: 44.4%;"></div>
+                    <input type="range" min="1" max="10" value="5" id="loadSlider">
+                </div>
+                <button class="action-btn" id="nextBtn" onclick="submitScore()">Next</button>
+            </div>
+        </div>
+
+        <!-- View 2: Dashboard Overview -->
+        <div id="view-dashboard" class="app-view">
+            <div class="page-header">
+                <h1>Overview</h1>
+                <p>Your current capacity profile</p>
+            </div>
+
+            <!-- 1. Performance Chart -->
+            <div class="gauge-card">
+                <h3 style="color: var(--text-main); font-size: 16px;">Overall Load</h3>
+                <div class="gauge-container">
+                    <div class="gauge-inner">
+                        <h2>78%</h2>
+                        <span style="font-size: 10px; font-weight: 700; color: var(--accent-orange);">HIGH STRAIN</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Summary Analysis -->
+            <div class="summary-card">
+                <h3>⚡ AI Pattern Analysis</h3>
+                <p>Your workload is peaking. Maintaining top-tier performance—like a 4.0 CGPA baseline—requires active recovery routing. Optimization algorithms indicate a critical imbalance in <strong>Time</strong> and <strong>Mental</strong> load.</p>
+            </div>
+
+            <!-- 3. Advise Section -->
+            <div class="advice-list">
+                <div class="advice-item">
+                    <div class="advice-text">
+                        <h4>Offload Errands</h4>
+                        <p>Shift 2 low-priority tasks to weekend.</p>
+                    </div>
+                    <button class="advice-btn" onclick="goToRebalance()">Rebalance</button>
+                </div>
+                <div class="advice-item">
+                    <div class="advice-text">
+                        <h4>Force Cycle Break</h4>
+                        <p>Block 30m for screen-free physical reset.</p>
+                    </div>
+                    <button class="advice-btn" onclick="goToRebalance()">Rebalance</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- View 3: Rebalance Placeholder -->
+        <div id="view-rebalance" class="app-view">
+            <div class="page-header"><h1>Rebalance View</h1></div>
+            <p style="color: var(--text-main); margin-top: 20px;">(Recovery actions interface loads here)</p>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" onclick="switchView('view-checkin', this)">🤖</div>
+            <div class="nav-item" onclick="switchView('view-dashboard', this)">📊</div>
+            <div class="nav-item" onclick="switchView('view-rebalance', this)">⚡</div>
+        </nav>
+    </div>
+
+    <script src="test4.js"></script>
+</body>
+</html>

@@ -1,0 +1,484 @@
+:root {
+    --bg-color: #f7f9fc;
+    --surface: #ffffff;
+    --primary: #4f46e5;
+    --primary-light: #e0e7ff;
+    --text-dark: #1e293b;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --urgent: #ef4444;
+    --normal: #10b981;
+    
+    /* Radar Colors */
+    --c-mental: #8b5cf6;
+    --c-time: #3b82f6;
+    --c-physical: #f43f5e;
+    --c-social: #f59e0b;
+    --c-errands: #10b981;
+
+    /* Robot Colors */
+    --robot-teal: #a2d5c6;
+    --robot-pink: #ff8fb3;
+    --robot-dark: #1a1a24;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+body {
+    background: #cbd5e1;
+    display: flex; justify-content: center; align-items: center;
+    min-height: 100vh;
+}
+
+.mobile-frame {
+    width: 390px; height: 844px; background: var(--bg-color);
+    border-radius: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: relative; overflow: hidden; display: flex; flex-direction: column;
+}
+
+/* View Controller */
+.view { display: none; flex-direction: column; height: 100%; overflow-y: auto; padding: 30px 20px 100px 20px; scrollbar-width: none; }
+.view::-webkit-scrollbar { display: none; }
+.view.active { display: flex; animation: fadeIn 0.3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Typography & Globals */
+h1 { font-size: 24px; color: var(--text-dark); margin-bottom: 8px; }
+h2 { font-size: 18px; color: var(--text-dark); margin-bottom: 12px; margin-top: 20px; }
+p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 20px; }
+
+.btn {
+    background: var(--primary); color: white; border: none; padding: 14px;
+    border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;
+    width: 100%; text-align: center; margin-top: auto; transition: all 0.2s;
+}
+.btn:active { transform: scale(0.98); }
+.btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-dark); margin-top: 10px; }
+.hidden { display: none !important; }
+
+.card { background: var(--surface); border-radius: 16px; padding: 16px; margin-bottom: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid var(--border); }
+.input-group { margin-bottom: 15px; }
+.input-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
+.input-group input, .input-group select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: #f8fafc; font-size: 14px; }
+
+/* ================= ROBOT & CAROUSEL CSS ================= */
+.avatar-selection { flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative; }
+
+/* Shared Speech Bubble */
+.speech-bubble {
+    background: white; color: var(--text-dark); padding: 15px 20px; border-radius: 20px; font-weight: 600; font-size: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+    position: relative; /* Changed from absolute */
+    width: 85%; margin: 15px auto 0 auto; /* Centers it and adds space above */
+    opacity: 0; transform: translateY(10px); transition: all 0.3s ease; text-align: center; z-index: 200; pointer-events: none;
+}
+.speech-bubble.active { opacity: 1; transform: translateY(0); }
+.speech-bubble::after { content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); border-width: 10px 10px 0; border-style: solid; border-color: white transparent transparent transparent; }
+
+.carousel {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+    scrollbar-width: none; gap: 20px; padding: 20px 0; margin-bottom: 20px;
+    scroll-behavior: smooth; margin-top: 10px; /* Reduced to bring the robots closer to the bubble */
+}
+.carousel::-webkit-scrollbar { display: none; }
+.carousel-slide { flex: 0 0 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; height: 220px; }
+
+.robot-wrapper { position: relative; animation: float 4s ease-in-out infinite; cursor: pointer; }
+.robot-wrapper.dizzy { animation: shake 0.5s ease-in-out infinite; }
+
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
+@keyframes shake { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-2px, 2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, -2px); } }
+@keyframes cycle-eye { 0% { transform: rotate(0deg) translateX(8px); } 100% { transform: rotate(360deg) translateX(8px); } }
+
+.ear { width: 25px; height: 60px; background: var(--robot-pink); position: absolute; top: 45px; border-radius: 15px; box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2); z-index: 1; }
+.ear.left { left: -15px; } .ear.right { right: -15px; }
+.antenna { width: 6px; height: 30px; background: #ccc; position: absolute; top: -25px; left: 50%; transform: translateX(-50%); z-index: 1; }
+.antenna-ball { width: 18px; height: 18px; background: var(--robot-pink); border-radius: 50%; position: absolute; top: -35px; left: 50%; transform: translateX(-50%); box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2); }
+.robot-head { width: 160px; height: 140px; background: var(--robot-teal); border-radius: 60px; position: relative; box-shadow: inset -5px -10px 20px rgba(0,0,0,0.15), 0 15px 25px rgba(0,0,0,0.05); display: flex; justify-content: center; align-items: center; z-index: 2; }
+.robot-face { width: 130px; height: 80px; background: var(--robot-dark); border-radius: 35px; display: flex; justify-content: center; align-items: center; gap: 15px; position: relative; }
+
+/* --- Robot Body Parts --- */
+.robot-body {
+    width: 110px;
+    height: 85px; /* Increased height so it shows at small scale */
+    background: var(--robot-teal);
+    border-radius: 40px 40px 30px 30px;
+    position: absolute;
+    top: 125px; /* Pushed further down from the head */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1; /* Keeps it behind the head */
+    box-shadow: inset -5px -10px 20px rgba(0,0,0,0.15), 0 10px 15px rgba(0,0,0,0.05);
+}
+
+.robot-arm {
+    width: 26px;
+    height: 60px;
+    background: var(--robot-pink);
+    border-radius: 13px;
+    position: absolute;
+    top: 15px;
+    z-index: 0;
+    box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2);
+}
+
+.robot-arm.left { left: -15px; transform: rotate(20deg); }
+.robot-arm.right { right: -15px; transform: rotate(-20deg); }
+
+.robot-chest {
+    width: 40px;
+    height: 15px;
+    background: var(--robot-dark);
+    border-radius: 10px;
+    position: absolute;
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.8;
+}
+
+/* --- Robot Legs --- */
+.robot-leg {
+    width: 24px;
+    height: 40px;
+    background: var(--robot-pink);
+    border-radius: 12px;
+    position: absolute;
+    top: 195px; /* Tucks it slightly inside the bottom of the body */
+    z-index: 0; /* Keeps it behind the torso */
+    box-shadow: inset -3px -3px 8px rgba(0,0,0,0.2);
+}
+
+.robot-leg.left { left: 45px; }
+.robot-leg.right { right: 45px; }
+
+/* Ensure the alternate yellow robot gets matching legs */
+.alt-robot .robot-leg { background: #ef476f; box-shadow: none; }
+
+/* Ensure the alternate yellow robot gets its matching body */
+.alt-robot .robot-body { background: #ffd166; }
+.alt-robot .robot-arm { background: #ef476f; box-shadow: none; }
+
+.eye { width: 40px; height: 45px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(255, 143, 179, 0.4); overflow: hidden; position: relative; }
+.pupil { width: 20px; height: 20px; background: var(--robot-dark); border-radius: 50%; }
+.smile { position: absolute; bottom: 10px; width: 20px; height: 8px; border-bottom: 3px solid var(--robot-pink); border-radius: 0 0 20px 20px; }
+
+.robot-wrapper.dizzy .pupil { animation: cycle-eye 0.5s linear infinite !important; background: var(--robot-dark); }
+
+/* Alternative Robot Colors for Carousel */
+.alt-robot .robot-head { background: #ffd166; }
+.alt-robot .ear, .alt-robot .antenna-ball, .alt-robot .smile { background: #ef476f; border-bottom-color: #ef476f; box-shadow: none; }
+.alt-robot .eye { box-shadow: 0 0 15px rgba(239, 71, 111, 0.4); }
+/* ======================================================== */
+
+/* Dashboard Specifics */
+.risk-circle { width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(var(--urgent) 0% 75%, var(--border) 75% 100%); display: flex; justify-content: center; align-items: center; margin: 0 auto 20px; }
+.risk-inner { width: 90px; height: 90px; background: var(--surface); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.risk-inner h3 { font-size: 28px; color: var(--text-dark); }
+.risk-inner span { font-size: 10px; color: var(--text-muted); font-weight: 700; }
+.radar-placeholder { height: 180px; width: 100%; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,5 95,40 75,95 25,95 5,40" fill="%23e0e7ff" stroke="%234f46e5" stroke-width="2"/><polygon points="50,25 75,50 65,80 35,80 25,50" fill="rgba(79,70,229,0.5)"/></svg>') center/contain no-repeat; margin-bottom: 20px; }
+.bar-wrap { display: flex; align-items: center; margin-bottom: 10px; }
+.bar-label { width: 70px; font-size: 12px; font-weight: 600; }
+.bar-track { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin: 0 10px; }
+.bar-fill { height: 100%; border-radius: 4px; }
+
+/* Task Tags & UI */
+.task-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.task-item:last-child { border-bottom: none; }
+.tag { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+.tag-urgent { background: #fee2e2; color: var(--urgent); }
+.tag-normal { background: #d1fae5; color: var(--normal); }
+.tag-area { background: var(--border); color: var(--text-muted); margin-left: 5px; }
+
+/* Chat UI */
+.chat-msg { margin-bottom: 15px; display: flex; flex-direction: column; }
+.chat-msg.bot .bubble { background: var(--primary-light); color: var(--primary); align-self: flex-start; border-bottom-left-radius: 4px; }
+.chat-msg.user .bubble { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+.bubble { padding: 12px 16px; border-radius: 16px; max-width: 80%; font-size: 14px; line-height: 1.4; }
+
+/* Navigation Bar */
+.bottom-nav { position: absolute; bottom: 0; width: 100%; background: var(--surface); border-top: 1px solid var(--border); display: none; padding: 15px 20px 25px 20px; justify-content: space-between; }
+.bottom-nav.active { display: flex; }
+.nav-btn { background: transparent; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; transition: color 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.nav-btn span { font-size: 10px; font-weight: 600; }
+.nav-btn.active { color: var(--primary); }
+
+/* --- Robot Stage & Pacing --- */
+.robot-stage {
+    position: absolute;
+    top: 0px; right: 0;
+    width: 140px; height: 120px;
+    pointer-events: none;
+}
+
+.robot-mover {
+    position: absolute; right: 0;
+    animation: pace 7s infinite alternate linear;
+}
+
+/* 1. The Pacing (Left to Right) */
+@keyframes pace {
+    0% { transform: translateX(0px); }
+    100% { transform: translateX(-80px); }
+}
+
+/* 2. The Walk Cycle (Bobbing & Waddling) */
+.robot-wrapper.walking {
+    animation: waddle 0.4s infinite alternate ease-in-out;
+}
+@keyframes waddle {
+    0% { transform: translateY(0px) rotate(-3deg); }
+    100% { transform: translateY(-15px) rotate(3deg); }
+}
+
+/* --- Sleeping State --- */
+.robot-mover.sleeping { animation-play-state: paused; }
+
+/* Overrides the walk cycle and pushes the robot down to "sit" */
+.robot-mover.sleeping .robot-wrapper { 
+    animation: none; 
+} 
+
+.robot-mover.sleeping .eye { 
+    height: 12px; border-radius: 20px; 
+    background: var(--robot-pink); box-shadow: none; 
+    margin-top: 15px; 
+}
+.robot-mover.sleeping .pupil { display: none; }
+.robot-mover.sleeping .smile { width: 10px; border-width: 2px; }
+
+/* Zzz Animation */
+.zzz {
+    position: absolute; color: var(--text-muted); font-weight: 800; font-size: 50px;
+    opacity: 0; z-index: 10;
+}
+.z1 { top: -60px; right: 20px; }
+.z2 { top: -90px; right: -10px; font-size: 40px; }
+.z3 { top: -110px; right: -30px; font-size: 30px; }
+
+.robot-mover.sleeping .z1 { animation: snore 3s infinite 0s; }
+.robot-mover.sleeping .z2 { animation: snore 3s infinite 0.5s; }
+.robot-mover.sleeping .z3 { animation: snore 3s infinite 1s; }
+
+@keyframes snore {
+    0% { opacity: 0; transform: translateY(0) scale(0.5); }
+    50% { opacity: 1; transform: translateY(-30px) scale(1); }
+    100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
+}
+
+
+/* --- Schedule Accordion UI --- */
+.day-card { background: #fafaf9; border-radius: 16px; overflow: hidden; transition: all 0.3s; }
+.day-header { display: flex; align-items: center; padding: 15px; cursor: pointer; }
+.day-name { font-weight: 700; color: var(--text-dark); margin-left: 15px; flex-grow: 1; }
+.day-summary { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.day-arrow { font-size: 10px; transition: transform 0.3s; color: #a8a29e; }
+
+.day-body { padding: 0 15px 15px 15px; display: none; border-top: 1px solid #e5e5e5; margin-top: 5px; padding-top: 15px; }
+.day-card.expanded .day-body { display: block; }
+.day-card.expanded .day-arrow { transform: rotate(180deg); }
+.day-card.inactive { opacity: 0.5; background: #ffffff; }
+.day-card.inactive .day-body { display: none !important; }
+
+/* Plus/Minus Controls */
+.hour-row { display: flex; align-items: center; margin-bottom: 15px; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+.hour-row:last-child { margin-bottom: 0; }
+.dot { width: 8px; height: 8px; border-radius: 50%; margin-right: 10px; }
+.hour-controls { margin-left: auto; display: flex; align-items: center; gap: 12px; background: #f5f5f4; border-radius: 12px; padding: 4px 8px; }
+.hour-controls button { background: #e7e5e4; border: none; width: 24px; height: 24px; border-radius: 8px; font-weight: bold; cursor: pointer; color: var(--text-dark); display: flex; align-items: center; justify-content: center; }
+.hour-controls span { font-weight: 700; width: 16px; text-align: center; color: var(--text-dark); }
+
+/* Custom Toggle Switch */
+.day-toggle { position: relative; width: 44px; height: 24px; }
+.day-toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-label { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #d6d3d1; border-radius: 24px; transition: .4s; }
+.toggle-label:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; }
+.day-toggle input:checked + .toggle-label { background-color: #204035; /* Dark forest green */ }
+.day-toggle input:checked + .toggle-label:before { transform: translateX(20px); }
+
+/* --- Robot Shocked State --- */
+.robot-wrapper.shocked .eye { height: 45px !important; border-radius: 50% !important; margin-top: 0 !important; }
+.robot-wrapper.shocked .pupil { display: block !important; transform: scale(0.7) !important; }
+.robot-wrapper.shocked .smile { width: 16px !important; height: 16px !important; background: var(--robot-pink) !important; border: none !important; border-radius: 50% !important; bottom: 5px !important; }
+
+/* --- Schedule Page Speech Bubble --- */
+.schedule-speech-bubble {
+    position: absolute;
+    top: -5px; 
+    right: 50px; /* Shifted left a bit more to fit the larger robot and wider bubble */
+    background: white; color: var(--text-dark);
+    padding: 10px 14px; border-radius: 16px;
+    font-size: 12px; /* <--- Increased text size from 10px to 12px for readability */
+    font-weight: 600; line-height: 1.4;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    width: 150px; /* <--- Increased width from 120px to 150px */
+    text-align: center; z-index: 10;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.schedule-speech-bubble::after {
+    content: ''; position: absolute; top: 14px; right: -6px;
+    border-width: 6px 0 6px 8px; border-style: solid;
+    border-color: transparent transparent transparent white;
+}
+
+
+/* --- Survey Page Speech Bubble --- */
+.survey-speech-bubble {
+    position: absolute;
+    top: -20px; left: 50%; transform: translateX(-50%);
+    background: white; color: var(--text-dark);
+    padding: 16px 20px; border-radius: 20px;
+    font-size: 15px; font-weight: 600; line-height: 1.5;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    width: 280px; text-align: center; z-index: 10;
+}
+.survey-speech-bubble::after {
+    content: ''; position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%);
+    border-width: 10px 10px 0 10px; border-style: solid;
+    border-color: white transparent transparent transparent;
+}
+
+/* --- Import Calendar UI --- */
+.drop-zone {
+    background: var(--surface);
+    border: 2px dashed #cbd5e1;
+    border-radius: 20px;
+    padding: 40px 20px;
+    text-align: center;
+    margin-bottom: 25px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.drop-zone:active {
+    background: #f1f5f9;
+    transform: scale(0.98);
+}
+.info-box {
+    background: #eff6ff;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+}
+.disabled-btn {
+    background: #e2e8f0 !important;
+    color: #94a3b8 !important;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* --- Overview Stat Cards --- */
+.stat-card {
+    padding: 25px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fafaf9; /* Warm off-white */
+    border-radius: 20px;
+}
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+.stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+
+/* --- Dashboard UI --- */
+.dark-hero-card {
+    background: #1c1917; /* Deep dark grey/brown */
+    border-radius: 24px;
+    padding: 25px 20px;
+    position: relative;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    overflow: hidden;
+}
+/* Optional subtle circle decoration for the dark card */
+.dark-hero-card::before {
+    content: ''; position: absolute; top: -30px; right: -20px;
+    width: 120px; height: 120px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03); pointer-events: none;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.cat-card {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 16px;
+    gap: 12px;
+}
+
+/* --- Circular Progress Rings --- */
+.cat-ring {
+    width: 44px; 
+    height: 44px;
+    border-radius: 50%;
+    background: conic-gradient(var(--c-fill) var(--pct), var(--c-track) 0);
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* This inner circle "hollows out" the gradient to make a donut shape */
+.cat-ring::before {
+    content: '';
+    position: absolute;
+    width: 32px; 
+    height: 32px;
+    background: var(--c-bg); /* Matches the card background to blend in */
+    border-radius: 50%;
+}
+
+.cat-ring span {
+    position: relative; 
+    z-index: 1;
+    font-size: 11px; 
+    font-weight: 700; 
+    color: var(--c-text);
+}
+
+.cat-title { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
+.cat-status { font-size: 11px; color: var(--text-muted); }
+
+/* Dashboard Speech Bubble */
+.dash-speech-bubble {
+    position: absolute;
+    top: 15px; right: 75px;
+    background: white; color: var(--text-dark);
+    padding: 8px 12px; border-radius: 14px;
+    font-size: 11px; font-weight: 600; line-height: 1.3;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    width: 130px; text-align: center; z-index: 10;
+    opacity: 0; transform: translateY(10px); transition: all 0.3s ease;
+    pointer-events: none;
+}
+.dash-speech-bubble.active { opacity: 1; transform: translateY(0); }
+.dash-speech-bubble::after {
+    content: ''; position: absolute; top: 12px; right: -6px;
+    border-width: 6px 0 6px 8px; border-style: solid;
+    border-color: transparent transparent transparent white;
+}
+
+
+
+
+
+@media (max-height: 900px) { .mobile-frame { transform: scale(0.85); } }
