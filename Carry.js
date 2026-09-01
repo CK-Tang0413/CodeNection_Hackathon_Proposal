@@ -68,19 +68,39 @@ function selectAvatar() {
     document.getElementById('avatarTitle').style.color = "var(--primary)";
     document.getElementById('startSetupBtn').classList.remove('hidden');
 
-    // MAGIC TRICK: Check if they swiped to the yellow robot
-    // If they scrolled more than 50px, they are on the second slide
-    if (carousel.scrollLeft > 50) {
-        document.getElementById('miniCompanion').classList.add('alt-robot');
-        document.getElementById('scheduleCompanion').classList.add('alt-robot');
-        document.getElementById('surveyCompanion').classList.add('alt-robot');
-        document.getElementById('overviewCompanion').classList.add('alt-robot');
-        document.getElementById('dashCompanion').classList.add('alt-robot');
-        document.getElementById('rebalanceCompanion').classList.add('alt-robot');
-        document.getElementById('logCompanion').classList.add('alt-robot');
-    } else {
-        document.getElementById('miniCompanion').classList.remove('alt-robot');
-    }
+    // UPGRADED MAGIC TRICK: Calculate exactly which slide is in the center
+    const slideWidth = carousel.clientWidth;
+    const activeIndex = Math.round(carousel.scrollLeft / slideWidth);
+
+    // List of every place the robot appears in the app
+    const companions = [
+        'miniCompanion', 
+        'scheduleCompanion', 
+        'surveyCompanion', 
+        'overviewCompanion', 
+        'dashCompanion', 
+        'rebalanceCompanion', 
+        'logCompanion'
+    ];
+
+    // Loop through all companions and apply the correct theme
+    companions.forEach(id => {
+        const robotElement = document.getElementById(id);
+        
+        // Add 'robot-5' to the clear list so it resets perfectly
+        robotElement.classList.remove('alt-robot', 'robot-3', 'robot-4', 'robot-5');
+        
+        // Apply the specific theme based on which slide they stopped on
+        if (activeIndex === 1) {
+            robotElement.classList.add('alt-robot'); // Yellow
+        } else if (activeIndex === 2) {
+            robotElement.classList.add('robot-3');   // WALL-E
+        } else if (activeIndex === 3) {
+            robotElement.classList.add('robot-4');   // EVE
+        } else if (activeIndex === 4) {
+            robotElement.classList.add('robot-5');   // Mixue Snow King
+        }
+    });
 }
 
 function goTo(viewId) {
@@ -120,7 +140,7 @@ function navTo(viewId, btnElement) {
 
 function startRetest() {
     document.getElementById('appNav').classList.remove('active');
-    goTo('view-survey');
+    goTo('view-welcome');
 }
 
 // --- SLEEP & POKE LOGIC ---

@@ -640,6 +640,464 @@ p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 
     transform: translateY(0);
 }
 
+/* --- Character 3: Cute Vector WALL-E --- */
+
+/* 1. Hide unused parts */
+.robot-3 .ear, 
+.robot-3 .antenna, 
+.robot-3 .antenna-ball,
+.robot-3 .smile { 
+    display: none !important; 
+}
+
+/* 2. Head & Neck */
+.robot-3 .robot-head {
+    background: transparent !important;
+    box-shadow: none !important;
+    top: -5px; 
+}
+.robot-3 .robot-face {
+    background: transparent;
+    gap: 4px; /* Brings eyes closer together */
+}
+
+/* Simple dark grey neck */
+.robot-wrapper.robot-3::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 60px;
+    background: #64748b; 
+    left: 50%;
+    transform: translateX(-50%);
+    top: 60px; /* Positions it exactly in the gap */
+    z-index: 0; /* Tucks it behind the eyes and the body */
+    border-radius: 4px;
+    border-left: 2px solid #4b5563; /* Adds a bit of mechanical shading */
+    border-right: 2px solid #4b5563;
+}
+
+/* 3. The Eyes (Teardrop shape) */
+.robot-3 .eye {
+    width: 60px;
+    height: 52px;
+    background: #cbd5e1; /* Light silver/grey housing */
+    border: 2px solid #64748b; /* Darker outline */
+    box-shadow: none;
+    position: relative;
+}
+
+/* Left Eye Shape & Tilt */
+.robot-3 .robot-face .eye:first-child {
+    border-radius: 60px 20px 20px 50px;
+    transform: rotate(-12deg);
+}
+
+/* Right Eye Shape & Tilt */
+.robot-3 .robot-face .eye:last-child {
+    border-radius: 20px 60px 50px 20px;
+    transform: rotate(12deg);
+}
+
+/* Big Black Pupils with Double Glints! */
+.robot-3 .pupil {
+    width: 34px;
+    height: 34px;
+    background-color: #1c1917; /* Very dark */
+    border-radius: 50%;
+    /* Draws the two white circles inside the pupil */
+    background-image: 
+        radial-gradient(circle at 30% 30%, white 4px, transparent 4.5px),
+        radial-gradient(circle at 75% 45%, white 2px, transparent 2.5px);
+    box-shadow: none;
+}
+
+/* Position pupils to look forward */
+.robot-3 .robot-face .eye:first-child .pupil {
+    position: absolute; bottom: 8px; right: 8px;
+}
+.robot-3 .robot-face .eye:last-child .pupil {
+    position: absolute; bottom: 8px; left: 8px;
+}
+
+/* 4. The Body */
+.robot-3 .robot-body {
+    background: #facc15; /* Bright flat yellow */
+    width: 110px;
+    height: 75px;
+    border-radius: 4px;
+    top: 105px;
+    box-shadow: none;
+    overflow: hidden; /* Keeps the grey chest panel perfectly inside */
+}
+
+/* Top Grey Control Panel */
+.robot-3 .robot-chest {
+    background: #4b5563; 
+    width: 100%;
+    height: 30px;
+    top: 0;
+    left: 0;
+    transform: none; 
+    border-radius: 0;
+    opacity: 1;
+}
+
+/* Faking the red button and yellow lights on the chest */
+.robot-3 .robot-chest::after {
+    content: '';
+    position: absolute;
+    top: 10px; left: 25px;
+    width: 10px; height: 8px;
+    background: #ef4444; /* Red button */
+    /* Clones the box to make yellow bars */
+    box-shadow: 
+        30px -3px 0 #facc15, 
+        30px 4px 0 #facc15;
+}
+
+/* 5. Blocky Arms */
+.robot-3 .robot-arm {
+    width: 28px;
+    height: 40px;
+    background: #374151; /* Dark grey */
+    border-top: 12px solid #9ca3af; /* Light grey shoulder connector */
+    border-bottom: 12px solid #4b5563; /* Lower arm segment */
+    border-radius: 4px;
+    top: 35px;
+    z-index: 2; /* Pulls arms in front of the yellow body */
+    box-shadow: none;
+}
+.robot-3 .robot-arm.left {
+    left: -8px;
+    transform: rotate(5deg);
+}
+.robot-3 .robot-arm.right {
+    right: -8px;
+    transform: rotate(-5deg);
+}
+
+/* 6. Tank Treads (Legs) */
+.robot-3 .robot-leg {
+    background: #1f2937; /* Dark tread color */
+    width: 44px;
+    height: 30px;
+    border-radius: 4px; 
+    top: 175px;
+    box-shadow: none;
+    /* Clean diagonal tread pattern */
+    background-image: repeating-linear-gradient(
+        45deg,
+        #1f2937,
+        #1f2937 6px,
+        #111827 6px,
+        #111827 12px
+    );
+}
+.robot-3 .robot-leg.left { left: 4px; }
+.robot-3 .robot-leg.right { right: 4px; }
+
+/* Fix overall positioning in the carousel */
+.robot-wrapper.robot-3 {
+    top: -30px;
+}
+
+/* --- Character 4: EVE --- */
+
+/* 1. Hide unused parts (No legs, antenna, chest panel, or smile) */
+.robot-4 .ear, 
+.robot-4 .antenna, 
+.robot-4 .antenna-ball,
+.robot-4 .smile,
+.robot-4 .robot-leg,
+.robot-4 .robot-chest { 
+    display: none !important; 
+}
+
+/* 2. Sleek White Head */
+.robot-4 .robot-head {
+    background: #1c1917; /* Very dark grey/black */
+    width: 140px;
+    height: 110px;
+    /* Creates an oval shape */
+    border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    top: 5px;
+}
+
+/* 3. Black Face Screen */
+.robot-4 .robot-face {
+    background: #ffffff;
+    width: 115px;
+    height: 70px;
+    border-radius: 50% 50% 45% 45% / 60% 60% 40% 40%;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+/* 4. Striped Glowing Eyes */
+.robot-4 .eye {
+    width: 32px;
+    height: 18px;
+    background: transparent;
+    border-radius: 20px 20px 2px 2px; /* Flat bottom, curved top */
+    box-shadow: none;
+    border: none;
+    overflow: hidden;
+    /* Draws the blue horizontal lines */
+    background-image: repeating-linear-gradient(
+        to bottom, 
+        #06b6d4, 
+        #06b6d4 3px, 
+        transparent 3px, 
+        transparent 5px
+    );
+}
+
+/* Tilt the eyes slightly for expression */
+.robot-4 .robot-face .eye:first-child { transform: rotate(-5deg); }
+.robot-4 .robot-face .eye:last-child { transform: rotate(5deg); }
+
+/* Hide the pupils (the eyes are just lines) */
+.robot-4 .pupil { display: none !important; }
+
+/* 5. Egg-Shaped Body */
+.robot-4 .robot-body {
+    background: #1c1917;
+    width: 90px;
+    height: 115px;
+    /* Creates a teardrop/egg shape */
+    border-radius: 50% 50% 50% 50% / 30% 30% 70% 70%;
+    top: 105px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+/* 6. Floating Fin Arms */
+.robot-4 .robot-arm {
+    background: #1c1917;
+    width: 22px;
+    height: 75px;
+    border: none;
+    /* Fin shape */
+    border-radius: 50% 50% 50% 50% / 20% 20% 80% 80%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    top: 15px;
+}
+
+/* Pull the arms slightly away from the body so they "float" */
+.robot-4 .robot-arm.left {
+    left: -25px;
+    transform: rotate(15deg);
+}
+.robot-4 .robot-arm.right {
+    right: -25px;
+    transform: rotate(-15deg);
+}
+
+.robot-wrapper.robot-4 {
+    top: -50px;
+}
+
+/* --- Character 5: Mixue Snow King --- */
+
+/* 1. Hide unused parts (No legs, chest panel, or ears) */
+.robot-5 .ear,
+.robot-5 .robot-chest,
+.robot-5 .robot-leg {
+    display: none !important;
+}
+
+/* Base wrapper adjustments */
+.robot-wrapper.robot-5 {
+    top: -10px;
+}
+
+/* 2. Red Cape (Behind everything) */
+.robot-wrapper.robot-5::before {
+    content: '';
+    position: absolute;
+    background: #e31937; /* Mixue Red */
+    border: 4px solid #1c1917; /* Thick dark outline */
+    width: 140px;
+    height: 110px;
+    border-radius: 50% 50% 40% 40%;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: -1;
+}
+
+/* 3. Round White Head */
+.robot-5 .robot-head {
+    background: #ffffff;
+    width: 110px;
+    height: 85px;
+    border-radius: 50%;
+    border: 4px solid #1c1917;
+    box-shadow: none;
+    top: 15px;
+    z-index: 2;
+}
+
+/* 4. The 3-Point Crown (Repurposing the Antenna) */
+.robot-5 .antenna {
+    display: block !important;
+    width: 34px; height: 20px;
+    background: #ffffff;
+    top: -18px; left: 50%; transform: translateX(-50%);
+    /* Carves the rectangle into a 3-point crown */
+    clip-path: polygon(0 0, 25% 60%, 50% 0, 75% 60%, 100% 0, 100% 100%, 0 100%);
+    z-index: 2;
+}
+/* Black outline for the Crown (Repurposing the Antenna Ball) */
+.robot-5 .antenna-ball {
+    display: block !important;
+    width: 42px; height: 26px;
+    background: #1c1917;
+    border-radius: 0;
+    top: -22px; left: 50%; transform: translateX(-50%);
+    clip-path: polygon(0 0, 25% 60%, 50% 0, 75% 60%, 100% 0, 100% 100%, 0 100%);
+    z-index: 1;
+    box-shadow: none;
+}
+
+/* 5. Face Details */
+.robot-5 .robot-face {
+    background: transparent;
+    gap: 25px; /* Wide eye spacing */
+    margin-top: 5px;
+}
+
+/* Blue Eyes */
+.robot-5 .eye {
+    width: 16px;
+    height: 24px;
+    background: #1d3c88; /* Mixue Blue */
+    border-radius: 50%;
+    border: none;
+    box-shadow: none;
+    position: relative;
+}
+
+/* White pupil glints */
+.robot-5 .pupil {
+    width: 6px; height: 6px;
+    background: #ffffff;
+    border-radius: 50%;
+    top: 4px; right: 4px;
+    position: absolute;
+}
+.robot-5 .eye:last-child .pupil {
+    right: auto; left: 4px; /* Mirror the glint on the right eye */
+}
+
+/* Orange Carrot Nose */
+.robot-5 .robot-face::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 12px;
+    background: #f39200; /* Mixue Orange */
+    border-radius: 50%;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-10%);
+}
+
+/* Blue Smile */
+.robot-5 .smile {
+    border: none;
+    border-bottom: 4px solid #1d3c88;
+    width: 40px;
+    height: 20px;
+    border-radius: 0 0 20px 20px;
+    bottom: 8px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Red Tongue sticking out */
+.robot-5 .smile::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 10px;
+    background: #e31937;
+    border-radius: 50%;
+    left: -4px;
+    top: 2px;
+    transform: rotate(-30deg);
+}
+
+/* 6. Big Round White Body */
+.robot-5 .robot-body {
+    background: #ffffff;
+    width: 125px;
+    height: 100px;
+    border-radius: 50% 50% 45% 45%;
+    border: 4px solid #1c1917;
+    top: 90px;
+    box-shadow: none;
+    z-index: 1;
+}
+
+/* Chubby Arms */
+.robot-5 .robot-arm {
+    background: #ffffff;
+    border: 4px solid #1c1917;
+    width: 30px;
+    height: 45px;
+    border-radius: 15px;
+    box-shadow: none;
+    top: 40px;
+}
+.robot-5 .robot-arm.left {
+    left: -15px;
+    transform: rotate(30deg);
+    z-index: 2;
+}
+.robot-5 .robot-arm.right {
+    right: -15px;
+    transform: rotate(-30deg);
+    z-index: 2;
+}
+
+/* --- 7. The Ice Cream Scepter --- */
+    
+/* Golden Wand Stick */
+.robot-5 .robot-arm.left::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 90px;
+    background: #facc15; 
+    border: 3px solid #1c1917;
+    border-radius: 4px;
+    top: -65px; left: 8px;
+    transform: rotate(-20deg);
+    z-index: -1;
+}
+
+/* Soft Serve Ice Cream Swirl */
+.robot-5 .robot-arm.left::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border: 3px solid #1c1917;
+    border-radius: 50%;
+    top: -75px; left: -1px;
+    transform: rotate(-20deg);
+    /* MAGIC: This copies the circle 2 times, stacking them upwards to make ice cream! */
+    box-shadow: 
+        0 -10px 0 -2px #ffffff,
+        0 -10px 0 1px #1c1917,
+        0 -20px 0 -4px #ffffff,
+        0 -20px 0 -1px #1c1917;
+    z-index: 0;
+}
 
 
 
