@@ -78,6 +78,7 @@ function selectAvatar() {
         document.getElementById('dashCompanion').classList.add('alt-robot');
         document.getElementById('rebalanceCompanion').classList.add('alt-robot');
         document.getElementById('logCompanion').classList.add('alt-robot');
+        document.getElementById('trendCompanion').classList.add('alt-robot');
     } else {
         document.getElementById('miniCompanion').classList.remove('alt-robot');
     }
@@ -94,21 +95,19 @@ function goTo(viewId) {
         sleepTimer = setTimeout(putRobotToSleep, 2000);
     }
     
-    // NEW: Survey Timer Logic
+    // Survey Timer Logic
     if (viewId === 'view-survey') {
         resetSurveyIdleTimer();
     } else {
-        // Stop the survey timer if they leave the page
         if (typeof surveyIdleTimer !== 'undefined') {
             clearTimeout(surveyIdleTimer);
         }
     }
-}
 
-function launchApp() {
-    document.getElementById('appNav').classList.add('active');
-    syncProfileData();
-    goTo('main-dashboard');
+    // Auto-trigger the Dashboard Robot greeting
+    if (viewId === 'main-dashboard') {
+        setTimeout(interactDashRobot, 500);
+    }
 }
 
 function navTo(viewId, btnElement) {
@@ -116,6 +115,17 @@ function navTo(viewId, btnElement) {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
     btnElement.classList.add('active');
+
+    // Auto-trigger the Dashboard Robot greeting when using the bottom nav bar
+    if (viewId === 'main-dashboard') {
+        setTimeout(interactDashRobot, 500);
+    }
+}
+
+function launchApp() {
+    document.getElementById('appNav').classList.add('active');
+    syncProfileData();
+    goTo('main-dashboard');
 }
 
 function startRetest() {
@@ -484,7 +494,6 @@ function launchApp() {
 let dashRobotTimer;
 function interactDashRobot() {
     const bubble = document.getElementById('dashSpeechBubble');
-    const robot = document.getElementById('dashCompanion');
     
     // Pick a random supportive phrase
     const phrases = [
@@ -494,17 +503,8 @@ function interactDashRobot() {
         "Check Rebalance if you feel stuck! ⚡"
     ];
     
+    // Instantly update the text (no disappearing, no dizzy animation)
     bubble.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-    bubble.classList.add('active');
-    
-    // Wiggle animation for interaction
-    robot.classList.add('dizzy');
-    
-    clearTimeout(dashRobotTimer);
-    dashRobotTimer = setTimeout(() => {
-        bubble.classList.remove('active');
-        robot.classList.remove('dizzy');
-    }, 3000);
 }
 
 
@@ -766,4 +766,123 @@ function syncProfileData() {
     
     // Render the accordion when data syncs
     buildProfileScheduleUI();
+}
+
+
+// --- TRENDS LOGIC ---
+let isThisWeek = true;
+
+function switchWeek(direction) {
+    const title = document.getElementById('trendWeekTitle');
+    const dateStr = document.getElementById('trendWeekDate');
+    const avg = document.getElementById('trendAvg');
+    const peak = document.getElementById('trendPeak');
+    const top = document.getElementById('trendTop');
+
+    if (direction === 'prev' && isThisWeek) {
+        isThisWeek = false;
+        title.innerText = "Last week";
+        dateStr.innerText = "Aug 23 – Aug 29";
+        avg.innerText = "45%";
+        peak.innerText = "Tue";
+        top.innerText = "Mental";
+        document.querySelector('.dot.active').nextElementSibling.classList.add('active');
+        document.querySelector('.dot').classList.remove('active');
+    } else if (direction === 'next' && !isThisWeek) {
+        isThisWeek = true;
+        title.innerText = "This week";
+        dateStr.innerText = "Aug 30 – Sep 5";
+        avg.innerText = "60%";
+        peak.innerText = "Thu";
+        top.innerText = "Social";
+        document.querySelector('.dot').classList.add('active');
+        document.querySelectorAll('.dot')[1].classList.remove('active');
+    }
+}
+
+function toggleTrendView(viewType) {
+    const btnSingle = document.getElementById('btnSingleCat');
+    const btnAll = document.getElementById('btnAllCat');
+    const filters = document.getElementById('trendFilters');
+    const allLabel = document.getElementById('trendAllLabel');
+    const chartSingle = document.getElementById('chartSingle');
+    const chartAll = document.getElementById('chartAll');
+    const legend = document.getElementById('trendLegend');
+
+    if (viewType === 'single') {
+        btnSingle.classList.add('active');
+        btnAll.classList.remove('active');
+        
+        filters.style.display = 'flex';
+        allLabel.style.display = 'none';
+        chartSingle.style.display = 'block';
+        chartAll.style.display = 'none';
+        legend.style.display = 'none';
+    } else {
+        btnAll.classList.add('active');
+        btnSingle.classList.remove('active');
+        
+        filters.style.display = 'none';
+        allLabel.style.display = 'block';
+        chartSingle.style.display = 'none';
+        chartAll.style.display = 'block';
+        legend.style.display = 'flex';
+    }
+}
+
+// --- TRENDS CHART INTERACTIVITY ---
+
+// Hardcoded mock data to simulate the line graph moving when you click different tabs
+const trendDataMap = {
+    'Overall': { color: '#293a34', bg: 'rgba(41, 58, 52, 0.1)', pts: [85, 55, 30, 35, 15, 22, 45] },
+    'Mental':  { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)', pts: [105, 55, 60, 65, 55, 25, 55] },
+    'Time':    { color: '#0f766e', bg: 'rgba(15, 118, 110, 0.1)', pts: [85, 75, 80, 75, 15, 52, 85] },
+    'Physical':{ color: '#84cc16', bg: 'rgba(132, 204, 22, 0.1)', pts: [110, 95, 60, 45, 45, 82, 105] },
+    'Social':  { color: '#ea580c', bg: 'rgba(234, 88, 12, 0.1)', pts: [95, 85, 30, 30, 30, 35, 40] },
+    'Errands': { color: '#a16207', bg: 'rgba(161, 98, 7, 0.1)',  pts: [115, 75, 20, 65, 45, 22, 35] }
+};
+
+function setTrendCategory(catName, btnElement) {
+    // 1. Reset all buttons to default grey
+    document.querySelectorAll('.trend-filter').forEach(btn => {
+        btn.style.background = '#f1f5f9';
+        btn.style.color = '#64748b';
+        btn.classList.remove('active');
+    });
+    
+    // 2. Highlight the clicked button
+    const data = trendDataMap[catName];
+    btnElement.style.background = data.color;
+    btnElement.style.color = 'white';
+    btnElement.classList.add('active');
+
+    // 3. Update the SVG Coordinates and Colors smoothly
+    const xCoords = [20, 70, 120, 170, 220, 270, 300]; 
+    const pts = data.pts;
+    
+    let polylineStr = "";
+    let polygonStr = `20,115 `; // Start bottom-left for the fill area
+    
+    const circles = document.querySelectorAll('.singleChartPoint');
+    
+    for(let i=0; i<xCoords.length; i++) {
+        polylineStr += `${xCoords[i]},${pts[i]} `;
+        polygonStr += `${xCoords[i]},${pts[i]} `;
+        
+        // Move and recolor the little white circles
+        if(i < circles.length) {
+            circles[i].setAttribute('cy', pts[i]);
+            circles[i].setAttribute('stroke', data.color);
+        }
+    }
+    polygonStr += `300,115`; // Close the polygon at bottom-right
+
+    // Apply the new shapes and colors to the SVG elements
+    const line = document.getElementById('singleChartLine');
+    line.setAttribute('points', polylineStr.trim());
+    line.setAttribute('stroke', data.color);
+    
+    const area = document.getElementById('singleChartArea');
+    area.setAttribute('points', polygonStr.trim());
+    area.setAttribute('fill', data.bg);
 }

@@ -276,7 +276,7 @@
             <button class="btn" style="margin-top: 0;" onclick="launchApp()">Enter Dashboard</button>
         </div>
 
-        <div id="main-dashboard" class="view" style="padding-top: 30px; padding-bottom: 90px;">
+        <div id="main-dashboard" class="view active" style="padding-top: 30px; padding-bottom: 90px;">
             
             <!-- Dark Hero Card -->
             <div class="dark-hero-card" style="min-height: 145px; display: flex; flex-direction: column; justify-content: center; position: relative;">
@@ -585,7 +585,235 @@
 
         </div>
 
-        <div id="main-profile" class="view active" style="padding-top: 40px; padding-bottom: 90px;">
+        <div id="main-trends" class="view" style="padding-top: 40px; padding-bottom: 90px; background: #fafaf9;">
+            
+            <!-- Header & Robot (Compact Inline Layout) -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 20px;">
+                
+                <!-- Title (Left) -->
+                <div style="flex: 1;">
+                    <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">Stress Over Time</p>
+                    <h1 style="margin-top: 0; margin-bottom: 0; font-size: 28px; font-family: Georgia, serif;">Trends</h1>
+                </div>
+                
+                <!-- Bubble (Middle) & Robot (Right) -->
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    
+                    <div class="trend-speech-bubble">Your CS workload peaked on Thursday! 📉</div>
+                    
+                    <div class="robot-stage" style="position: relative; width: 60px; height: 50px; flex-shrink: 0;">
+                        <!-- Scaled and centered to sit perfectly next to the bubble -->
+                        <div class="robot-scaler" style="position: absolute; top: 10px; right: 0; transform: scale(0.30); transform-origin: top right;">
+                            <div class="robot-wrapper" id="trendCompanion">
+                                <div class="antenna-ball"></div><div class="antenna"></div>
+                                <div class="ear left"></div><div class="ear right"></div>
+                                <div class="robot-head">
+                                    <div class="robot-face">
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="smile"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 20px; padding: 0 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <button class="icon-btn" onclick="switchWeek('prev')">❮</button>
+                    <div>
+                        <div id="trendWeekTitle" style="font-size: 15px; font-weight: 700; color: var(--text-dark);">This week</div>
+                        <div id="trendWeekDate" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Aug 30 – Sep 5</div>
+                    </div>
+                    <button class="icon-btn" onclick="switchWeek('next')">❯</button>
+                </div>
+                <div style="display: flex; justify-content: center; gap: 4px; margin-bottom: 6px;">
+                    <span class="dot active"></span><span class="dot" style="background: #e2e8f0;"></span><span class="dot" style="background: #e2e8f0;"></span>
+                </div>
+                <div style="font-size: 10px; color: #94a3b8;">Swipe left / right to change week</div>
+            </div>
+
+            <div style="display: flex; gap: 10px; padding: 0 20px; margin-bottom: 20px;">
+                <div class="card stat-card" style="flex: 1; padding: 15px 5px; text-align: center;">
+                    <div id="trendAvg" style="font-size: 22px; font-weight: 700; color: #1e3a8a; font-family: Georgia, serif;">60%</div>
+                    <div class="stat-label">AVG LOAD</div>
+                </div>
+                <div class="card stat-card" style="flex: 1; padding: 15px 5px; text-align: center;">
+                    <div id="trendPeak" style="font-size: 22px; font-weight: 700; color: #ea580c; font-family: Georgia, serif;">Thu</div>
+                    <div class="stat-label">PEAK DAY</div>
+                </div>
+                <div class="card stat-card" style="flex: 1; padding: 15px 5px; text-align: center;">
+                    <div id="trendTop" style="font-size: 22px; font-weight: 700; color: #ea580c; font-family: Georgia, serif;">Social</div>
+                    <div class="stat-label">TOP LOAD</div>
+                </div>
+            </div>
+
+            <div style="padding: 0 20px; margin-bottom: 20px;">
+                <div class="segment-control">
+                    <button id="btnSingleCat" class="segment-btn active" onclick="toggleTrendView('single')">Single category</button>
+                    <button id="btnAllCat" class="segment-btn" onclick="toggleTrendView('all')">All categories</button>
+                </div>
+            </div>
+
+            <div class="card" style="margin: 0 20px 20px 20px; padding: 20px 15px;">
+                
+                <!-- Filter Pills (Now with preserved category colors!) -->
+                <div id="trendFilters" style="display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; white-space: nowrap; padding-bottom: 5px; scrollbar-width: none;">
+                    <span class="tag trend-filter active" onclick="setTrendCategory('Overall', this)" data-bg="#f1f5f9" data-text="#64748b" style="background: #293a34; color: white; cursor: pointer;">Overall</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Mental', this)" data-bg="#eff6ff" data-text="#3b82f6" style="background: #eff6ff; color: #3b82f6; cursor: pointer;">Mental</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Time', this)" data-bg="#f0fdf4" data-text="#0f766e" style="background: #f0fdf4; color: #0f766e; cursor: pointer;">Time</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Physical', this)" data-bg="#f0fdfa" data-text="#84cc16" style="background: #f0fdfa; color: #84cc16; cursor: pointer;">Physical</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Social', this)" data-bg="#fff7ed" data-text="#ea580c" style="background: #fff7ed; color: #ea580c; cursor: pointer;">Social</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Errands', this)" data-bg="#fafaf9" data-text="#a16207" style="background: #fafaf9; color: #a16207; cursor: pointer;">Errands</span>
+                </div>
+                <div id="trendAllLabel" style="display: none; font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;">All Categories</div>
+
+                <svg id="chartSingle" viewBox="0 0 300 120" style="width: 100%; height: auto; overflow: visible; transition: all 0.3s ease;">
+                    <line x1="20" y1="10" x2="300" y2="10" stroke="#f1f5f9" stroke-width="1"/>
+                    <line x1="20" y1="45" x2="300" y2="45" stroke="#f1f5f9" stroke-width="1"/>
+                    <line x1="20" y1="80" x2="300" y2="80" stroke="#f1f5f9" stroke-width="1"/>
+                    <line x1="20" y1="115" x2="300" y2="115" stroke="#e2e8f0" stroke-width="1"/>
+                    
+                    <text x="15" y="13" font-size="8" fill="#94a3b8" text-anchor="end">100</text>
+                    <text x="15" y="48" font-size="8" fill="#94a3b8" text-anchor="end">75</text>
+                    <text x="15" y="83" font-size="8" fill="#94a3b8" text-anchor="end">50</text>
+                    <text x="15" y="118" font-size="8" fill="#94a3b8" text-anchor="end">25</text>
+                    
+                    <polygon id="singleChartArea" points="20,115 20,85 70,55 120,30 170,35 220,15 270,22 300,45 300,115" fill="rgba(41, 58, 52, 0.1)" style="transition: all 0.3s ease;"/>
+                    <polyline id="singleChartLine" points="20,85 70,55 120,30 170,35 220,15 270,22 300,45" fill="none" stroke="#293a34" stroke-width="2" stroke-linejoin="round" style="transition: all 0.3s ease;"/>
+                    
+                    <circle class="singleChartPoint" cx="20" cy="85" r="3" fill="white" stroke="#293a34" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="70" cy="55" r="3" fill="white" stroke="#293a34" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="120" cy="30" r="3" fill="white" stroke="#293a34" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="170" cy="35" r="3" fill="white" stroke="#293a34" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="220" cy="15" r="3" fill="white" stroke="#293a34" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="270" cy="22" r="3" fill="white" stroke="#293a34" stroke-width="2" style="transition: all 0.3s ease;"/>
+
+                    <text x="20" y="135" font-size="9" fill="#64748b" text-anchor="middle">Sun</text>
+                    <text x="70" y="135" font-size="9" fill="#64748b" text-anchor="middle">Mon</text>
+                    <text x="120" y="135" font-size="9" fill="#64748b" text-anchor="middle">Tue</text>
+                    <text x="170" y="135" font-size="9" fill="#64748b" text-anchor="middle">Wed</text>
+                    <text x="220" y="135" font-size="9" fill="#64748b" text-anchor="middle">Thu</text>
+                    <text x="270" y="135" font-size="9" fill="#64748b" text-anchor="middle">Fri</text>
+                </svg>
+
+                <!-- SVG Line Chart (All Categories) -->
+                <svg id="chartAll" viewBox="0 0 300 120" style="width: 100%; height: auto; overflow: visible; display: none;">
+                    <line x1="20" y1="10" x2="300" y2="10" stroke="#f1f5f9" stroke-width="1"/>
+                    <line x1="20" y1="45" x2="300" y2="45" stroke="#f1f5f9" stroke-width="1"/>
+                    <line x1="20" y1="80" x2="300" y2="80" stroke="#f1f5f9" stroke-width="1"/>
+                    <line x1="20" y1="115" x2="300" y2="115" stroke="#e2e8f0" stroke-width="1"/>
+                    
+                    <polyline points="20,105 70,55 120,60 170,65 220,55 270,25 300,55" fill="none" stroke="#3b82f6" stroke-width="1.5"/> <!-- Mental -->
+                    <polyline points="20,85 70,75 120,80 170,75 220,15 270,52 300,85" fill="none" stroke="#0f766e" stroke-width="1.5"/> <!-- Time -->
+                    <polyline points="20,110 70,95 120,60 170,45 220,45 270,82 300,105" fill="none" stroke="#84cc16" stroke-width="1.5"/> <!-- Physical -->
+                    <polyline points="20,95 70,85 120,30 170,30 220,30 270,35 300,40" fill="none" stroke="#ea580c" stroke-width="1.5"/> <!-- Social -->
+                    <polyline points="20,115 70,75 120,20 170,65 220,45 270,22 300,35" fill="none" stroke="#a16207" stroke-width="1.5"/> <!-- Errands -->
+                    
+                    <text x="20" y="135" font-size="9" fill="#64748b" text-anchor="middle">Sun</text>
+                    <text x="70" y="135" font-size="9" fill="#64748b" text-anchor="middle">Mon</text>
+                    <text x="120" y="135" font-size="9" fill="#64748b" text-anchor="middle">Tue</text>
+                    <text x="170" y="135" font-size="9" fill="#64748b" text-anchor="middle">Wed</text>
+                    <text x="220" y="135" font-size="9" fill="#64748b" text-anchor="middle">Thu</text>
+                    <text x="270" y="135" font-size="9" fill="#64748b" text-anchor="middle">Fri</text>
+                </svg>
+
+                <div id="trendLegend" style="display: none; justify-content: space-between; margin-top: 35px; font-size: 9px; font-weight: 700;">
+                    <div style="color: #3b82f6;">■ Mental</div>
+                    <div style="color: #0f766e;">■ Time</div>
+                    <div style="color: #84cc16;">■ Physical</div>
+                    <div style="color: #ea580c;">■ Social</div>
+                    <div style="color: #a16207;">■ Errands</div>
+                </div>
+            </div>
+
+            <!-- Day by Day Breakdown -->
+            <div class="card" style="margin: 0 20px; padding: 20px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;">Day by Day</div>
+                
+                <!-- Day Row Template -->
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Sun</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">30</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 25%; background: #60a5fa;"></div>
+                        <div class="t-bar" style="width: 30%; background: #475569;"></div>
+                        <div class="t-bar" style="width: 20%; background: #a3e635;"></div>
+                        <div class="t-bar" style="width: 35%; background: #fb923c;"></div>
+                        <div class="t-bar" style="width: 30%; background: #b45309;"></div>
+                    </div>
+                    <div class="score-col" style="color: #10b981;">32</div>
+                </div>
+                
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Mon</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">31</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 35%; background: #60a5fa;"></div>
+                        <div class="t-bar" style="width: 35%; background: #475569;"></div>
+                        <div class="t-bar" style="width: 25%; background: #a3e635;"></div>
+                        <div class="t-bar" style="width: 40%; background: #fb923c;"></div>
+                        <div class="t-bar" style="width: 35%; background: #b45309;"></div>
+                    </div>
+                    <div class="score-col" style="color: #d97706;">51</div>
+                </div>
+
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Tue</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">1</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 40%; background: #60a5fa;"></div>
+                        <div class="t-bar" style="width: 40%; background: #475569;"></div>
+                        <div class="t-bar" style="width: 35%; background: #a3e635;"></div>
+                        <div class="t-bar" style="width: 45%; background: #fb923c;"></div>
+                        <div class="t-bar" style="width: 40%; background: #b45309;"></div>
+                    </div>
+                    <div class="score-col" style="color: #d97706;">66</div>
+                </div>
+
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Wed</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">2</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 35%; background: #60a5fa;"></div>
+                        <div class="t-bar" style="width: 35%; background: #475569;"></div>
+                        <div class="t-bar" style="width: 40%; background: #a3e635;"></div>
+                        <div class="t-bar" style="width: 40%; background: #fb923c;"></div>
+                        <div class="t-bar" style="width: 30%; background: #b45309;"></div>
+                    </div>
+                    <div class="score-col" style="color: #d97706;">63</div>
+                </div>
+
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Thu</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">3</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 45%; background: #60a5fa;"></div>
+                        <div class="t-bar" style="width: 50%; background: #475569;"></div>
+                        <div class="t-bar" style="width: 40%; background: #a3e635;"></div>
+                        <div class="t-bar" style="width: 45%; background: #fb923c;"></div>
+                        <div class="t-bar" style="width: 45%; background: #b45309;"></div>
+                    </div>
+                    <div class="score-col" style="color: #ef4444;">78</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="main-profile" class="view" style="padding-top: 40px; padding-bottom: 90px;">
             <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Account</p>
             <h1 style="margin-top: 0; margin-bottom: 20px; font-size: 28px;">Profile</h1>
             
@@ -620,9 +848,64 @@
                     <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);"><span id="profileWeeklyTotal">0</span>h / week</div>
                 </div>
                 
-                <!-- NEW: Mini Bar Chart Container -->
+                <!-- Hardcoded Mini Bar Chart Showcase -->
                 <div id="profileWeeklyChart" style="display: flex; justify-content: space-between; align-items: flex-end; height: 45px; margin-bottom: 20px; gap: 8px;">
-                    <!-- JS will inject the bars here -->
+                    
+                    <!-- Mon -->
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                        <div style="width: 100%; height: 25px; display: flex; align-items: flex-end; margin-bottom: 8px;">
+                            <div style="width: 100%; background: #293a34; height: 60%; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 9px; font-weight: 700; color: var(--text-dark);">Mon</div>
+                    </div>
+
+                    <!-- Tue -->
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                        <div style="width: 100%; height: 25px; display: flex; align-items: flex-end; margin-bottom: 8px;">
+                            <div style="width: 100%; background: #293a34; height: 80%; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 9px; font-weight: 700; color: var(--text-dark);">Tue</div>
+                    </div>
+
+                    <!-- Wed -->
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                        <div style="width: 100%; height: 25px; display: flex; align-items: flex-end; margin-bottom: 8px;">
+                            <div style="width: 100%; background: #293a34; height: 50%; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 9px; font-weight: 700; color: var(--text-dark);">Wed</div>
+                    </div>
+
+                    <!-- Thu -->
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                        <div style="width: 100%; height: 25px; display: flex; align-items: flex-end; margin-bottom: 8px;">
+                            <div style="width: 100%; background: #293a34; height: 100%; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 9px; font-weight: 700; color: var(--text-dark);">Thu</div>
+                    </div>
+
+                    <!-- Fri -->
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                        <div style="width: 100%; height: 25px; display: flex; align-items: flex-end; margin-bottom: 8px;">
+                            <div style="width: 100%; background: #293a34; height: 40%; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 9px; font-weight: 700; color: var(--text-dark);">Fri</div>
+                    </div>
+
+                    <!-- Sat (Inactive) -->
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                        <div style="width: 100%; height: 25px; display: flex; align-items: flex-end; margin-bottom: 8px;">
+                            <div style="width: 100%; background: #e2e8f0; height: 3px; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 9px; font-weight: 700; color: var(--text-muted);">Sat</div>
+                    </div>
+
+                    <!-- Sun (Inactive) -->
+                    <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+                        <div style="width: 100%; height: 25px; display: flex; align-items: flex-end; margin-bottom: 8px;">
+                            <div style="width: 100%; background: #e2e8f0; height: 3px; border-radius: 4px;"></div>
+                        </div>
+                        <div style="font-size: 9px; font-weight: 700; color: var(--text-muted);">Sun</div>
+                    </div>
                 </div>
                 
                 <!-- Your existing Accordion Container -->
@@ -639,30 +922,12 @@
             <button class="btn btn-outline" style="width: 100%; border: 2px solid #fee2e2; color: #ef4444; background: #fff5f5; font-weight: 700;" onclick="startRetest()">Re-do setup & quiz</button>
         </div>
 
-        <div id="main-robot" class="view">
-            <h1>AI Assistant</h1>
-            <p>Daily Check-in.</p>
-            
-            <div class="card" style="height: 400px; display: flex; flex-direction: column; background: #f8fafc;">
-                <div style="text-align: center; font-size: 10px; color: var(--text-muted); margin-bottom: 15px;">Today, 8:00 AM</div>
-                <div class="chat-msg bot"><div class="bubble">Good morning! Your total burnout risk has slightly increased to 75% 🔴 based on yesterday's logs.</div></div>
-                <div class="chat-msg bot"><div class="bubble">You have 2 urgent tasks today: Anti-Scam Chatbot NLP and 4-7-8 Breathing. How is your Mental load feeling right now?</div></div>
-                <div class="chat-msg user"><div class="bubble">A bit high. I need to focus on the chatbot today.</div></div>
-
-                <div style="flex: 1;"></div>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" placeholder="Reply..." style="flex:1; padding:12px; border:1px solid var(--border); border-radius:20px;">
-                    <button style="background:var(--primary); color:white; border:none; border-radius:50%; width:40px; height:40px;">↑</button>
-                </div>
-            </div>
-        </div>
-
         <div class="bottom-nav" id="appNav">
             <button class="nav-btn active" onclick="navTo('main-dashboard', this)">📊<span>Dash</span></button>
             <button class="nav-btn" onclick="navTo('main-rebalance', this)">⚡<span>Rebalance</span></button>
             <button class="nav-btn" onclick="navTo('main-log', this)">➕<span>Log</span></button>
+            <button class="nav-btn" onclick="navTo('main-trends', this)">📈<span>Trends</span></button>
             <button class="nav-btn" onclick="navTo('main-profile', this)">👤<span>Profile</span></button>
-            <button class="nav-btn" onclick="navTo('main-robot', this)">🤖<span>AI Chat</span></button>
         </div>
 
     </div>
