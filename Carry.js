@@ -14,6 +14,7 @@ setTimeout(() => {
 document.addEventListener('mousemove', (e) => {
     if(isDizzy) return;
     pupils.forEach(pupil => {
+        if (pupil.closest('#fabCompanion')) return;
         const rect = pupil.parentElement.getBoundingClientRect();
         const eyeCenterX = rect.left + rect.width / 2;
         const eyeCenterY = rect.top + rect.height / 2;
@@ -58,30 +59,36 @@ document.querySelectorAll('.robot-wrapper').forEach(robot => {
 // --- NAVIGATION LOGIC ---
 function selectAvatar() {
     const carousel = document.getElementById('avatarCarousel');
-    
-    // Lock scrolling so they can't swipe away after choosing
     carousel.style.overflowX = 'hidden';
     
-    // Hide the 'Pick This' button and show 'Start'
     document.getElementById('pickAvatarBtn').classList.add('hidden');
     document.getElementById('avatarTitle').innerText = "Great choice!";
     document.getElementById('avatarTitle').style.color = "var(--primary)";
     document.getElementById('startSetupBtn').classList.remove('hidden');
 
-    // MAGIC TRICK: Check if they swiped to the yellow robot
-    // If they scrolled more than 50px, they are on the second slide
-    if (carousel.scrollLeft > 50) {
-        document.getElementById('miniCompanion').classList.add('alt-robot');
-        document.getElementById('scheduleCompanion').classList.add('alt-robot');
-        document.getElementById('surveyCompanion').classList.add('alt-robot');
-        document.getElementById('overviewCompanion').classList.add('alt-robot');
-        document.getElementById('dashCompanion').classList.add('alt-robot');
-        document.getElementById('rebalanceCompanion').classList.add('alt-robot');
-        document.getElementById('logCompanion').classList.add('alt-robot');
-        document.getElementById('trendCompanion').classList.add('alt-robot');
-    } else {
-        document.getElementById('miniCompanion').classList.remove('alt-robot');
-    }
+    // Calculate which slide is active based on scroll position
+    const slideWidth = carousel.clientWidth;
+    const activeIndex = Math.round(carousel.scrollLeft / slideWidth);
+    
+    const types = ['robot', 'bao', 'cat', 'dog'];
+    currentAvatarType = types[activeIndex];
+
+    // Apply the chosen class to ALL companions in the app
+    const companions = [
+        'miniCompanion', 'scheduleCompanion', 'surveyCompanion', 'overviewCompanion', 
+        'dashCompanion', 'rebalanceCompanion', 'logCompanion', 'trendCompanion', 
+        'fabCompanion', 'expandedCompanion'
+    ];
+    
+    companions.forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            el.classList.remove('avatar-bao', 'avatar-cat', 'avatar-dog');
+            if (currentAvatarType !== 'robot') {
+                el.classList.add(`avatar-${currentAvatarType}`);
+            }
+        }
+    });
 }
 
 function goTo(viewId) {
@@ -108,6 +115,16 @@ function goTo(viewId) {
     if (viewId === 'main-dashboard') {
         setTimeout(interactDashRobot, 500);
     }
+
+    // NEW: Show Global Chat only on "main-" pages
+    const chatWidget = document.getElementById('globalChatWidget');
+    if (chatWidget) {
+        if (viewId.startsWith('main-')) {
+            chatWidget.style.display = 'block';
+        } else {
+            chatWidget.style.display = 'none';
+        }
+    }
 }
 
 function navTo(viewId, btnElement) {
@@ -120,10 +137,21 @@ function navTo(viewId, btnElement) {
     if (viewId === 'main-dashboard') {
         setTimeout(interactDashRobot, 500);
     }
+
+    // NEW: Show Global Chat only on "main-" pages
+    const chatWidget = document.getElementById('globalChatWidget');
+    if (chatWidget) {
+        if (viewId.startsWith('main-')) {
+            chatWidget.style.display = 'block';
+        } else {
+            chatWidget.style.display = 'none';
+        }
+    }
 }
 
 function launchApp() {
     document.getElementById('appNav').classList.add('active');
+    document.getElementById('globalChatWidget').style.display = 'block';
     syncProfileData();
     goTo('main-dashboard');
 }
@@ -504,7 +532,7 @@ function interactDashRobot() {
     ];
     
     // Instantly update the text (no disappearing, no dizzy animation)
-    bubble.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+    bubble.innerText = formatAvatarText(phrases[Math.floor(Math.random() * phrases.length)]);
 }
 
 
@@ -885,4 +913,37 @@ function setTrendCategory(catName, btnElement) {
     const area = document.getElementById('singleChartArea');
     area.setAttribute('points', polygonStr.trim());
     area.setAttribute('fill', data.bg);
+}
+
+// --- GLOBAL AI CHAT LOGIC ---
+function toggleGlobalChat() {
+    const overlay = document.getElementById('chatOverlay');
+    overlay.classList.toggle('active');
+}
+
+function handleChatEnter(e) {
+    if (e.key === 'Enter') sendChatMessage();
+}
+
+function sendChatMessage() {
+    const input = document.getElementById('globalChatInput');
+    const bubble = document.getElementById('activeChatBubble');
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    // Clear input and show "typing" indicator
+    input.value = '';
+    bubble.innerText = "...";
+    
+    // Simulate AI thinking and replying
+    setTimeout(() => {
+        const replies = [
+            "I logged that for you! Check your schedule.",
+            "That sounds like a heavy cognitive load. Remember to take a break after.",
+            "I'm updating your trends now. You're doing great!",
+            "Got it! Let's keep your day balanced."
+        ];
+        bubble.innerText = formatAvatarText(replies[Math.floor(Math.random() * replies.length)]);
+    }, 800);
 }

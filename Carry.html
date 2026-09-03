@@ -10,7 +10,7 @@
 
     <div class="mobile-frame">
         
-        <div id="view-welcome" class="view ">
+        <div id="view-welcome" class="view active">
             <h1 style="text-align: center; margin-top: 20px;">Equilibrium</h1>
             <p style="text-align: center;">Welcome! Before we start balancing your schedule, we need to establish your baseline load.</p>
             
@@ -19,6 +19,7 @@
                 <h2 id="avatarTitle" style="text-align: center; margin-top: 0;">Pick a companion</h2>
                 <div class="speech-bubble" id="welcomeSpeechBubble">Hi! Swipe to pick your companion.</div>
                 <div class="carousel" id="avatarCarousel">
+                    <!-- 1. Original Robot -->
                     <div class="carousel-slide">
                         <div class="robot-wrapper">
                             <div class="antenna-ball"></div><div class="antenna"></div>
@@ -33,20 +34,62 @@
                         </div>
                     </div>
                     
+                   <!-- Bao Bun -->
                     <div class="carousel-slide">
-                        <div class="robot-wrapper alt-robot">
-                            <div class="antenna-ball"></div><div class="antenna"></div>
-                            <div class="ear left"></div><div class="ear right"></div>
-                            <div class="robot-head">
-                                <div class="robot-face">
-                                    <div class="eye"><div class="pupil"></div></div>
-                                    <div class="eye"><div class="pupil"></div></div>
-                                    <div class="smile"></div>
+                        <div class="bao-wrapper">
+                            <div class="bao-head">
+                                <div class="bao-pleats">
+                                    <div class="pleat"></div><div class="pleat"></div><div class="pleat"></div>
+                                    <div class="pleat"></div><div class="pleat"></div>
+                                </div>
+                                <div class="bao-blush left"></div><div class="bao-blush right"></div>
+                                <div class="bao-face">
+                                    <div class="bao-eye"></div>
+                                    <div class="bao-eye"></div>
+                                    <div class="bao-smile"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+
+                    <!-- Cat -->
+                    <div class="carousel-slide">
+                        <div class="cat-wrapper">
+                            <div class="cat-ear left"><div class="cat-ear-inner"></div></div>
+                            <div class="cat-ear right"><div class="cat-ear-inner"></div></div>
+                            <div class="cat-head">
+                                <div class="cat-tuft"></div><div class="cat-tuft"></div><div class="cat-tuft"></div>
+                                <div class="whisker left-1"></div><div class="whisker left-2"></div>
+                                <div class="whisker right-1"></div><div class="whisker right-2"></div>
+                                <div class="cat-face">
+                                    <div class="cat-eye"></div>
+                                    <div class="cat-mouth"></div>
+                                    <div class="cat-eye"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dog -->
+                    <div class="carousel-slide">
+                        <div class="dog-wrapper">
+                            <div class="dog-tail"></div>
+                            <div class="dog-body"></div>
+                            <div class="dog-ear left"></div>
+                            <div class="dog-ear right"></div>
+                            <div class="dog-head">
+                                <div class="dog-blush left"></div><div class="dog-blush right"></div>
+                                <div class="dog-face">
+                                    <div class="dog-eyes">
+                                        <div class="dog-eye"></div>
+                                        <div class="dog-eye"></div>
+                                    </div>
+                                    <div class="dog-nose"></div>
+                                    <div class="dog-smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 <button class="btn btn-outline" id="pickAvatarBtn" onclick="selectAvatar()">Pick This Companion</button>
             </div>
@@ -276,7 +319,7 @@
             <button class="btn" style="margin-top: 0;" onclick="launchApp()">Enter Dashboard</button>
         </div>
 
-        <div id="main-dashboard" class="view active" style="padding-top: 30px; padding-bottom: 90px;">
+        <div id="main-dashboard" class="view" style="padding-top: 30px; padding-bottom: 90px;">
             
             <!-- Dark Hero Card -->
             <div class="dark-hero-card" style="min-height: 145px; display: flex; flex-direction: column; justify-content: center; position: relative;">
@@ -930,7 +973,65 @@
             <button class="nav-btn" onclick="navTo('main-profile', this)">👤<span>Profile</span></button>
         </div>
 
+
+        <!-- Global AI Chat Widget -->
+        <div id="globalChatWidget" style="display: none; position: absolute; z-index: 100; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+            
+            <!-- The Circular Floating Button -->
+            <div id="chatFab" onclick="toggleGlobalChat()">
+                <!-- Scaled down mini robot for the circle -->
+                <div class="robot-scaler" style="transform: scale(0.16); transform-origin: center; margin-top: 15px;">
+                    <div class="robot-wrapper" id="fabCompanion">
+                        <div class="antenna-ball"></div><div class="antenna"></div>
+                        <div class="ear left"></div><div class="ear right"></div>
+                        <div class="robot-head">
+                            <div class="robot-face">
+                                <div class="eye"><div class="pupil"></div></div>
+                                <div class="eye"><div class="pupil"></div></div>
+                                <div class="smile"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Expanded Chat Interface -->
+            <div id="chatOverlay" class="chat-overlay">
+                <div class="chat-container card">
+                    <button onclick="toggleGlobalChat()" class="close-chat-btn">✖</button>
+                    
+                    <div class="chat-content">
+                        <!-- Chat Bubble -->
+                        <div id="activeChatBubble" class="active-chat-bubble">I'm here! How can I help you balance your workload today?</div>
+                        
+                        <!-- Big Robot Head in the middle -->
+                        <div class="robot-scaler" style="transform: scale(0.65); transform-origin: center; margin: 30px auto 0 auto;">
+                            <div class="robot-wrapper" id="expandedCompanion">
+                                <div class="antenna-ball"></div><div class="antenna"></div>
+                                <div class="ear left"></div><div class="ear right"></div>
+                                <div class="robot-head">
+                                    <div class="robot-face">
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="smile"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="globalChatInput" placeholder="Ask me anything..." onkeypress="handleChatEnter(event)">
+                        <button onclick="sendChatMessage()" class="send-btn">➤</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+
 
     <script src="Carry.js"></script>
 </body>
