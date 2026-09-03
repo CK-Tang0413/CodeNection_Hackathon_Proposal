@@ -1,298 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equilibrium - Hackathon UI</title>
-    <style>
-        :root {
-            --bg-gradient: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-            --glass-bg: rgba(255, 255, 255, 0.45);
-            --glass-border: rgba(255, 255, 255, 0.6);
-            --shadow-light: rgba(255, 255, 255, 0.8);
-            --shadow-dark: rgba(142, 197, 252, 0.5);
-            --text-main: #2c3e50;
-            --accent-green: #38ef7d;
-            --accent-orange: #ff9966;
-            --accent-red: #ff5e62;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cute Cartoon Dog</title>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        body {
-            background: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #ffe8c8;
+      font-family: sans-serif;
+    }
 
-        /* Mobile Device Container */
-        .mobile-frame {
-            width: 390px;
-            height: 844px;
-            background: var(--bg-gradient);
-            border-radius: 40px;
-            box-shadow: 
-                -10px -10px 20px #ffffff,
-                10px 10px 20px #d1d9e6,
-                inset 0 0 0 8px #ffffff;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            padding: 30px 20px;
-        }
+    .dog {
+      position: relative;
+      width: 300px;
+      height: 300px;
+    }
 
-        /* Glassmorphism Header */
-        header {
-            text-align: center;
-            padding: 15px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-            margin-bottom: 25px;
-        }
+    /* Head */
+    .head {
+      position: absolute;
+      width: 230px;
+      height: 210px;
+      left: 35px;
+      top: 45px;
+      background: #c9824b;
+      border: 5px solid #713f2a;
+      border-radius: 48% 48% 45% 45%;
+      z-index: 2;
+    }
 
-        header h1 {
-            color: var(--text-main);
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
+    /* Ears */
+    .ear {
+      position: absolute;
+      width: 75px;
+      height: 120px;
+      background: #8b512f;
+      border: 5px solid #713f2a;
+      border-radius: 50%;
+      top: 55px;
+      z-index: 1;
+    }
 
-        header p {
-            color: #556;
-            font-size: 12px;
-            margin-top: 4px;
-        }
+    .ear.left {
+      left: 10px;
+      transform: rotate(25deg);
+    }
 
-        /* Burnout Barometer (3D Gauge Concept) */
-        .barometer-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid var(--glass-border);
-            box-shadow: 
-                -5px -5px 15px var(--shadow-light),
-                5px 5px 15px var(--shadow-dark);
-            margin-bottom: 25px;
-        }
+    .ear.right {
+      right: 10px;
+      transform: rotate(-25deg);
+    }
 
-        .gauge-container {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            background: conic-gradient(
-                var(--accent-green) 0% 40%, 
-                var(--accent-orange) 40% 75%, 
-                var(--accent-red) 75% 100%
-            );
-            position: relative;
-            box-shadow: inset 0px 4px 10px rgba(0,0,0,0.2);
-            animation: pulse 3s infinite alternate;
-        }
+    /* Inner ears */
+    .ear::after {
+      content: "";
+      position: absolute;
+      width: 42px;
+      height: 82px;
+      background: #c9824b;
+      border-radius: 50%;
+      top: 15px;
+      left: 12px;
+    }
 
-        .gauge-inner {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            bottom: 15px;
-            background: var(--bg-gradient);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0px 5px 15px rgba(0,0,0,0.15);
-        }
+    /* Eyes */
+    .eye {
+      position: absolute;
+      width: 27px;
+      height: 34px;
+      background: #2d211c;
+      border-radius: 50%;
+      top: 100px;
+    }
 
-        .gauge-inner h2 {
-            font-size: 32px;
-            color: var(--text-main);
-        }
+    .eye.left {
+      left: 78px;
+    }
 
-        /* Soft 3D Sliders for Load Input */
-        .sliders-section {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
+    .eye.right {
+      right: 78px;
+    }
 
-        .slider-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    /* Eye shine */
+    .eye::after {
+      content: "";
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+      top: 6px;
+      left: 6px;
+    }
 
-        .slider-label {
-            font-weight: 600;
-            color: var(--text-main);
-            font-size: 14px;
-            width: 70px;
-        }
+    /* Muzzle */
+    .muzzle {
+      position: absolute;
+      width: 125px;
+      height: 75px;
+      background: #f3c99b;
+      border-radius: 50%;
+      left: 47px;
+      top: 125px;
+    }
 
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-            margin-left: 10px;
-        }
+    /* Nose */
+    .nose {
+      position: absolute;
+      width: 45px;
+      height: 32px;
+      background: #30221d;
+      border-radius: 50% 50% 45% 45%;
+      left: 42px;
+      top: 8px;
+    }
 
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 14px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 10px;
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1), inset -2px -2px 5px rgba(255,255,255,0.7);
-        }
+    .nose::after {
+      content: "";
+      position: absolute;
+      width: 13px;
+      height: 7px;
+      background: #5b4439;
+      border-radius: 50%;
+      left: 10px;
+      top: 5px;
+    }
 
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 24px;
-            width: 24px;
-            border-radius: 50%;
-            background: #fff;
-            margin-top: -5px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            cursor: pointer;
-            border: 2px solid #a8c0ff;
-        }
+    /* Mouth */
+    .mouth {
+      position: absolute;
+      width: 48px;
+      height: 25px;
+      left: 38px;
+      top: 38px;
+      border-bottom: 4px solid #713f2a;
+      border-radius: 0 0 50% 50%;
+    }
 
-        /* Active Recovery 3D Cards */
-        .recovery-section h3 {
-            color: var(--text-main);
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
+    /* Tongue */
+    .tongue {
+      position: absolute;
+      width: 30px;
+      height: 42px;
+      background: #f08080;
+      border: 3px solid #713f2a;
+      border-top: none;
+      border-radius: 0 0 50% 50%;
+      left: 48px;
+      top: 58px;
+      animation: happy 1.5s ease-in-out infinite;
+    }
 
-        .cards-scroller {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            scrollbar-width: none; /* Firefox */
-        }
-        
-        .cards-scroller::-webkit-scrollbar {
-            display: none; /* Chrome */
-        }
+    @keyframes happy {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(5px);
+      }
+    }
 
-        .recovery-card {
-            min-width: 140px;
-            background: rgba(255, 255, 255, 0.3);
-            border: 1px solid var(--glass-border);
-            padding: 15px;
-            border-radius: 20px;
-            text-align: center;
-            backdrop-filter: blur(5px);
-            box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
-            transition: transform 0.2s ease;
-        }
+    /* Little cheeks */
+    .cheek {
+      position: absolute;
+      width: 25px;
+      height: 14px;
+      background: #e99b78;
+      border-radius: 50%;
+      top: 155px;
+      opacity: 0.8;
+    }
 
-        .recovery-card:active {
-            transform: scale(0.95);
-            box-shadow: inset 4px 4px 10px var(--shadow-dark), inset -4px -4px 10px var(--shadow-light);
-        }
+    .cheek.left {
+      left: 45px;
+    }
 
-        .recovery-card .icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
+    .cheek.right {
+      right: 45px;
+    }
 
-        .recovery-card .action-title {
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
+    /* Tail-like decorative heart */
+    .heart {
+      position: absolute;
+      right: -5px;
+      top: 15px;
+      color: #f08080;
+      font-size: 28px;
+      transform: rotate(15deg);
+      z-index: 5;
+    }
 
-        .recovery-card .time {
-            font-size: 11px;
-            color: #445;
-            margin-top: 5px;
-        }
+    /* Floating hearts */
+    .heart.one {
+      right: 5px;
+      top: -5px;
+      font-size: 20px;
+    }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.02); }
-        }
-    </style>
+    .heart.two {
+      left: 5px;
+      top: 20px;
+      font-size: 18px;
+      transform: rotate(-15deg);
+    }
+  </style>
 </head>
+
 <body>
 
-    <div class="mobile-frame">
-        <header>
-            <h1>Equilibrium</h1>
-            <p>Predictive Load Balancer</p>
-        </header>
+  <div class="dog">
 
-        <div class="barometer-card">
-            <div class="gauge-container">
-                <div class="gauge-inner">
-                    <h2>78%</h2>
-                    <span style="font-size: 11px; font-weight: 600; color: #667;">LOAD RISK</span>
-                </div>
-            </div>
-            <p style="font-size: 13px; color: var(--text-main); font-weight: 500;">Capacity reaching limits. Time to pivot.</p>
-        </div>
+    <div class="heart one">♥</div>
+    <div class="heart two">♥</div>
 
-        <div class="sliders-section">
-            <div class="slider-row">
-                <span class="slider-label">Mental</span>
-                <input type="range" min="1" max="10" value="8">
-            </div>
-            <div class="slider-row">
-                <span class="slider-label">Time</span>
-                <input type="range" min="1" max="10" value="9">
-            </div>
-            <div class="slider-row">
-                <span class="slider-label">Physical</span>
-                <input type="range" min="1" max="10" value="4">
-            </div>
-            <div class="slider-row">
-                <span class="slider-label">Social</span>
-                <input type="range" min="1" max="10" value="3">
-            </div>
-            <div class="slider-row">
-                <span class="slider-label">Errands</span>
-                <input type="range" min="1" max="10" value="6">
-            </div>
-        </div>
+    <div class="ear left"></div>
+    <div class="ear right"></div>
 
-        <div class="recovery-section">
-            <h3>Suggested Recovery</h3>
-            <div class="cards-scroller">
-                <div class="recovery-card">
-                    <div class="icon">🚶‍♂️</div>
-                    <div class="action-title">Tech-Free Walk</div>
-                    <div class="time">30 Mins</div>
-                </div>
-                <div class="recovery-card">
-                    <div class="icon">🧘‍♀️</div>
-                    <div class="action-title">Reset Breathing</div>
-                    <div class="time">5 Mins</div>
-                </div>
-                <div class="recovery-card">
-                    <div class="icon">📅</div>
-                    <div class="action-title">Reschedule Errands</div>
-                    <div class="time">Auto-move</div>
-                </div>
-            </div>
-        </div>
+    <div class="head">
+
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+
+      <div class="cheek left"></div>
+      <div class="cheek right"></div>
+
+      <div class="muzzle">
+        <div class="nose"></div>
+        <div class="mouth"></div>
+        <div class="tongue"></div>
+      </div>
+
     </div>
+  </div>
 
 </body>
 </html>

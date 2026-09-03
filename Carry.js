@@ -4,6 +4,15 @@ const welcomeBubble = document.getElementById('welcomeSpeechBubble');
 let clickCount = 0;
 let isDizzy = false;
 
+function formatAvatarText(text) {
+    if (typeof currentAvatarType === 'undefined') return text;
+    
+    if (currentAvatarType === 'cat') return text + " 🐾";
+    if (currentAvatarType === 'dog') return text + " 🐶";
+    if (currentAvatarType === 'bao') return text + " 🥟";
+    return text;
+}
+
 // Auto-show bubble on page load
 setTimeout(() => {
     welcomeBubble.classList.add('active');
@@ -14,45 +23,21 @@ setTimeout(() => {
 document.addEventListener('mousemove', (e) => {
     if(isDizzy) return;
     pupils.forEach(pupil => {
+        // Ignore the tiny FAB circle robot
         if (pupil.closest('#fabCompanion')) return;
+        
+        // Ignore the Bao, Cat, and Dog in the selection carousel
+        if (pupil.closest('.bao-wrapper, .cat-wrapper, .dog-wrapper')) return;
+        
+        // Ignore the Bao, Cat, and Dog when they are selected as the active global companion
+        if (pupil.closest('.avatar-bao, .avatar-cat, .avatar-dog')) return;
+
         const rect = pupil.parentElement.getBoundingClientRect();
         const eyeCenterX = rect.left + rect.width / 2;
         const eyeCenterY = rect.top + rect.height / 2;
         const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
         const maxDistance = 8;
         pupil.style.transform = `translate(${Math.cos(angle) * maxDistance}px, ${Math.sin(angle) * maxDistance}px)`;
-    });
-});
-
-// Click detection for all robots
-document.querySelectorAll('.robot-wrapper').forEach(robot => {
-    robot.addEventListener('click', () => {
-        if(isDizzy) return;
-        clickCount++;
-        
-        if(clickCount === 2) {
-            welcomeBubble.innerText = "Hey, poking tickles!";
-            welcomeBubble.classList.add('active');
-            setTimeout(() => welcomeBubble.classList.remove('active'), 2000);
-        }
-        
-        if(clickCount >= 4) {
-            isDizzy = true; 
-            clickCount = 0; 
-            robot.classList.add('dizzy');
-            welcomeBubble.innerText = "Ouch, you make me dizzy... 😵‍💫";
-            welcomeBubble.classList.add('active');
-            
-            // Reset pupils during spinning so they stay centered in the orbit
-            pupils.forEach(p => p.style.transform = 'translate(0px, 0px)');
-
-            setTimeout(() => {
-                robot.classList.remove('dizzy');
-                welcomeBubble.innerText = "Phew! Okay, back to work.";
-                isDizzy = false;
-                setTimeout(() => welcomeBubble.classList.remove('active'), 2500);
-            }, 3000);
-        }
     });
 });
 
@@ -156,8 +141,22 @@ function launchApp() {
     goTo('main-dashboard');
 }
 
+// Add this variable right above your function
+let isRetest = false; 
+
 function startRetest() {
+    isRetest = true; // Tell the app this is a retake!
+    
+    // Hide the bottom navigation bar
     document.getElementById('appNav').classList.remove('active');
+    
+    // Force the global floating chat circle to hide 
+    const chatWidget = document.getElementById('globalChatWidget');
+    if (chatWidget) {
+        chatWidget.style.display = 'none';
+    }
+    
+    // Route back to the survey
     goTo('view-survey');
 }
 
@@ -186,152 +185,97 @@ function pokeRobot() {
 miniCompanion.addEventListener('click', pokeRobot);
 
 
-// --- WEEKLY SCHEDULE LOGIC ---
+// --- WEEKLY SCHEDULE LOGIC (SIMPLIFIED) ---
+let weeklyData = {
+    class: 15,
+    work: 10, // Default for when toggle is turned on
+    study: 10,
+    hasWork: false
+};
+
+// We keep the legacy array so the Profile Page charts still function
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const scheduleData = {
-    Mon: { active: true, class: 3, work: 0, study: 2, expanded: true },
-    Tue: { active: true, class: 3, work: 0, study: 2, expanded: false },
-    Wed: { active: true, class: 3, work: 0, study: 2, expanded: false },
-    Thu: { active: true, class: 3, work: 0, study: 2, expanded: false },
-    Fri: { active: true, class: 3, work: 0, study: 2, expanded: false },
+    Mon: { active: true, class: 0, work: 0, study: 0, expanded: false },
+    Tue: { active: true, class: 0, work: 0, study: 0, expanded: false },
+    Wed: { active: true, class: 0, work: 0, study: 0, expanded: false },
+    Thu: { active: true, class: 0, work: 0, study: 0, expanded: false },
+    Fri: { active: true, class: 0, work: 0, study: 0, expanded: false },
     Sat: { active: false, class: 0, work: 0, study: 0, expanded: false },
     Sun: { active: false, class: 0, work: 0, study: 0, expanded: false }
 };
 
-function buildScheduleUI() {
-    const container = document.getElementById('scheduleAccordion');
-    container.innerHTML = ''; // Clear container
-    
-    daysOfWeek.forEach(day => {
-        const data = scheduleData[day];
-        const total = data.class + data.work + data.study;
-        
-        const card = document.createElement('div');
-        card.className = `day-card ${data.expanded ? 'expanded' : ''} ${!data.active ? 'inactive' : ''}`;
-        card.id = `card-${day}`;
-        
-        card.innerHTML = `
-            <div class="day-header" onclick="toggleDayExpand('${day}')">
-                <div class="day-toggle">
-                    <input type="checkbox" id="toggle-${day}" ${data.active ? 'checked' : ''} onclick="event.stopPropagation(); toggleDayActive('${day}', this.checked)">
-                    <label for="toggle-${day}" class="toggle-label"></label>
-                </div>
-                <span class="day-name">${day}</span>
-                <div class="day-summary">
-                    <span class="day-total" id="total-${day}">${data.active ? total + 'h total' : ''}</span>
-                    <span class="day-arrow">▼</span>
-                </div>
-            </div>
-            <div class="day-body">
-                <div class="hour-row"><span class="dot" style="background: #3b82f6;"></span> Class hours
-                    <div class="hour-controls">
-                        <button onclick="updateHours('${day}', 'class', -1)">-</button>
-                        <span id="${day}-class">${data.class}</span>
-                        <button onclick="updateHours('${day}', 'class', 1)">+</button>
-                    </div>
-                </div>
-                <div class="hour-row"><span class="dot" style="background: #a8a29e;"></span> Work / part-time
-                    <div class="hour-controls">
-                        <button onclick="updateHours('${day}', 'work', -1)">-</button>
-                        <span id="${day}-work">${data.work}</span>
-                        <button onclick="updateHours('${day}', 'work', 1)">+</button>
-                    </div>
-                </div>
-                <div class="hour-row"><span class="dot" style="background: #84cc16;"></span> Self-study
-                    <div class="hour-controls">
-                        <button onclick="updateHours('${day}', 'study', -1)">-</button>
-                        <span id="${day}-study">${data.study}</span>
-                        <button onclick="updateHours('${day}', 'study', 1)">+</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        container.appendChild(card);
-    });
+function toggleWorkUI(isWorking) {
+    weeklyData.hasWork = isWorking;
+    const controls = document.getElementById('workControls');
+    controls.style.display = isWorking ? 'block' : 'none';
     updateTotalWeeklyHours();
 }
 
-function toggleDayExpand(day) {
-    if(!scheduleData[day].active) return;
-    scheduleData[day].expanded = !scheduleData[day].expanded;
-    document.getElementById(`card-${day}`).classList.toggle('expanded');
-}
-
-function toggleDayActive(day, isActive) {
-    scheduleData[day].active = isActive;
-    const card = document.getElementById(`card-${day}`);
-    
-    if(!isActive) {
-        card.classList.add('inactive');
-        card.classList.remove('expanded');
-        scheduleData[day].expanded = false;
-        document.getElementById(`total-${day}`).innerText = '';
-    } else {
-        card.classList.remove('inactive');
-        const total = scheduleData[day].class + scheduleData[day].work + scheduleData[day].study;
-        document.getElementById(`total-${day}`).innerText = total + 'h total';
-    }
-    updateTotalWeeklyHours();
-}
-
-function updateHours(day, category, change) {
-    let newVal = scheduleData[day][category] + change;
+function updateWeekly(category, change) {
+    let newVal = weeklyData[category] + change;
     if(newVal < 0) newVal = 0; // Prevent negative hours
-    scheduleData[day][category] = newVal;
+    if(newVal > 80) newVal = 80; // Sanity cap
     
-    document.getElementById(`${day}-${category}`).innerText = newVal;
-    
-    const total = scheduleData[day].class + scheduleData[day].work + scheduleData[day].study;
-    document.getElementById(`total-${day}`).innerText = total + 'h total';
+    weeklyData[category] = newVal;
+    document.getElementById(`week-${category}`).innerText = newVal;
     
     updateTotalWeeklyHours();
 }
 
 function updateTotalWeeklyHours() {
-    let weeklyTotal = 0;
-    let totalClass = 0;
-    let totalWork = 0;
-    let totalStudy = 0;
+    let total = weeklyData.class + weeklyData.study;
+    if (weeklyData.hasWork) {
+        total += weeklyData.work;
+    }
 
-    daysOfWeek.forEach(day => {
-        if(scheduleData[day].active) {
-            totalClass += scheduleData[day].class;
-            totalWork += scheduleData[day].work;
-            totalStudy += scheduleData[day].study;
+    document.getElementById('weeklyTotalDisplay').innerText = total;
+    
+    // Eepii Dialogue Update
+    const bubble = document.getElementById('scheduleSpeechBubble');
+    if (bubble) {
+        if (total >= 45) {
+            bubble.innerText = formatAvatarText("That's a heavy load! 🛑");
+        } else if (total < 20) {
+            bubble.innerText = formatAvatarText("Lots of free time to optimize! ✨");
+        } else {
+            if (weeklyData.class > weeklyData.study && weeklyData.class > (weeklyData.hasWork ? weeklyData.work : 0)) {
+                bubble.innerText = formatAvatarText("Lots of classes! Expanding your mind. 🧠");
+            } else if (weeklyData.hasWork && weeklyData.work >= weeklyData.class) {
+                bubble.innerText = formatAvatarText("Balancing work and study. Doing great! 💼");
+            } else {
+                bubble.innerText = formatAvatarText("Dedicated to self-study! Keep it up. 🌱");
+            }
         }
+    }
+    
+    distributeToDays();
+}
+
+// Secretly spreads the weekly total across Mon-Fri for the Profile Chart
+function distributeToDays() {
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    const dailyClass = Math.round(weeklyData.class / 5);
+    const dailyWork = weeklyData.hasWork ? Math.round(weeklyData.work / 5) : 0;
+    const dailyStudy = Math.round(weeklyData.study / 5);
+
+    weekdays.forEach(day => {
+        scheduleData[day].class = dailyClass;
+        scheduleData[day].work = dailyWork;
+        scheduleData[day].study = dailyStudy;
     });
 
-    weeklyTotal = totalClass + totalWork + totalStudy;
-    document.getElementById('weeklyTotalDisplay').innerText = weeklyTotal;
-    
-    const robot = document.getElementById('scheduleCompanion');
-    const bubble = document.getElementById('scheduleSpeechBubble');
-    
-    // Short, loving dialogue (all under 10 words)
-    if (weeklyTotal >= 45) {
-        robot.classList.add('shocked');
-        bubble.innerText = "That's a heavier load I ever saw! 🛑"; // 8 words
-    } else if (weeklyTotal < 20) {
-        robot.classList.remove('shocked');
-        bubble.innerText = "Your life seems balanced. Let's improve it! ✨"; // 8 words
-    } else {
-        robot.classList.remove('shocked');
-        
-        if (totalClass >= totalWork && totalClass >= totalStudy) {
-            bubble.innerText = "Lots of classes! You're expanding your mind. 🧠"; // 8 words
-        } else if (totalWork >= totalClass && totalWork >= totalStudy) {
-            bubble.innerText = "Balancing work and study. You're doing great! 💼"; // 8 words
-        } else {
-            bubble.innerText = "Dedicated to self-study! Your hard work shines. 🌱"; // 8 words
-        }
+    // If the profile page script has loaded, tell it to redraw the chart
+    if (typeof buildProfileScheduleUI === 'function') {
+        buildProfileScheduleUI();
     }
 }
 
-// Build the UI immediately when the script loads
-buildScheduleUI();
+// Initialize on load
+updateTotalWeeklyHours();
 
 
-// --- BASELINE SURVEY LOGIC ---
+// --- BASELINE SURVEY LOGIC (CHATBOT UI) ---
 const surveyQuestions = [
     { text: "How often do you feel mentally overwhelmed by academic demands?", category: "Mental" },
     { text: "How often do you feel unable to keep up with your study schedule?", category: "Time" },
@@ -348,128 +292,161 @@ const surveyQuestions = [
 let currentQuestionIndex = 0;
 let surveyTotalScore = 0;
 
-let surveyIdleTimer;
-
-function promptIdleUser() {
-    // Only interrupt if they are actually on the survey view
-    if (document.getElementById('view-survey').classList.contains('active')) {
-        const bubble = document.getElementById('surveySpeechBubble');
-        const robot = document.getElementById('surveyCompanion');
-        
-        bubble.innerText = "Hey, are you still with me? 👀";
-        robot.classList.remove('shocked'); 
-        
-        // Hide the answer choices and show the "Yes" button
-        document.getElementById('surveyAnswerButtons').classList.add('hidden');
-        document.getElementById('surveyIdleButton').classList.remove('hidden');
-    }
-}
-
-function wakeSurveyRobot() {
-    const bubble = document.getElementById('surveySpeechBubble');
-    
-    // Restore the current question text from our array
-    bubble.innerText = surveyQuestions[currentQuestionIndex].text;
-    
-    // Bring back the answer choices and hide the "Yes" button
-    document.getElementById('surveyAnswerButtons').classList.remove('hidden');
-    document.getElementById('surveyIdleButton').classList.add('hidden');
-    
-    // Restart the 10-second countdown
-    resetSurveyIdleTimer();
-}
-
-function resetSurveyIdleTimer() {
-    clearTimeout(surveyIdleTimer);
-    // Set timer for 10 seconds (10000 milliseconds)
-    surveyIdleTimer = setTimeout(promptIdleUser, 10000);
-}
-
-function answerSurvey(score) {
-    // Stop the idle timer immediately when they click an answer
-    clearTimeout(surveyIdleTimer);
-    
+function processSurveyAnswer(score) {
     surveyTotalScore += score;
-    
-    const bubble = document.getElementById('surveySpeechBubble');
-    const options = document.getElementById('surveyOptions');
-    const robot = document.getElementById('surveyCompanion');
-    
-    // Hide options briefly
-    options.style.opacity = '0';
-    options.style.pointerEvents = 'none';
+    const bubble = document.getElementById('surveyActiveChatBubble');
+    const replies = document.getElementById('surveyQuickReplies');
+    const input = document.getElementById('surveyChatInput');
 
-    // Robot Reacts to the answer
-    if (score === 1 || score === 2) {
-        robot.classList.remove('shocked');
-        bubble.innerText = "That's a very healthy sign! 🍃";
-    } else if (score === 3) {
-        robot.classList.remove('shocked');
-        bubble.innerText = "Totally normal. We'll keep an eye on it! ⚖️";
-    } else {
-        robot.classList.add('shocked');
-        bubble.innerText = "I hear you. You're not alone in feeling this way. ❤️";
+    // Disable inputs and show typing indicator
+    if (replies) {
+        replies.style.opacity = '0.3';
+        replies.style.pointerEvents = 'none';
     }
+    if (input) {
+        input.disabled = true;
+        input.value = '';
+    }
+    
+    if (bubble) bubble.innerText = "...";
 
-    // Wait 1.8 seconds, then load next question or finish
+    // Wait slightly to simulate AI processing, then load next question
     setTimeout(() => {
         currentQuestionIndex++;
         
         if (currentQuestionIndex < surveyQuestions.length) {
-            // Next Question
-            document.getElementById('surveyProgress').innerText = `Question ${currentQuestionIndex + 1} of 10`;
+            document.getElementById('surveyProgressHeader').innerText = `Question ${currentQuestionIndex + 1} of 10`;
             bubble.innerText = surveyQuestions[currentQuestionIndex].text;
-            robot.classList.remove('shocked');
             
-            options.style.opacity = '1';
-            options.style.pointerEvents = 'auto';
-            
-            // Start the 10-second countdown for the new question
-            resetSurveyIdleTimer();
-        } else {
-            // Finish Survey - Calculate Risk
-            let riskPercentage = Math.round(((surveyTotalScore - 10) / 40) * 100);
-            
-            // Set dynamic text and colors based on the final score
-            let levelText = "Moderate";
-            let levelColor = "var(--c-social)"; // Orange color
-            let descText = "You are balancing a lot right now. Your Rebalance tab will help you optimize your time and energy.";
-
-            if (riskPercentage >= 70) {
-                levelText = "High";
-                levelColor = "var(--urgent)";
-                descText = "Maintaining a 4.0 CGPA takes immense dedication, but you're carrying a heavy load right now. Your Rebalance tab will be crucial — check it daily.";
-            } else if (riskPercentage < 30) {
-                levelText = "Low";
-                levelColor = "var(--normal)";
-                descText = "Your academic life seems well-balanced! Let's use Equilibrium to keep it that way.";
+            // Re-enable inputs
+            if (replies) {
+                replies.style.opacity = '1';
+                replies.style.pointerEvents = 'auto';
             }
-
-            // Inject the calculated values into the Overview page
-            document.getElementById('overviewLevel').innerText = levelText;
-            document.getElementById('overviewLevel').style.color = levelColor;
-            document.getElementById('overviewScore').innerText = riskPercentage;
-            document.getElementById('overviewScore').style.color = levelColor;
-            document.getElementById('overviewText').innerText = descText;
-
-            // Fetch the weekly total from the Schedule step
-            const weeklyHours = document.getElementById('weeklyTotalDisplay').innerText;
-            document.getElementById('overviewHours').innerText = weeklyHours + "h";
-            
-            // Reset for future tests
-            currentQuestionIndex = 0;
-            surveyTotalScore = 0;
-            options.style.opacity = '1';
-            options.style.pointerEvents = 'auto';
-            document.getElementById('surveyProgress').innerText = `Question 1 of 10`;
-            bubble.innerText = surveyQuestions[0].text;
-            
-            goTo('view-calendar');
+            if (input) input.disabled = false;
+        } else {
+            finishSurvey(surveyTotalScore);
         }
-    }, 1800);
+    }, 600);
+}
+
+// Handle Typed Input
+function handleSurveyEnter(e) {
+    if (e.key === 'Enter') submitSurveyInput();
+}
+
+function submitSurveyInput() {
+    const inputEl = document.getElementById('surveyChatInput');
+    if (!inputEl) return;
+    
+    const inputStr = inputEl.value.toLowerCase().trim();
+    if (!inputStr) return;
+
+    let score = 3; // Default to 'Sometimes' if we don't recognize the word
+    
+    if (inputStr.includes('never') || inputStr === '1') score = 1;
+    else if (inputStr.includes('rarely') || inputStr === '2') score = 2;
+    else if (inputStr.includes('sometimes') || inputStr === '3') score = 3;
+    else if (inputStr.includes('often') || inputStr === '4') score = 4;
+    else if (inputStr.includes('always') || inputStr === '5') score = 5;
+
+    processSurveyAnswer(score);
+}
+
+function finishSurvey(finalScore) {
+    let riskPercentage = Math.round(((finalScore - 10) / 40) * 100);
+    if (riskPercentage > 100) riskPercentage = 100;
+    
+    let levelText = "Moderate";
+    let levelColor = "var(--c-social)"; 
+    let descText = "You are balancing a lot right now. Your Rebalance tab will help you optimize your time and energy.";
+
+    if (riskPercentage >= 70) {
+        levelText = "High Risk";
+        levelColor = "var(--urgent)";
+        descText = "Maintaining your workload takes immense dedication, but you're carrying a heavy load right now. Your Rebalance tab will be crucial — check it daily.";
+    } else if (riskPercentage < 30) {
+        levelText = "Healthy";
+        levelColor = "var(--normal)";
+        descText = "Your life seems well-balanced! Let's use Eepii to keep it that way.";
+    }
+
+    // Inject values into the Overview page
+    const overviewLevel = document.getElementById('overviewLevel');
+    if (overviewLevel) {
+        overviewLevel.innerText = levelText;
+        overviewLevel.style.color = levelColor;
+    }
+    
+    const overviewScore = document.getElementById('overviewScore');
+    if (overviewScore) {
+        overviewScore.innerText = riskPercentage + "%";
+        overviewScore.style.color = levelColor;
+    }
+    
+    const overviewText = document.getElementById('overviewText');
+    if (overviewText) overviewText.innerText = descText;
+
+    // --- SMART ROUTING LOGIC ---
+    if (isRetest) {
+        isRetest = false; // Reset the flag so it doesn't get stuck
+        goTo('view-overview'); // Jump straight to the results
+    } else {
+        goTo('view-schedule-setup'); // New users go to the schedule
+    }
+}
+
+// --- SKIP DEMO LOGIC ---
+function skipSurvey() {
+    // 46 points equals exactly a 90% risk score in the calculation formula
+    currentQuestionIndex = 10; 
+    finishSurvey(46); 
 }
 
 // --- CALENDAR IMPORT LOGIC ---
+let isProfileImport = false;
+
+function startProfileImport() {
+    isProfileImport = true;
+    // Temporarily hide the bottom nav bar so it doesn't overlap the calendar screen
+    document.getElementById('appNav').classList.remove('active');
+    goTo('view-calendar');
+}
+
+function finishCalendarSetup() {
+    if (isProfileImport) {
+        isProfileImport = false;
+        // Restore the bottom nav bar and return directly to the profile
+        document.getElementById('appNav').classList.add('active');
+        goTo('main-profile');
+    } else {
+        // First time onboarding, continue to the overview summary
+        goTo('view-overview');
+    }
+    
+    // Reset the dropzone for future imports
+    setTimeout(() => {
+        const dropZone = document.getElementById('calendarDropZone');
+        if (dropZone) {
+            dropZone.innerHTML = `
+                <span style="font-size: 36px; display: block; margin-bottom: 12px;">📅</span>
+                <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 5px; font-size: 15px;">Drop your .ics file here</div>
+                <div style="font-size: 13px; color: var(--text-muted);">or tap to browse files</div>
+            `;
+            dropZone.style.borderColor = '#cbd5e1';
+            dropZone.style.background = 'transparent';
+        }
+        
+        const btn = document.getElementById('importBtn');
+        if (btn) {
+            btn.innerText = 'Choose a file first';
+            btn.classList.add('disabled-btn');
+            btn.disabled = true;
+            btn.onclick = null;
+        }
+    }, 500);
+}
+
 function simulateFileUpload() {
     const dropZone = document.getElementById('calendarDropZone');
     
@@ -480,7 +457,7 @@ function simulateFileUpload() {
         <div style="font-size: 13px; color: var(--normal); font-weight: 600;">File ready to import</div>
     `;
     dropZone.style.borderColor = 'var(--normal)';
-    dropZone.style.background = '#f0fdf4'; // Light green background
+    dropZone.style.background = '#f0fdf4';
     
     // Enable the import button
     const btn = document.getElementById('importBtn');
@@ -488,8 +465,8 @@ function simulateFileUpload() {
     btn.classList.remove('disabled-btn');
     btn.disabled = false;
     
-    // Route to the next page on click
-    btn.onclick = () => goTo('view-overview');
+    // Use the smart routing function when clicked
+    btn.onclick = () => finishCalendarSetup();
 }
 
 
@@ -946,4 +923,23 @@ function sendChatMessage() {
         ];
         bubble.innerText = formatAvatarText(replies[Math.floor(Math.random() * replies.length)]);
     }, 800);
+}
+
+
+// --- SMART SCHEDULE LOGIC ---
+function toggleTask(cardElement) {
+    cardElement.classList.toggle('completed');
+    
+    // Have Eepii react if you finish an urgent task
+    if (cardElement.classList.contains('completed')) {
+        // Checks if the inner tag contains the red urgent color
+        const isUrgent = cardElement.innerHTML.includes('#fee2e2'); 
+        
+        if (isUrgent) {
+            const bubble = document.getElementById('rebalanceSpeechBubble');
+            if (bubble) {
+                bubble.innerText = formatAvatarText("Huge win! Great job clearing that deadline.");
+            }
+        }
+    }
 }

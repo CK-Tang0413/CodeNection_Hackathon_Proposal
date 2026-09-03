@@ -11,7 +11,7 @@
     <div class="mobile-frame">
         
         <div id="view-welcome" class="view active">
-            <h1 style="text-align: center; margin-top: 20px;">Equilibrium</h1>
+            <h1 style="text-align: center; margin-top: 20px;">Eepii</h1>
             <p style="text-align: center;">Welcome! Before we start balancing your schedule, we need to establish your baseline load.</p>
             
             <div class="avatar-selection">
@@ -44,8 +44,8 @@
                                 </div>
                                 <div class="bao-blush left"></div><div class="bao-blush right"></div>
                                 <div class="bao-face">
-                                    <div class="bao-eye"></div>
-                                    <div class="bao-eye"></div>
+                                    <div class="bao-eye-socket"><div class="bao-eye pupil"></div></div>
+                                    <div class="bao-eye-socket"><div class="bao-eye pupil"></div></div>
                                     <div class="bao-smile"></div>
                                 </div>
                             </div>
@@ -62,9 +62,9 @@
                                 <div class="whisker left-1"></div><div class="whisker left-2"></div>
                                 <div class="whisker right-1"></div><div class="whisker right-2"></div>
                                 <div class="cat-face">
-                                    <div class="cat-eye"></div>
+                                    <div class="cat-eye-socket"><div class="cat-eye pupil"></div></div>
                                     <div class="cat-mouth"></div>
-                                    <div class="cat-eye"></div>
+                                    <div class="cat-eye-socket"><div class="cat-eye pupil"></div></div>
                                 </div>
                             </div>
                         </div>
@@ -73,16 +73,14 @@
                     <!-- Dog -->
                     <div class="carousel-slide">
                         <div class="dog-wrapper">
-                            <div class="dog-tail"></div>
-                            <div class="dog-body"></div>
                             <div class="dog-ear left"></div>
                             <div class="dog-ear right"></div>
                             <div class="dog-head">
                                 <div class="dog-blush left"></div><div class="dog-blush right"></div>
                                 <div class="dog-face">
                                     <div class="dog-eyes">
-                                        <div class="dog-eye"></div>
-                                        <div class="dog-eye"></div>
+                                        <div class="dog-eye-socket"><div class="dog-eye pupil"></div></div>
+                                        <div class="dog-eye-socket"><div class="dog-eye pupil"></div></div>
                                     </div>
                                     <div class="dog-nose"></div>
                                     <div class="dog-smile"></div>
@@ -90,13 +88,12 @@
                             </div>
                         </div>
                     </div>
-
-                <button class="btn btn-outline" id="pickAvatarBtn" onclick="selectAvatar()">Pick This Companion</button>
+                
+                </div> <button class="btn btn-outline" id="pickAvatarBtn" onclick="selectAvatar()" style="margin-top: 30px; width: 100%;">Pick This Companion</button>
             </div>
 
-            <button class="btn hidden" id="startSetupBtn" onclick="goTo('view-profile-setup')">Start Setup</button>
+            <button class="btn hidden" id="startSetupBtn" onclick="goTo('view-profile-setup')" style="width: 100%;">Start Setup</button>
         </div>
-
 
         <div id="view-profile-setup" class="view" style="justify-content: center; padding-bottom: 30px;">
     
@@ -152,7 +149,7 @@
                 <select class="idle-tracker"><option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option></select>
             </div>
             
-            <button class="btn" style="margin-top: 20px;" onclick="goTo('view-schedule-setup')">Next: Weekly Schedule</button>
+            <button class="btn" style="margin-top: 20px;" onclick="goTo('view-survey')">Next: Stress Survey</button>
         </div>
 
         <div id="view-schedule-setup" class="view">
@@ -196,64 +193,123 @@
             </div>
 
             <!-- Total Hours Counter -->
-            <div style="text-align: center; margin-bottom: 15px; background: white; padding: 10px; border-radius: 12px; border: 1px solid var(--border);">
-                <span style="font-size: 14px; font-weight: 600; color: var(--text-muted);">Total Weekly Load: <strong id="weeklyTotalDisplay" style="color: var(--primary); font-size: 18px;">0</strong> hours</span>
+            <div style="text-align: center; margin-bottom: 20px; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <span style="font-size: 14px; font-weight: 600; color: var(--text-muted);">Total Weekly Load: <strong id="weeklyTotalDisplay" style="color: var(--primary); font-size: 20px; margin-left: 5px;">25</strong><span style="font-size: 14px; color: var(--primary);">h</span></span>
             </div>
 
-            <!-- JavaScript will inject the 7 days here -->
-            <div id="scheduleAccordion" style="display: flex; flex-direction: column; gap: 10px;"></div>
-            
-            <button class="btn" style="margin-top: 20px;" onclick="goTo('view-survey')">Next: Stress Survey</button>
-        </div>
-
-        <div id="view-survey" class="view" style="justify-content: center; align-items: center; padding-bottom: 40px; padding-top: 50px;">
-            
-            <p id="surveyProgress" style="font-size: 14px; font-weight: 700; color: var(--text-muted); margin-bottom: 30px; text-transform: uppercase; letter-spacing: 1px;">Question 1 of 10</p>
-            
-            <!-- Adjusted height from 260px to 200px to keep the layout tight -->
-            <div class="robot-stage" style="position: relative; width: 100%; height: 200px; margin-bottom: 20px; display: flex; justify-content: center;">
+            <!-- Simplified Weekly Inputs -->
+            <div class="weekly-inputs" style="display: flex; flex-direction: column; gap: 15px;">
                 
-                <div class="survey-speech-bubble" id="surveySpeechBubble">
-                    How often have you felt mentally overwhelmed by academic demands?
+                <!-- Class Hours -->
+                <div class="input-card" style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 2px;">🎓 Class Hours</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Lectures, programming labs, and tutorials</div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 12px;">
+                        <button class="ctrl-btn" onclick="updateWeekly('class', -1)">-</button>
+                        <span style="font-size: 16px; font-weight: 700;"><span id="week-class">15</span> hrs</span>
+                        <button class="ctrl-btn" onclick="updateWeekly('class', 1)">+</button>
+                    </div>
                 </div>
-                
-                <!-- Robot scaled up to 0.55 (Head Only) -->
-                <div class="robot-scaler" style="transform: scale(0.55); transform-origin: top center; position: absolute; top: 115px;">
-                    <div class="robot-wrapper" id="surveyCompanion">
-                        <div class="antenna-ball"></div><div class="antenna"></div>
-                        <div class="ear left"></div><div class="ear right"></div>
-                        <div class="robot-head">
-                            <div class="robot-face">
-                                <div class="eye"><div class="pupil"></div></div>
-                                <div class="eye"><div class="pupil"></div></div>
-                                <div class="smile"></div>
-                            </div>
+
+                <!-- Work Toggle & Hours -->
+                <div class="input-card" style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 2px;">💼 Working</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Internships, freelance, or part-time roles</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="workToggle" onchange="toggleWorkUI(this.checked)">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <!-- Hidden by default until toggled on -->
+                    <div id="workControls" style="display: none; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 12px;">
+                            <button class="ctrl-btn" onclick="updateWeekly('work', -1)">-</button>
+                            <span style="font-size: 16px; font-weight: 700;"><span id="week-work">10</span> hrs</span>
+                            <button class="ctrl-btn" onclick="updateWeekly('work', 1)">+</button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Survey Options -->
-            <div id="surveyOptions" style="width: 100%; transition: opacity 0.3s;">
-                
-                <div id="surveyAnswerButtons" style="display: flex; flex-direction: column; gap: 12px;">
-                    <button class="btn btn-outline" style="margin-top: 0;" onclick="answerSurvey(1)">Never</button>
-                    <button class="btn btn-outline" style="margin-top: 0;" onclick="answerSurvey(2)">Rarely</button>
-                    <button class="btn btn-outline" style="margin-top: 0;" onclick="answerSurvey(3)">Sometimes</button>
-                    <button class="btn btn-outline" style="margin-top: 0;" onclick="answerSurvey(4)">Often</button>
-                    <button class="btn btn-outline" style="margin-top: 0;" onclick="answerSurvey(5)">Always</button>
+                <!-- Self Study -->
+                <div class="input-card" style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 2px;">📚 Self-Study</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Assignments, coding practice, and revision</div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 12px;">
+                        <button class="ctrl-btn" onclick="updateWeekly('study', -1)">-</button>
+                        <span style="font-size: 16px; font-weight: 700;"><span id="week-study">10</span> hrs</span>
+                        <button class="ctrl-btn" onclick="updateWeekly('study', 1)">+</button>
+                    </div>
                 </div>
-                
-                <button id="surveyIdleButton" class="btn hidden" style="margin-top: 0;" onclick="wakeSurveyRobot()">Yes, I'm here!</button>
 
             </div>
             
+            <button class="btn" style="margin-top: 25px; width: 100%;" onclick="goTo('view-calendar')">Next: Import Calendar</button>
+        </div>
+
+        <div id="view-survey" class="view" style="padding: 0; background: #f8fafc; height: 100%;">
+            
+            <!-- Full height inner wrapper -->
+            <div style="display: flex; flex-direction: column; height: 100vh; width: 100%;">
+                
+                <!-- Header with Skip Demo Button -->
+                <div style="padding: 20px 20px 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <span id="surveyProgressHeader" style="font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Question 1 of 10</span>
+                    <button onclick="skipSurvey()" style="padding: 6px 12px; font-size: 11px; font-weight: 700; background: #fee2e2; color: #b91c1c; border: none; border-radius: 8px; cursor: pointer;">Skip (Demo)</button>
+                </div>
+
+                <!-- Chat Content (Centered Robot & Bubble) -->
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;">
+                    
+                    <div id="surveyActiveChatBubble" class="active-chat-bubble" style="position: relative; margin-bottom: 40px; top: 0; left: 0; transform: none; width: 100%; text-align: center;">
+                        How often do you feel mentally overwhelmed by academic demands?
+                    </div>
+                    
+                    <div class="robot-scaler" style="transform: scale(0.65); transform-origin: center;">
+                        <div class="robot-wrapper" id="surveyCompanion">
+                            <div class="antenna-ball"></div><div class="antenna"></div>
+                            <div class="ear left"></div><div class="ear right"></div>
+                            <div class="robot-head">
+                                <div class="robot-face">
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Input & Options Area -->
+                <div style="padding: 20px; background: white; border-top: 1px solid #e2e8f0; padding-bottom: 40px;">
+                    
+                    <!-- Quick Replies -->
+                    <div id="surveyQuickReplies" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px; transition: opacity 0.3s;">
+                        <button class="quick-reply-btn" onclick="processSurveyAnswer(1)">Never</button>
+                        <button class="quick-reply-btn" onclick="processSurveyAnswer(2)">Rarely</button>
+                        <button class="quick-reply-btn" onclick="processSurveyAnswer(3)">Sometimes</button>
+                        <button class="quick-reply-btn" onclick="processSurveyAnswer(4)">Often</button>
+                        <button class="quick-reply-btn" onclick="processSurveyAnswer(5)">Always</button>
+                    </div>
+
+                    <!-- Text Input Wrapper -->
+                    <div style="display: flex; align-items: center; border: 1px solid #e2e8f0; border-radius: 30px; padding: 4px 4px 4px 15px; background: white;">
+                        <input type="text" id="surveyChatInput" placeholder="Type your answer..." onkeypress="handleSurveyEnter(event)" style="flex: 1; border: none; outline: none; background: transparent; font-size: 14px; font-family: inherit; min-width: 0;">
+                        <button onclick="submitSurveyInput()" class="send-btn" style="flex-shrink: 0; margin-left: 10px;">➤</button>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
         <div id="view-calendar" class="view" style="padding-top: 40px;">
             <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Class Schedule</p>
             <h1 style="margin-top: 0; margin-bottom: 15px; font-size: 28px;">Import your timetable</h1>
-            <p style="margin-bottom: 30px;">Export your university calendar as a .ics file and import it here. Equilibrium will use it to understand your class density.</p>
+            <p style="margin-bottom: 30px;">Export your university calendar as a .ics file and import it here. Eepii will use it to understand your class density.</p>
             
             <!-- File Drop Zone -->
             <div class="drop-zone" id="calendarDropZone" onclick="simulateFileUpload()">
@@ -273,7 +329,7 @@
             <div style="flex: 1;"></div>
 
             <button id="importBtn" class="btn disabled-btn" disabled>Choose a file first</button>
-            <button class="btn btn-outline" style="border: none; margin-top: 10px; color: var(--text-muted); font-weight: 600;" onclick="goTo('view-overview')">Skip for now</button>
+            <button class="btn btn-outline" style="border: none; margin-top: 10px; color: var(--text-muted); font-weight: 600;" onclick="finishCalendarSetup()">Skip for now</button>
         </div>
 
         <div id="view-overview" class="view" style="justify-content: center; align-items: center; text-align: center;">
@@ -306,11 +362,11 @@
             <!-- Side-by-Side Metric Cards -->
             <div style="display: flex; gap: 15px; width: 100%; margin-bottom: 25px;">
                 <div class="card stat-card" style="flex: 1; margin-bottom: 0;">
-                    <div class="stat-value" id="overviewHours">0h</div>
+                    <div class="stat-value" id="overviewHours">25h</div>
                     <div class="stat-label">Weekly Commitment</div>
                 </div>
                 <div class="card stat-card" style="flex: 1; margin-bottom: 0;">
-                    <div class="stat-value" id="overviewScore" style="color: var(--urgent);">0%</div>
+                    <div class="stat-value" id="overviewScore" style="color: var(--urgent);">90%</div>
                     <div class="stat-label">Stress Score</div>
                 </div>
             </div>
@@ -471,9 +527,12 @@
                 <div class="timeline-event">
                     <div class="event-time">09:00 AM</div>
                     <div class="event-marker task-urgent"></div>
-                    <div class="event-card task-card">
-                        <div class="event-header">
+                    <!-- Added onclick -->
+                    <div class="event-card task-card" onclick="toggleTask(this)">
+                        <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
                             <span class="tag" style="background: #fee2e2; color: #b91c1c;">Urgent Task</span>
+                            <!-- Added checkbox -->
+                            <div class="custom-checkbox"></div>
                         </div>
                         <div class="event-title">Anti-Scam Chatbot Risk Scoring Module</div>
                         <div class="event-desc">2 Hours • Deep Work</div>
@@ -484,9 +543,12 @@
                 <div class="timeline-event">
                     <div class="event-time">11:00 AM</div>
                     <div class="event-marker activity-recovery"></div>
-                    <div class="event-card recovery-card">
-                        <div class="event-header">
+                    <!-- Added onclick -->
+                    <div class="event-card recovery-card" onclick="toggleTask(this)">
+                        <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
                             <span class="tag" style="background: #dcfce7; color: #15803d;">🍃 Rebalance</span>
+                            <!-- Added checkbox -->
+                            <div class="custom-checkbox"></div>
                         </div>
                         <div class="event-title">Screen Break & Short Walk</div>
                         <div class="event-desc">20 Mins • Step away from the desk</div>
@@ -497,9 +559,12 @@
                 <div class="timeline-event">
                     <div class="event-time">01:00 PM</div>
                     <div class="event-marker task-normal"></div>
-                    <div class="event-card task-card">
-                        <div class="event-header">
+                    <!-- Added onclick -->
+                    <div class="event-card task-card" onclick="toggleTask(this)">
+                        <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
                             <span class="tag" style="background: #e2e8f0; color: #475569;">Task</span>
+                            <!-- Added checkbox -->
+                            <div class="custom-checkbox"></div>
                         </div>
                         <div class="event-title">Tour Management System Prototype</div>
                         <div class="event-desc">1.5 Hours • Medium Focus</div>
@@ -510,9 +575,12 @@
                 <div class="timeline-event">
                     <div class="event-time">02:30 PM</div>
                     <div class="event-marker activity-recovery"></div>
-                    <div class="event-card recovery-card">
-                        <div class="event-header">
+                    <!-- Added onclick -->
+                    <div class="event-card recovery-card" onclick="toggleTask(this)">
+                        <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
                             <span class="tag" style="background: #fef3c7; color: #b45309;">☕ Rebalance</span>
+                            <!-- Added checkbox -->
+                            <div class="custom-checkbox"></div>
                         </div>
                         <div class="event-title">Grab a snack (Nuggets & fries?)</div>
                         <div class="event-desc">30 Mins • Mental reset</div>
@@ -529,7 +597,7 @@
                 <div style="max-width: 65%;">
                     <h1 style="margin-top: 0; margin-bottom: 8px; font-size: 28px;">Log Load</h1>
                     <p style="margin-bottom: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
-                        Add a new task. Equilibrium's AI will automatically assign its category and urgency.
+                        Add a new task. Eepii's AI will automatically assign its category and urgency.
                     </p>
                 </div>
                 
@@ -860,13 +928,15 @@
             <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Account</p>
             <h1 style="margin-top: 0; margin-bottom: 20px; font-size: 28px;">Profile</h1>
             
-            <!-- Personalized Dark Hero Card -->
-            <div class="dark-hero-card" style="padding: 20px; display: flex; align-items: center; gap: 15px; min-height: auto; margin-bottom: 25px;">
-                <div style="width: 55px; height: 55px; border-radius: 16px; background: #292524; border: 1px solid #44403c; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold;">
+           <!-- Personalized Dark Hero Card -->
+            <div class="dark-hero-card" style="padding: 20px; display: flex; align-items: center; gap: 15px; height: auto; min-height: 95px; border-radius: 24px; margin-bottom: 25px;">
+                <!-- Added flex-shrink: 0 so the icon doesn't get squeezed -->
+                <div style="width: 55px; height: 55px; border-radius: 16px; background: #292524; border: 1px solid #44403c; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; flex-shrink: 0;">
                     <span style="font-size: 22px;">👨‍💻</span>
                 </div>
                 <div>
-                    <div style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px;">Alex Wong</div>
+                    <!-- Added line-height for cleaner stacking -->
+                    <div style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px; line-height: 1.2;">Alex Wong</div>
                     <div style="font-size: 12px; color: #d6d3d1;">BSc Computer Science (AI)</div>
                     <div style="font-size: 11px; color: #a8a29e; margin-top: 4px; font-weight: 600;">Latest CGPA: 4.0</div>
                 </div>
@@ -958,7 +1028,7 @@
             <!-- ICS Import -->
             <div class="card" style="padding: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
                 <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">Class Schedule (.ICS)</div>
-                <button class="btn" style="margin: 0; padding: 6px 16px; font-size: 12px; background: #eff6ff; color: #1e40af; border-radius: 20px; box-shadow: none;" onclick="goTo('view-calendar')">Import</button>
+                <button class="btn" style="margin: 0; padding: 6px 16px; font-size: 12px; background: #eff6ff; color: #1e40af; border-radius: 20px; box-shadow: none;" onclick="startProfileImport()">Import</button>
             </div>
 
             <!-- Retest Button -->
@@ -973,8 +1043,6 @@
             <button class="nav-btn" onclick="navTo('main-profile', this)">👤<span>Profile</span></button>
         </div>
 
-
-        <!-- Global AI Chat Widget -->
         <div id="globalChatWidget" style="display: none; position: absolute; z-index: 100; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
             
             <!-- The Circular Floating Button -->
@@ -1030,9 +1098,7 @@
         </div>
 
     </div>
-
-
-
+    
     <script src="Carry.js"></script>
 </body>
 </html>
