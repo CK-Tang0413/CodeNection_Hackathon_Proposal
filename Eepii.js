@@ -29,7 +29,7 @@ function selectAvatar() {
     const companions = [
         'miniCompanion', 'scheduleCompanion', 'surveyCompanion', 'overviewCompanion', 
         'dashCompanion', 'rebalanceCompanion', 'logCompanion', 'trendCompanion', 
-        'fabCompanion', 'expandedCompanion'
+        'fabCompanion', 'expandedCompanion', 'dashChatCompanion'
     ];
     
     companions.forEach(id => {
@@ -119,7 +119,7 @@ function goTo(viewId) {
 
     const chatWidget = document.getElementById('globalChatWidget');
     if (chatWidget) {
-        chatWidget.style.display = viewId.startsWith('main-') ? 'block' : 'none';
+        chatWidget.style.display = (viewId.startsWith('main-') && viewId !== 'main-dashboard') ? 'block' : 'none';
     }
 }
 
@@ -133,13 +133,14 @@ function navTo(viewId, btnElement) {
 
     const chatWidget = document.getElementById('globalChatWidget');
     if (chatWidget) {
-        chatWidget.style.display = viewId.startsWith('main-') ? 'block' : 'none';
+        chatWidget.style.display = (viewId.startsWith('main-') && viewId !== 'main-dashboard') ? 'block' : 'none';
     }
 }
 
 function launchApp() {
     document.getElementById('appNav').classList.add('active');
-    document.getElementById('globalChatWidget').style.display = 'block';
+    const chatWidget = document.getElementById('globalChatWidget');
+    if (chatWidget) chatWidget.style.display = 'none'; // starts on main-dashboard
     
     // Transfer risk score from Overview to Dashboard
     const riskScore = document.getElementById('overviewScore').innerText.replace('%', '');
@@ -471,6 +472,96 @@ function interactDashRobot() {
         "Check Rebalance if you feel stuck! ⚡"
     ];
     bubble.innerText = formatAvatarText(phrases[Math.floor(Math.random() * phrases.length)]);
+}
+
+function toggleLoadBreakdown() {
+    const breakdown = document.getElementById('loadDistributionBreakdown');
+    const chevron = document.getElementById('heroExpandChevron');
+    const text = document.getElementById('heroExpandText');
+    if (!breakdown) return;
+
+    const isExpanded = breakdown.classList.contains('expanded');
+    if (isExpanded) {
+        breakdown.classList.remove('expanded');
+        if (chevron) chevron.innerHTML = '&#9662;';
+        if (text) text.innerText = 'View Load Breakdown';
+    } else {
+        breakdown.classList.add('expanded');
+        if (chevron) chevron.innerHTML = '&#9652;';
+        if (text) text.innerText = 'Hide Load Breakdown';
+    }
+}
+window.toggleLoadBreakdown = toggleLoadBreakdown;
+
+function handleDashChatEnter(e) {
+    if (e.key === 'Enter') sendDashChatMessage();
+}
+
+function handleQuickChip(action) {
+    if (action === '5-min breather') {
+        respondDashChat("Taking 5 minutes away from screens reduces cognitive fatigue by 28%. Try taking 4 deep breaths or looking 20 feet away! 🍃");
+    } else if (action === 'feeling overwhelmed') {
+        respondDashChat("I hear you. Let's tackle just ONE small micro-step first, or visit Rebalance for an interleaved recovery block. You've got this! 💙");
+    } else if (action === 'prioritize tasks') {
+        respondDashChat("Your NLP project is marked Urgent. Focus on a 25-min sprint, then let's shift to Tour Slides after a quick rest! 🎯");
+    } else if (action === 'explain score') {
+        const score = document.getElementById('dashScore')?.innerText || '61';
+        respondDashChat(`Your burnout risk is currently ${score}% (Elevated). Your Mental load is highest at 90%. Tap the top card to view your full 5-axis distribution! 📊`);
+    }
+}
+
+function sendDashChatMessage() {
+    const input = document.getElementById('dashChatInput');
+    if (!input) return;
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+
+    const bubble = document.getElementById('dashChatSpeechBubble');
+    if (bubble) bubble.innerText = "...";
+
+    setTimeout(() => {
+        const lower = text.toLowerCase();
+        let reply = "";
+        if (lower.includes('break') || lower.includes('rest') || lower.includes('tired') || lower.includes('sleep')) {
+            reply = "You've been pushing hard! A 15-minute screen-free walk or hydration break will restore your mental sharpness.";
+        } else if (lower.includes('stress') || lower.includes('overwhelm') || lower.includes('anxious') || lower.includes('panic')) {
+            reply = "Take a slow, deep breath. Focus solely on your next immediate 10-minute task. I'm right here with you.";
+        } else if (lower.includes('task') || lower.includes('study') || lower.includes('exam') || lower.includes('work') || lower.includes('schedule')) {
+            reply = "I've structured your flow with active recovery blocks. Clearing urgent tasks before 3 PM gives you a peaceful evening.";
+        } else if (lower.includes('hi') || lower.includes('hello') || lower.includes('hey')) {
+            reply = "Hey there! Ready to keep your schedule and stress in harmony today?";
+        } else {
+            const defaults = [
+                "Noted! Keeping your energy balanced is our top priority today.",
+                "Great insight. Remember to check your Rebalance timeline for recovery intervals!",
+                "I've updated your daily recommendations. One steady step at a time!",
+                "That sounds manageable! Let's pace ourselves steadily throughout the day."
+            ];
+            reply = defaults[Math.floor(Math.random() * defaults.length)];
+        }
+        if (bubble) bubble.innerText = formatAvatarText(reply);
+    }, 500);
+}
+
+function respondDashChat(reply) {
+    const bubble = document.getElementById('dashChatSpeechBubble');
+    if (bubble) {
+        bubble.innerText = "...";
+        setTimeout(() => {
+            bubble.innerText = formatAvatarText(reply);
+        }, 300);
+    }
+}
+
+function interactDashChatCompanion() {
+    const phrases = [
+        "I'm keeping your day balanced! ✨",
+        "Deep breath in... and slow breath out. 🍃",
+        "Don't forget to hydrate! 💧",
+        "Tap the top card if you want to inspect your 5-axis load breakdown! 📊"
+    ];
+    respondDashChat(phrases[Math.floor(Math.random() * phrases.length)]);
 }
 
 function toggleTask(cardElement) {

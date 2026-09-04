@@ -384,8 +384,8 @@
         <!-- ========================================== -->
         <div id="main-dashboard" class="view" style="padding-top: 30px; padding-bottom: 90px;">
             
-            <!-- Dark Hero Overview -->
-            <div class="dark-hero-card" style="min-height: 145px; display: flex; flex-direction: column; justify-content: center; position: relative;">
+            <!-- Dark Hero Overview (Tap to toggle load breakdown) -->
+            <div class="dark-hero-card" onclick="toggleLoadBreakdown()" style="cursor: pointer; position: relative;">
                 
                 <div style="font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: 1.5px; margin-bottom: 8px;">BURNOUT RISK</div>
                 
@@ -394,15 +394,15 @@
                     <div id="dashStatus" style="font-size: 14px; font-weight: 700; color: #d97706;">Elevated</div>
                 </div>
                 
-                <p style="font-size: 12px; color: #d6d3d1; max-width: 65%; margin: 0; line-height: 1.4;">
-                    You're carrying a lot. Check the Rebalance tab for targeted relief.
+                <p style="font-size: 12px; color: #d6d3d1; max-width: 65%; margin: 0 0 12px 0; line-height: 1.4;">
+                    You're carrying a lot. Tap this card to inspect your load breakdown.
                 </p>
 
-                <!-- Interactive Dashboard Robot -->
+                <!-- Interactive Dashboard Robot in Hero Card -->
                 <div class="dash-speech-bubble" id="dashSpeechBubble">Tap me for a quick check-in!</div>
                 
-                <div class="robot-scaler" style="position: absolute; bottom: 15px; right: 15px; transform: scale(0.40); transform-origin: bottom right; cursor: pointer;">
-                    <div class="robot-wrapper" id="dashCompanion" onclick="interactDashRobot()" style="height: 110px;">
+                <div class="robot-scaler" style="position: absolute; top: 20px; right: 15px; transform: scale(0.38); transform-origin: top right;">
+                    <div class="robot-wrapper" id="dashCompanion" onclick="event.stopPropagation(); interactDashRobot();" style="height: 110px;">
                         <div class="antenna-ball"></div><div class="antenna"></div>
                         <div class="ear left"></div><div class="ear right"></div>
                         <div class="robot-head">
@@ -414,55 +414,119 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Expand / Collapse Pill Indicator -->
+                <div class="hero-expand-pill" id="heroExpandPill" onclick="event.stopPropagation(); toggleLoadBreakdown();">
+                    <span id="heroExpandText">View Load Breakdown</span>
+                    <span id="heroExpandChevron" class="hero-chevron">&#9662;</span>
+                </div>
+
+                <!-- Collapsible Load Distribution Breakdown -->
+                <div id="loadDistributionBreakdown" class="load-breakdown-drawer" onclick="event.stopPropagation();">
+                    <div class="breakdown-divider"></div>
+                    <div style="font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; margin-bottom: 14px; text-transform: uppercase;">
+                        5-Axis Load Distribution
+                    </div>
+
+                    <!-- Radar Chart SVG Container -->
+                    <div class="breakdown-radar-box">
+                        <svg viewBox="0 0 120 115" style="width: 100%; max-width: 230px; overflow: visible;">
+                            <polygon points="60,20 98,47.6 83.5,92.4 36.5,92.4 22,47.6" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <polygon points="60,40 79,53.8 71.7,76.2 48.2,76.2 41,53.8" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="60" y2="20" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="98" y2="47.6" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="83.5" y2="92.4" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="36.5" y2="92.4" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="22" y2="47.6" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <polygon points="60,24 82.8,52.5 69.4,72.9 45.8,79.4 48.5,56.2" fill="rgba(45, 212, 191, 0.22)" stroke="#2dd4bf" stroke-width="1.8" stroke-linejoin="round"/>
+                            <circle cx="60" cy="24" r="3.5" fill="#38bdf8" /> 
+                            <circle cx="82.8" cy="52.5" r="3.5" fill="#2dd4bf" /> 
+                            <circle cx="69.4" cy="72.9" r="3.5" fill="#a3e635" /> 
+                            <circle cx="45.8" cy="79.4" r="3.5" fill="#fb923c" /> 
+                            <circle cx="48.5" cy="56.2" r="3.5" fill="#facc15" /> 
+                            <text x="60" y="12" font-size="5" text-anchor="middle" fill="#cbd5e1" font-weight="700">Mental</text>
+                            <text x="102" y="50" font-size="5" text-anchor="start" fill="#cbd5e1" font-weight="700">Time</text>
+                            <text x="86" y="102" font-size="5" text-anchor="middle" fill="#cbd5e1" font-weight="700">Physical</text>
+                            <text x="34" y="102" font-size="5" text-anchor="middle" fill="#cbd5e1" font-weight="700">Social</text>
+                            <text x="18" y="50" font-size="5" text-anchor="end" fill="#cbd5e1" font-weight="700">Errands</text>
+                        </svg>
+                    </div>
+
+                    <!-- Category Status Rings Grid -->
+                    <div class="category-grid breakdown-cat-grid">
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #38bdf8; --c-track: #1e293b; --pct: 90%; --c-text: #38bdf8;">
+                            <div class="cat-ring"><span>90%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Mental</div><div class="cat-status" style="color: #94a3b8;">Overloaded</div></div>
+                        </div>
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #2dd4bf; --c-track: #134e4a; --pct: 60%; --c-text: #2dd4bf;">
+                            <div class="cat-ring"><span>60%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Time</div><div class="cat-status" style="color: #94a3b8;">Heavy</div></div>
+                        </div>
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #a3e635; --c-track: #365314; --pct: 40%; --c-text: #a3e635;">
+                            <div class="cat-ring"><span>40%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Physical</div><div class="cat-status" style="color: #94a3b8;">Moderate</div></div>
+                        </div>
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #fb923c; --c-track: #7c2d12; --pct: 60%; --c-text: #fb923c;">
+                            <div class="cat-ring"><span>60%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Social</div><div class="cat-status" style="color: #94a3b8;">Heavy</div></div>
+                        </div>
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #facc15; --c-track: #713f12; --pct: 30%; --c-text: #facc15;">
+                            <div class="cat-ring"><span>30%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Errands</div><div class="cat-status" style="color: #94a3b8;">Moderate</div></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Radar Chart Widget -->
-            <div class="card" style="padding: 20px; display: flex; flex-direction: column; align-items: center;">
-                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; margin-bottom: 20px; align-self: flex-start;">LOAD DISTRIBUTION</div>
+            <!-- Embedded Dashboard AI Chatbot Card -->
+            <div class="card dash-chat-card" id="dashboardChatCard">
                 
-                <svg viewBox="0 0 120 115" style="width: 100%; max-width: 250px; overflow: visible;">
-                    <polygon points="60,20 98,47.6 83.5,92.4 36.5,92.4 22,47.6" fill="none" stroke="#e2e8f0" stroke-width="1"/>
-                    <polygon points="60,40 79,53.8 71.7,76.2 48.2,76.2 41,53.8" fill="none" stroke="#e2e8f0" stroke-width="1"/>
-                    <line x1="60" y1="60" x2="60" y2="20" stroke="#e2e8f0" stroke-width="1"/>
-                    <line x1="60" y1="60" x2="98" y2="47.6" stroke="#e2e8f0" stroke-width="1"/>
-                    <line x1="60" y1="60" x2="83.5" y2="92.4" stroke="#e2e8f0" stroke-width="1"/>
-                    <line x1="60" y1="60" x2="36.5" y2="92.4" stroke="#e2e8f0" stroke-width="1"/>
-                    <line x1="60" y1="60" x2="22" y2="47.6" stroke="#e2e8f0" stroke-width="1"/>
-                    <polygon points="60,24 82.8,52.5 69.4,72.9 45.8,79.4 48.5,56.2" fill="rgba(47, 62, 70, 0.15)" stroke="#2f3e46" stroke-width="1.5" stroke-linejoin="round"/>
-                    <circle cx="60" cy="24" r="3.5" fill="#3b82f6" /> 
-                    <circle cx="82.8" cy="52.5" r="3.5" fill="#0f766e" /> 
-                    <circle cx="69.4" cy="72.9" r="3.5" fill="#84cc16" /> 
-                    <circle cx="45.8" cy="79.4" r="3.5" fill="#ea580c" /> 
-                    <circle cx="48.5" cy="56.2" r="3.5" fill="#a16207" /> 
-                    <text x="60" y="12" font-size="5" text-anchor="middle" fill="#64748b" font-weight="700">Mental</text>
-                    <text x="102" y="50" font-size="5" text-anchor="start" fill="#64748b" font-weight="700">Time</text>
-                    <text x="86" y="102" font-size="5" text-anchor="middle" fill="#64748b" font-weight="700">Physical</text>
-                    <text x="34" y="102" font-size="5" text-anchor="middle" fill="#64748b" font-weight="700">Social</text>
-                    <text x="18" y="50" font-size="5" text-anchor="end" fill="#64748b" font-weight="700">Errands</text>
-                </svg>
-            </div>
+                <!-- Chatbot Header -->
+                <div class="dash-chat-header">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="status-pulse-dot"></span>
+                        <div style="font-size: 11px; font-weight: 800; color: var(--primary); letter-spacing: 1.2px; text-transform: uppercase;">
+                            Eepii AI Companion
+                        </div>
+                    </div>
+                    <span class="chat-status-pill">Ready to help</span>
+                </div>
 
-            <!-- Category Status Rings -->
-            <div class="category-grid">
-                <div class="cat-card" style="background: #eff6ff; --c-bg: #eff6ff; --c-fill: #3b82f6; --c-track: #dbeafe; --pct: 90%; --c-text: #1e3a8a;">
-                    <div class="cat-ring"><span>90%</span></div>
-                    <div><div class="cat-title">Mental</div><div class="cat-status">Overloaded</div></div>
+                <!-- Companion Dialogue Area -->
+                <div class="dash-chat-dialogue-area">
+                    <!-- Dialogue Bubble -->
+                    <div class="dash-chat-speech-bubble" id="dashChatSpeechBubble">
+                        Hi! I'm watching your stress balance. Tap a quick question or tell me what's on your mind! ✨
+                    </div>
+
+                    <!-- Centered Scaled Companion -->
+                    <div class="robot-scaler" style="transform: scale(0.48); transform-origin: center; margin: 12px auto 6px auto; height: 110px; display: flex; justify-content: center; align-items: center;">
+                        <div class="robot-wrapper" id="dashChatCompanion" onclick="interactDashChatCompanion()" style="cursor: pointer;">
+                            <div class="antenna-ball"></div><div class="antenna"></div>
+                            <div class="ear left"></div><div class="ear right"></div>
+                            <div class="robot-head">
+                                <div class="robot-face">
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="cat-card" style="background: #f0fdf4; --c-bg: #f0fdf4; --c-fill: #0f766e; --c-track: #ccfbf1; --pct: 60%; --c-text: #134e4a;">
-                    <div class="cat-ring"><span>60%</span></div>
-                    <div><div class="cat-title">Time</div><div class="cat-status">Heavy</div></div>
+
+                <!-- Quick Action Prompt Chips -->
+                <div class="dash-quick-chips">
+                    <button class="dash-chip" onclick="handleQuickChip('5-min breather')">🍃 5-Min Breather</button>
+                    <button class="dash-chip" onclick="handleQuickChip('feeling overwhelmed')">😫 Overwhelmed</button>
+                    <button class="dash-chip" onclick="handleQuickChip('prioritize tasks')">🎯 Prioritize</button>
+                    <button class="dash-chip" onclick="handleQuickChip('explain score')">📊 My Score</button>
                 </div>
-                <div class="cat-card" style="background: #f0fdfa; --c-bg: #f0fdfa; --c-fill: #84cc16; --c-track: #ecfccb; --pct: 40%; --c-text: #3f6212;">
-                    <div class="cat-ring"><span>40%</span></div>
-                    <div><div class="cat-title">Physical</div><div class="cat-status">Moderate</div></div>
-                </div>
-                <div class="cat-card" style="background: #fff7ed; --c-bg: #fff7ed; --c-fill: #ea580c; --c-track: #ffedd5; --pct: 60%; --c-text: #9a3412;">
-                    <div class="cat-ring"><span>60%</span></div>
-                    <div><div class="cat-title">Social</div><div class="cat-status">Heavy</div></div>
-                </div>
-                <div class="cat-card" style="background: #fafaf9; --c-bg: #fafaf9; --c-fill: #a16207; --c-track: #e7e5e4; --pct: 30%; --c-text: #44403c;">
-                    <div class="cat-ring"><span>30%</span></div>
-                    <div><div class="cat-title">Errands</div><div class="cat-status">Moderate</div></div>
+
+                <!-- Chat Input Row -->
+                <div class="dash-chat-input-bar">
+                    <input type="text" id="dashChatInput" placeholder="Ask Eepii for advice, break tips..." onkeypress="handleDashChatEnter(event)">
+                    <button class="dash-chat-send-btn" onclick="sendDashChatMessage()">➤</button>
                 </div>
             </div>
 
