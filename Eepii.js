@@ -1,64 +1,31 @@
-// --- ROBOT INTERACTION LOGIC ---
-const pupils = document.querySelectorAll('.pupil');
-const welcomeBubble = document.getElementById('welcomeSpeechBubble');
-let clickCount = 0;
-let isDizzy = false;
+// ==========================================
+// 1. GLOBAL UTILS & AVATAR LOGIC
+// ==========================================
+let currentAvatarType = 'robot';
 
 function formatAvatarText(text) {
     if (typeof currentAvatarType === 'undefined') return text;
-    
     if (currentAvatarType === 'cat') return text + " 🐾";
     if (currentAvatarType === 'dog') return text + " 🐶";
     if (currentAvatarType === 'bao') return text + " 🥟";
     return text;
 }
 
-// Auto-show bubble on page load
-setTimeout(() => {
-    welcomeBubble.classList.add('active');
-    setTimeout(() => welcomeBubble.classList.remove('active'), 3000);
-}, 1000);
-
-// Global Eye Tracking (tracks for all robots in carousel)
-document.addEventListener('mousemove', (e) => {
-    if(isDizzy) return;
-    pupils.forEach(pupil => {
-        // Ignore the tiny FAB circle robot
-        if (pupil.closest('#fabCompanion')) return;
-        
-        // Ignore the Bao, Cat, and Dog in the selection carousel
-        if (pupil.closest('.bao-wrapper, .cat-wrapper, .dog-wrapper')) return;
-        
-        // Ignore the Bao, Cat, and Dog when they are selected as the active global companion
-        if (pupil.closest('.avatar-bao, .avatar-cat, .avatar-dog')) return;
-
-        const rect = pupil.parentElement.getBoundingClientRect();
-        const eyeCenterX = rect.left + rect.width / 2;
-        const eyeCenterY = rect.top + rect.height / 2;
-        const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
-        const maxDistance = 8;
-        pupil.style.transform = `translate(${Math.cos(angle) * maxDistance}px, ${Math.sin(angle) * maxDistance}px)`;
-    });
-});
-
-// --- NAVIGATION LOGIC ---
 function selectAvatar() {
     const carousel = document.getElementById('avatarCarousel');
     carousel.style.overflowX = 'hidden';
     
     document.getElementById('pickAvatarBtn').classList.add('hidden');
-    document.getElementById('avatarTitle').innerText = "Great choice!";
-    document.getElementById('avatarTitle').style.color = "var(--primary)";
+    const title = document.getElementById('avatarTitle');
+    title.innerText = "Great choice!";
+    title.style.color = "var(--primary)";
     document.getElementById('startSetupBtn').classList.remove('hidden');
 
-    // Calculate which slide is active based on scroll position
     const slideWidth = carousel.clientWidth;
     const activeIndex = Math.round(carousel.scrollLeft / slideWidth);
-    
     const types = ['robot', 'bao', 'cat', 'dog'];
     currentAvatarType = types[activeIndex];
 
-    // Apply the chosen class to ALL companions in the app
     const companions = [
         'miniCompanion', 'scheduleCompanion', 'surveyCompanion', 'overviewCompanion', 
         'dashCompanion', 'rebalanceCompanion', 'logCompanion', 'trendCompanion', 
@@ -76,39 +43,83 @@ function selectAvatar() {
     });
 }
 
+
+// ==========================================
+// 2. EYE TRACKING & INTERACTION ANIMATIONS
+// ==========================================
+const pupils = document.querySelectorAll('.pupil');
+const welcomeBubble = document.getElementById('welcomeSpeechBubble');
+let clickCount = 0;
+let isDizzy = false;
+
+// Auto-show welcome bubble on load
+setTimeout(() => {
+    if(welcomeBubble) {
+        welcomeBubble.classList.add('active');
+        setTimeout(() => welcomeBubble.classList.remove('active'), 3000);
+    }
+}, 1000);
+
+document.addEventListener('mousemove', (e) => {
+    if(isDizzy) return;
+    pupils.forEach(pupil => {
+        if (pupil.closest('#fabCompanion') || 
+            pupil.closest('.bao-wrapper, .cat-wrapper, .dog-wrapper') || 
+            pupil.closest('.avatar-bao, .avatar-cat, .avatar-dog')) return;
+
+        const rect = pupil.parentElement.getBoundingClientRect();
+        const eyeCenterX = rect.left + rect.width / 2;
+        const eyeCenterY = rect.top + rect.height / 2;
+        const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
+        const maxDistance = 8;
+        pupil.style.transform = `translate(${Math.cos(angle) * maxDistance}px, ${Math.sin(angle) * maxDistance}px)`;
+    });
+});
+
+// Sleep & Poke Logic (Profile Setup)
+let sleepTimer;
+const miniMover = document.getElementById('miniCompanionMover');
+const miniCompanion = document.getElementById('miniCompanion');
+
+function putRobotToSleep() {
+    if (document.getElementById('view-profile-setup').classList.contains('active')) {
+        miniMover.classList.add('sleeping');
+    }
+}
+
+function pokeRobot() {
+    if (miniMover && miniMover.classList.contains('sleeping')) {
+        miniMover.classList.remove('sleeping');
+        clearTimeout(sleepTimer);
+        sleepTimer = setTimeout(putRobotToSleep, 4000);
+    }
+}
+
+if (miniCompanion) {
+    miniCompanion.addEventListener('click', pokeRobot);
+}
+
+
+// ==========================================
+// 3. CORE NAVIGATION & ROUTING
+// ==========================================
+let isRetest = false; 
+
 function goTo(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
 
-    // Profile Setup Logic
     if (viewId === 'view-profile-setup') {
-        miniMover.classList.remove('sleeping');
+        if (miniMover) miniMover.classList.remove('sleeping');
         clearTimeout(sleepTimer);
         sleepTimer = setTimeout(putRobotToSleep, 2000);
     }
-    
-    // Survey Timer Logic
-    if (viewId === 'view-survey') {
-        resetSurveyIdleTimer();
-    } else {
-        if (typeof surveyIdleTimer !== 'undefined') {
-            clearTimeout(surveyIdleTimer);
-        }
-    }
 
-    // Auto-trigger the Dashboard Robot greeting
-    if (viewId === 'main-dashboard') {
-        setTimeout(interactDashRobot, 500);
-    }
+    if (viewId === 'main-dashboard') setTimeout(interactDashRobot, 500);
 
-    // NEW: Show Global Chat only on "main-" pages
     const chatWidget = document.getElementById('globalChatWidget');
     if (chatWidget) {
-        if (viewId.startsWith('main-')) {
-            chatWidget.style.display = 'block';
-        } else {
-            chatWidget.style.display = 'none';
-        }
+        chatWidget.style.display = viewId.startsWith('main-') ? 'block' : 'none';
     }
 }
 
@@ -118,82 +129,58 @@ function navTo(viewId, btnElement) {
     document.getElementById(viewId).classList.add('active');
     btnElement.classList.add('active');
 
-    // Auto-trigger the Dashboard Robot greeting when using the bottom nav bar
-    if (viewId === 'main-dashboard') {
-        setTimeout(interactDashRobot, 500);
-    }
+    if (viewId === 'main-dashboard') setTimeout(interactDashRobot, 500);
 
-    // NEW: Show Global Chat only on "main-" pages
     const chatWidget = document.getElementById('globalChatWidget');
     if (chatWidget) {
-        if (viewId.startsWith('main-')) {
-            chatWidget.style.display = 'block';
-        } else {
-            chatWidget.style.display = 'none';
-        }
+        chatWidget.style.display = viewId.startsWith('main-') ? 'block' : 'none';
     }
 }
 
 function launchApp() {
     document.getElementById('appNav').classList.add('active');
     document.getElementById('globalChatWidget').style.display = 'block';
+    
+    // Transfer risk score from Overview to Dashboard
+    const riskScore = document.getElementById('overviewScore').innerText.replace('%', '');
+    const dashScore = document.getElementById('dashScore');
+    const dashStatus = document.getElementById('dashStatus');
+    
+    if (dashScore) dashScore.innerText = riskScore;
+    
+    if (dashStatus) {
+        if (parseInt(riskScore) >= 70) {
+            dashStatus.innerText = "High Risk";
+            dashStatus.style.color = "#ef4444";
+        } else if (parseInt(riskScore) >= 50) {
+            dashStatus.innerText = "Elevated";
+            dashStatus.style.color = "#d97706";
+        } else {
+            dashStatus.innerText = "Healthy";
+            dashStatus.style.color = "#10b981";
+        }
+    }
+
     syncProfileData();
     goTo('main-dashboard');
 }
 
-// Add this variable right above your function
-let isRetest = false; 
-
 function startRetest() {
-    isRetest = true; // Tell the app this is a retake!
-    
-    // Hide the bottom navigation bar
+    isRetest = true; 
     document.getElementById('appNav').classList.remove('active');
     
-    // Force the global floating chat circle to hide 
     const chatWidget = document.getElementById('globalChatWidget');
-    if (chatWidget) {
-        chatWidget.style.display = 'none';
-    }
+    if (chatWidget) chatWidget.style.display = 'none';
     
-    // Route back to the survey
     goTo('view-survey');
 }
 
-// --- SLEEP & POKE LOGIC ---
-let sleepTimer;
-const miniMover = document.getElementById('miniCompanionMover');
-const miniCompanion = document.getElementById('miniCompanion');
 
-function putRobotToSleep() {
-    // Only fall asleep if they are actually on the profile setup page
-    if (document.getElementById('view-profile-setup').classList.contains('active')) {
-        miniMover.classList.add('sleeping');
-    }
-}
+// ==========================================
+// 4. WEEKLY SCHEDULE SETUP
+// ==========================================
+let weeklyData = { class: 15, work: 10, study: 10, hasWork: false };
 
-function pokeRobot() {
-    // If the robot is sleeping, wake it up and start the 2-second timer again
-    if (miniMover.classList.contains('sleeping')) {
-        miniMover.classList.remove('sleeping');
-        clearTimeout(sleepTimer);
-        sleepTimer = setTimeout(putRobotToSleep, 4000);
-    }
-}
-
-// Make the mini robot listen for clicks
-miniCompanion.addEventListener('click', pokeRobot);
-
-
-// --- WEEKLY SCHEDULE LOGIC (SIMPLIFIED) ---
-let weeklyData = {
-    class: 15,
-    work: 10, // Default for when toggle is turned on
-    study: 10,
-    hasWork: false
-};
-
-// We keep the legacy array so the Profile Page charts still function
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const scheduleData = {
     Mon: { active: true, class: 0, work: 0, study: 0, expanded: false },
@@ -208,30 +195,27 @@ const scheduleData = {
 function toggleWorkUI(isWorking) {
     weeklyData.hasWork = isWorking;
     const controls = document.getElementById('workControls');
-    controls.style.display = isWorking ? 'block' : 'none';
+    if (controls) controls.style.display = isWorking ? 'block' : 'none';
     updateTotalWeeklyHours();
 }
 
 function updateWeekly(category, change) {
     let newVal = weeklyData[category] + change;
-    if(newVal < 0) newVal = 0; // Prevent negative hours
-    if(newVal > 80) newVal = 80; // Sanity cap
+    if(newVal < 0) newVal = 0; 
+    if(newVal > 80) newVal = 80; 
     
     weeklyData[category] = newVal;
     document.getElementById(`week-${category}`).innerText = newVal;
-    
     updateTotalWeeklyHours();
 }
 
 function updateTotalWeeklyHours() {
     let total = weeklyData.class + weeklyData.study;
-    if (weeklyData.hasWork) {
-        total += weeklyData.work;
-    }
+    if (weeklyData.hasWork) total += weeklyData.work;
 
-    document.getElementById('weeklyTotalDisplay').innerText = total;
+    const totalDisplay = document.getElementById('weeklyTotalDisplay');
+    if (totalDisplay) totalDisplay.innerText = total;
     
-    // Eepii Dialogue Update
     const bubble = document.getElementById('scheduleSpeechBubble');
     if (bubble) {
         if (total >= 45) {
@@ -248,11 +232,9 @@ function updateTotalWeeklyHours() {
             }
         }
     }
-    
     distributeToDays();
 }
 
-// Secretly spreads the weekly total across Mon-Fri for the Profile Chart
 function distributeToDays() {
     const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
     const dailyClass = Math.round(weeklyData.class / 5);
@@ -265,17 +247,14 @@ function distributeToDays() {
         scheduleData[day].study = dailyStudy;
     });
 
-    // If the profile page script has loaded, tell it to redraw the chart
-    if (typeof buildProfileScheduleUI === 'function') {
-        buildProfileScheduleUI();
-    }
+    if (typeof buildProfileScheduleUI === 'function') buildProfileScheduleUI();
 }
-
-// Initialize on load
 updateTotalWeeklyHours();
 
 
-// --- BASELINE SURVEY LOGIC (CHATBOT UI) ---
+// ==========================================
+// 5. STRESS SURVEY (CHATBOT UI)
+// ==========================================
 const surveyQuestions = [
     { text: "How often do you feel mentally overwhelmed by academic demands?", category: "Mental" },
     { text: "How often do you feel unable to keep up with your study schedule?", category: "Time" },
@@ -298,7 +277,6 @@ function processSurveyAnswer(score) {
     const replies = document.getElementById('surveyQuickReplies');
     const input = document.getElementById('surveyChatInput');
 
-    // Disable inputs and show typing indicator
     if (replies) {
         replies.style.opacity = '0.3';
         replies.style.pointerEvents = 'none';
@@ -307,18 +285,15 @@ function processSurveyAnswer(score) {
         input.disabled = true;
         input.value = '';
     }
-    
     if (bubble) bubble.innerText = "...";
 
-    // Wait slightly to simulate AI processing, then load next question
     setTimeout(() => {
         currentQuestionIndex++;
         
         if (currentQuestionIndex < surveyQuestions.length) {
             document.getElementById('surveyProgressHeader').innerText = `Question ${currentQuestionIndex + 1} of 10`;
-            bubble.innerText = surveyQuestions[currentQuestionIndex].text;
+            bubble.innerText = formatAvatarText(surveyQuestions[currentQuestionIndex].text);
             
-            // Re-enable inputs
             if (replies) {
                 replies.style.opacity = '1';
                 replies.style.pointerEvents = 'auto';
@@ -330,7 +305,6 @@ function processSurveyAnswer(score) {
     }, 600);
 }
 
-// Handle Typed Input
 function handleSurveyEnter(e) {
     if (e.key === 'Enter') submitSurveyInput();
 }
@@ -342,8 +316,7 @@ function submitSurveyInput() {
     const inputStr = inputEl.value.toLowerCase().trim();
     if (!inputStr) return;
 
-    let score = 3; // Default to 'Sometimes' if we don't recognize the word
-    
+    let score = 3; 
     if (inputStr.includes('never') || inputStr === '1') score = 1;
     else if (inputStr.includes('rarely') || inputStr === '2') score = 2;
     else if (inputStr.includes('sometimes') || inputStr === '3') score = 3;
@@ -371,44 +344,36 @@ function finishSurvey(finalScore) {
         descText = "Your life seems well-balanced! Let's use Eepii to keep it that way.";
     }
 
-    // Inject values into the Overview page
     const overviewLevel = document.getElementById('overviewLevel');
-    if (overviewLevel) {
-        overviewLevel.innerText = levelText;
-        overviewLevel.style.color = levelColor;
-    }
+    if (overviewLevel) { overviewLevel.innerText = levelText; overviewLevel.style.color = levelColor; }
     
     const overviewScore = document.getElementById('overviewScore');
-    if (overviewScore) {
-        overviewScore.innerText = riskPercentage + "%";
-        overviewScore.style.color = levelColor;
-    }
+    if (overviewScore) { overviewScore.innerText = riskPercentage + "%"; overviewScore.style.color = levelColor; }
     
     const overviewText = document.getElementById('overviewText');
     if (overviewText) overviewText.innerText = descText;
 
-    // --- SMART ROUTING LOGIC ---
     if (isRetest) {
-        isRetest = false; // Reset the flag so it doesn't get stuck
-        goTo('view-overview'); // Jump straight to the results
+        isRetest = false;
+        goTo('view-overview');
     } else {
-        goTo('view-schedule-setup'); // New users go to the schedule
+        goTo('view-schedule-setup');
     }
 }
 
-// --- SKIP DEMO LOGIC ---
 function skipSurvey() {
-    // 46 points equals exactly a 90% risk score in the calculation formula
     currentQuestionIndex = 10; 
     finishSurvey(46); 
 }
 
-// --- CALENDAR IMPORT LOGIC ---
+
+// ==========================================
+// 6. CALENDAR IMPORT (.ICS)
+// ==========================================
 let isProfileImport = false;
 
 function startProfileImport() {
     isProfileImport = true;
-    // Temporarily hide the bottom nav bar so it doesn't overlap the calendar screen
     document.getElementById('appNav').classList.remove('active');
     goTo('view-calendar');
 }
@@ -416,15 +381,12 @@ function startProfileImport() {
 function finishCalendarSetup() {
     if (isProfileImport) {
         isProfileImport = false;
-        // Restore the bottom nav bar and return directly to the profile
         document.getElementById('appNav').classList.add('active');
         goTo('main-profile');
     } else {
-        // First time onboarding, continue to the overview summary
         goTo('view-overview');
     }
     
-    // Reset the dropzone for future imports
     setTimeout(() => {
         const dropZone = document.getElementById('calendarDropZone');
         if (dropZone) {
@@ -449,8 +411,8 @@ function finishCalendarSetup() {
 
 function simulateFileUpload() {
     const dropZone = document.getElementById('calendarDropZone');
+    if(!dropZone) return;
     
-    // Update the drop zone UI to show a successful upload
     dropZone.innerHTML = `
         <span style="font-size: 36px; display: block; margin-bottom: 12px;">📄</span>
         <div style="font-weight: 700; color: var(--primary); margin-bottom: 5px; font-size: 15px;">timetable_2026.ics</div>
@@ -459,61 +421,48 @@ function simulateFileUpload() {
     dropZone.style.borderColor = 'var(--normal)';
     dropZone.style.background = '#f0fdf4';
     
-    // Enable the import button
     const btn = document.getElementById('importBtn');
-    btn.innerText = 'Import Timetable';
-    btn.classList.remove('disabled-btn');
-    btn.disabled = false;
-    
-    // Use the smart routing function when clicked
-    btn.onclick = () => finishCalendarSetup();
-}
-
-
-// --- DASHBOARD LOGIC ---
-function launchApp() {
-    // Reveal bottom navigation
-    document.getElementById('appNav').classList.add('active');
-    
-    // Transfer the score from the Overview screen to the Dashboard
-    const riskScore = document.getElementById('overviewScore').innerText.replace('%', '');
-    const dashScore = document.getElementById('dashScore');
-    const dashStatus = document.getElementById('dashStatus');
-    
-    dashScore.innerText = riskScore;
-    
-    if (parseInt(riskScore) >= 70) {
-        dashStatus.innerText = "High Risk";
-        dashStatus.style.color = "#ef4444";
-    } else if (parseInt(riskScore) >= 50) {
-        dashStatus.innerText = "Elevated";
-        dashStatus.style.color = "#d97706";
-    } else {
-        dashStatus.innerText = "Healthy";
-        dashStatus.style.color = "#10b981";
+    if(btn) {
+        btn.innerText = 'Import Timetable';
+        btn.classList.remove('disabled-btn');
+        btn.disabled = false;
+        btn.onclick = () => finishCalendarSetup();
     }
-
-    goTo('main-dashboard');
 }
 
-let dashRobotTimer;
+
+// ==========================================
+// 7. DASHBOARD & REBALANCE 
+// ==========================================
 function interactDashRobot() {
     const bubble = document.getElementById('dashSpeechBubble');
+    if(!bubble) return;
     
-    // Pick a random supportive phrase
     const phrases = [
         "I'm keeping an eye on your load! 📊",
         "Don't forget to take a breather. 🍃",
         "You're doing great today! ✨",
         "Check Rebalance if you feel stuck! ⚡"
     ];
-    
-    // Instantly update the text (no disappearing, no dizzy animation)
     bubble.innerText = formatAvatarText(phrases[Math.floor(Math.random() * phrases.length)]);
 }
 
+function toggleTask(cardElement) {
+    cardElement.classList.toggle('completed');
+    
+    if (cardElement.classList.contains('completed')) {
+        const isUrgent = cardElement.innerHTML.includes('#fee2e2'); 
+        if (isUrgent) {
+            const bubble = document.getElementById('rebalanceSpeechBubble');
+            if (bubble) bubble.innerText = formatAvatarText("Huge win! Great job clearing that deadline.");
+        }
+    }
+}
 
-// --- LOG ENTRY & AI LOGIC ---
+
+// ==========================================
+// 8. LOG LOAD & AI MODAL
+// ==========================================
 let pendingTaskData = {};
 
 function analyzeAndShowModal() {
@@ -527,7 +476,6 @@ function analyzeAndShowModal() {
         return;
     }
 
-    // 1. Mock AI Category Assignment based on keywords
     let category = "Time"; 
     let catColor = "#e2e8f0"; let catText = "#475569"; let catIcon = "⏱️";
     const textToAnalyze = (name + " " + desc).toLowerCase();
@@ -542,7 +490,6 @@ function analyzeAndShowModal() {
         category = "Errands"; catColor = "#f3f4f6"; catText = "#374151"; catIcon = "🛒";
     }
 
-    // 2. Mock AI Urgency Calculation (Combines Deadline proximity + Stress level)
     let urgency = "Normal";
     let urgColor = "#fef3c7"; let urgText = "#b45309";
     
@@ -556,12 +503,8 @@ function analyzeAndShowModal() {
         urgency = "Low"; urgColor = "#e2e8f0"; urgText = "#475569";
     }
 
-    // Store globally for the Confirm step
-    pendingTaskData = { 
-        name, dateStr, category, catIcon, catColor, catText, urgency, urgColor, urgText 
-    };
+    pendingTaskData = { name, dateStr, category, catIcon, catColor, catText, urgency, urgColor, urgText };
 
-    // Populate Modal
     document.getElementById('modalTaskName').innerText = name;
     
     const catBadge = document.getElementById('modalCategory');
@@ -573,8 +516,6 @@ function analyzeAndShowModal() {
     urgBadge.style.background = urgColor; urgBadge.style.color = urgText;
     
     document.getElementById('modalDeadline').innerText = dateStr;
-
-    // Show Modal
     document.getElementById('aiConfirmModal').classList.add('active');
 }
 
@@ -584,8 +525,6 @@ function closeAiModal() {
 
 function confirmAndLogTask() {
     const container = document.getElementById('currentLogContainer');
-    
-    // Create new list item HTML
     const newItem = document.createElement('div');
     newItem.style.cssText = "padding: 12px 0; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;";
     
@@ -598,10 +537,8 @@ function confirmAndLogTask() {
         <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">${pendingTaskData.dateStr}</div>
     `;
     
-    // Append to list
     container.appendChild(newItem);
     
-    // Reset Form & Close Modal
     document.getElementById('taskNameInput').value = '';
     document.getElementById('taskDescInput').value = '';
     document.getElementById('taskStressInput').value = 5;
@@ -611,9 +548,9 @@ function confirmAndLogTask() {
 }
 
 
-// --- PROFILE PAGE LOGIC ---
-
-// 1. Build a duplicate accordion AND bar chart specifically for the Profile page
+// ==========================================
+// 9. PROFILE PAGE & DATA SYNC
+// ==========================================
 function buildProfileScheduleUI() {
     const accordionContainer = document.getElementById('profileScheduleAccordion');
     const chartContainer = document.getElementById('profileWeeklyChart');
@@ -622,7 +559,6 @@ function buildProfileScheduleUI() {
     accordionContainer.innerHTML = ''; 
     chartContainer.innerHTML = '';
     
-    // Calculate the highest hour day to scale the chart properly (minimum scale of 8 hours)
     let maxHours = 8;
     daysOfWeek.forEach(day => {
         if(scheduleData[day].active) {
@@ -638,15 +574,14 @@ function buildProfileScheduleUI() {
         const total = data.active ? (data.class + data.work + data.study) : 0;
         if (data.active) weeklyTotal += total;
         
-        // --- BUILD THE MINI BAR CHART ---
-        let heightPct = '3px'; // Default for inactive days
-        let bgColor = '#e2e8f0'; // Light grey for inactive
+        let heightPct = '3px'; 
+        let bgColor = '#e2e8f0'; 
         
         if (data.active && total > 0) {
             heightPct = Math.max((total / maxHours) * 100, 15) + '%';
-            bgColor = '#293a34'; // Dark green from your design
+            bgColor = '#293a34'; 
         } else if (data.active && total === 0) {
-            heightPct = '6px'; // Tiny bump for an active day with 0 hours
+            heightPct = '6px'; 
             bgColor = '#293a34';
         }
 
@@ -660,7 +595,6 @@ function buildProfileScheduleUI() {
         `;
         chartContainer.appendChild(barColumn);
 
-        // --- BUILD THE ACCORDION ---
         const card = document.createElement('div');
         card.className = `day-card ${data.expanded ? 'expanded' : ''} ${!data.active ? 'inactive' : ''}`;
         card.id = `p-card-${day}`; 
@@ -704,18 +638,13 @@ function buildProfileScheduleUI() {
         accordionContainer.appendChild(card);
     });
     
-    // Update the total hours number in the profile header
     document.getElementById('profileWeeklyTotal').innerText = weeklyTotal;
 }
 
-// Profile Accordion Interactions
 function toggleProfileDayExpand(day) {
     if(!scheduleData[day].active) return;
     scheduleData[day].expanded = !scheduleData[day].expanded;
     document.getElementById(`p-card-${day}`).classList.toggle('expanded');
-    
-    // Sync the original setup accordion so they match perfectly
-    document.getElementById(`card-${day}`).className = document.getElementById(`p-card-${day}`).className;
 }
 
 function toggleProfileDayActive(day, isActive) {
@@ -733,48 +662,48 @@ function toggleProfileDayActive(day, isActive) {
         document.getElementById(`p-total-${day}`).innerText = total + 'h total';
     }
     
-    buildScheduleUI(); // Sync back to the main setup UI
-    buildProfileScheduleUI(); // Re-render this UI to update totals
+    buildProfileScheduleUI(); 
 }
 
 function updateProfileHours(day, category, change) {
     let newVal = scheduleData[day][category] + change;
     if(newVal < 0) newVal = 0;
     scheduleData[day][category] = newVal;
-    
-    buildScheduleUI(); // Sync back
-    buildProfileScheduleUI(); // Re-render
+    buildProfileScheduleUI();
 }
 
-// 2. Sync Survey Data to the Profile Page
 function syncProfileData() {
-    const score = document.getElementById('dashScore').innerText;
-    const statusText = document.getElementById('dashStatus').innerText;
-    const statusColor = document.getElementById('dashStatus').style.color;
+    const dashScoreEl = document.getElementById('dashScore');
+    const dashStatusEl = document.getElementById('dashStatus');
+    if(!dashScoreEl || !dashStatusEl) return;
+
+    const score = dashScoreEl.innerText;
+    const statusText = dashStatusEl.innerText;
+    const statusColor = dashStatusEl.style.color;
     
     const badge = document.getElementById('profileStressBadge');
     const label = document.getElementById('profileStressLabel');
     const desc = document.getElementById('profileStressDesc');
     
-    badge.innerText = score;
-    badge.style.color = statusColor;
-    label.innerText = statusText;
-    label.style.color = statusColor;
+    if(badge) { badge.innerText = score; badge.style.color = statusColor; }
+    if(label) { label.innerText = statusText; label.style.color = statusColor; }
     
-    if (parseInt(score) >= 70) {
-        desc.innerText = "You're already carrying a lot. Your Rebalance tab will be important — check it daily.";
-    } else if (parseInt(score) >= 50) {
-        desc.innerText = "You have an elevated load. Don't skip your designated rest blocks.";
-    } else {
-        desc.innerText = "Your baseline is healthy! Let's keep your schedule balanced.";
+    if(desc) {
+        if (parseInt(score) >= 70) {
+            desc.innerText = "You're already carrying a lot. Your Rebalance tab will be important — check it daily.";
+        } else if (parseInt(score) >= 50) {
+            desc.innerText = "You have an elevated load. Don't skip your designated rest blocks.";
+        } else {
+            desc.innerText = "Your baseline is healthy! Let's keep your schedule balanced.";
+        }
     }
-    
-    // Render the accordion when data syncs
     buildProfileScheduleUI();
 }
 
 
-// --- TRENDS LOGIC ---
+// ==========================================
+// 10. TRENDS & CHARTS
+// ==========================================
 let isThisWeek = true;
 
 function switchWeek(direction) {
@@ -788,18 +717,14 @@ function switchWeek(direction) {
         isThisWeek = false;
         title.innerText = "Last week";
         dateStr.innerText = "Aug 23 – Aug 29";
-        avg.innerText = "45%";
-        peak.innerText = "Tue";
-        top.innerText = "Mental";
+        avg.innerText = "45%"; peak.innerText = "Tue"; top.innerText = "Mental";
         document.querySelector('.dot.active').nextElementSibling.classList.add('active');
         document.querySelector('.dot').classList.remove('active');
     } else if (direction === 'next' && !isThisWeek) {
         isThisWeek = true;
         title.innerText = "This week";
         dateStr.innerText = "Aug 30 – Sep 5";
-        avg.innerText = "60%";
-        peak.innerText = "Thu";
-        top.innerText = "Social";
+        avg.innerText = "60%"; peak.innerText = "Thu"; top.innerText = "Social";
         document.querySelector('.dot').classList.add('active');
         document.querySelectorAll('.dot')[1].classList.remove('active');
     }
@@ -815,29 +740,16 @@ function toggleTrendView(viewType) {
     const legend = document.getElementById('trendLegend');
 
     if (viewType === 'single') {
-        btnSingle.classList.add('active');
-        btnAll.classList.remove('active');
-        
-        filters.style.display = 'flex';
-        allLabel.style.display = 'none';
-        chartSingle.style.display = 'block';
-        chartAll.style.display = 'none';
-        legend.style.display = 'none';
+        btnSingle.classList.add('active'); btnAll.classList.remove('active');
+        filters.style.display = 'flex'; allLabel.style.display = 'none';
+        chartSingle.style.display = 'block'; chartAll.style.display = 'none'; legend.style.display = 'none';
     } else {
-        btnAll.classList.add('active');
-        btnSingle.classList.remove('active');
-        
-        filters.style.display = 'none';
-        allLabel.style.display = 'block';
-        chartSingle.style.display = 'none';
-        chartAll.style.display = 'block';
-        legend.style.display = 'flex';
+        btnAll.classList.add('active'); btnSingle.classList.remove('active');
+        filters.style.display = 'none'; allLabel.style.display = 'block';
+        chartSingle.style.display = 'none'; chartAll.style.display = 'block'; legend.style.display = 'flex';
     }
 }
 
-// --- TRENDS CHART INTERACTIVITY ---
-
-// Hardcoded mock data to simulate the line graph moving when you click different tabs
 const trendDataMap = {
     'Overall': { color: '#293a34', bg: 'rgba(41, 58, 52, 0.1)', pts: [85, 55, 30, 35, 15, 22, 45] },
     'Mental':  { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)', pts: [105, 55, 60, 65, 55, 25, 55] },
@@ -848,25 +760,22 @@ const trendDataMap = {
 };
 
 function setTrendCategory(catName, btnElement) {
-    // 1. Reset all buttons to default grey
     document.querySelectorAll('.trend-filter').forEach(btn => {
         btn.style.background = '#f1f5f9';
         btn.style.color = '#64748b';
         btn.classList.remove('active');
     });
     
-    // 2. Highlight the clicked button
     const data = trendDataMap[catName];
     btnElement.style.background = data.color;
     btnElement.style.color = 'white';
     btnElement.classList.add('active');
 
-    // 3. Update the SVG Coordinates and Colors smoothly
     const xCoords = [20, 70, 120, 170, 220, 270, 300]; 
     const pts = data.pts;
     
     let polylineStr = "";
-    let polygonStr = `20,115 `; // Start bottom-left for the fill area
+    let polygonStr = `20,115 `; 
     
     const circles = document.querySelectorAll('.singleChartPoint');
     
@@ -874,15 +783,13 @@ function setTrendCategory(catName, btnElement) {
         polylineStr += `${xCoords[i]},${pts[i]} `;
         polygonStr += `${xCoords[i]},${pts[i]} `;
         
-        // Move and recolor the little white circles
         if(i < circles.length) {
             circles[i].setAttribute('cy', pts[i]);
             circles[i].setAttribute('stroke', data.color);
         }
     }
-    polygonStr += `300,115`; // Close the polygon at bottom-right
+    polygonStr += `300,115`; 
 
-    // Apply the new shapes and colors to the SVG elements
     const line = document.getElementById('singleChartLine');
     line.setAttribute('points', polylineStr.trim());
     line.setAttribute('stroke', data.color);
@@ -892,10 +799,13 @@ function setTrendCategory(catName, btnElement) {
     area.setAttribute('fill', data.bg);
 }
 
-// --- GLOBAL AI CHAT LOGIC ---
+
+// ==========================================
+// 11. GLOBAL AI CHAT WIDGET
+// ==========================================
 function toggleGlobalChat() {
     const overlay = document.getElementById('chatOverlay');
-    overlay.classList.toggle('active');
+    if(overlay) overlay.classList.toggle('active');
 }
 
 function handleChatEnter(e) {
@@ -905,15 +815,14 @@ function handleChatEnter(e) {
 function sendChatMessage() {
     const input = document.getElementById('globalChatInput');
     const bubble = document.getElementById('activeChatBubble');
+    if(!input || !bubble) return;
+
     const text = input.value.trim();
-    
     if (!text) return;
     
-    // Clear input and show "typing" indicator
     input.value = '';
     bubble.innerText = "...";
     
-    // Simulate AI thinking and replying
     setTimeout(() => {
         const replies = [
             "I logged that for you! Check your schedule.",
@@ -923,23 +832,4 @@ function sendChatMessage() {
         ];
         bubble.innerText = formatAvatarText(replies[Math.floor(Math.random() * replies.length)]);
     }, 800);
-}
-
-
-// --- SMART SCHEDULE LOGIC ---
-function toggleTask(cardElement) {
-    cardElement.classList.toggle('completed');
-    
-    // Have Eepii react if you finish an urgent task
-    if (cardElement.classList.contains('completed')) {
-        // Checks if the inner tag contains the red urgent color
-        const isUrgent = cardElement.innerHTML.includes('#fee2e2'); 
-        
-        if (isUrgent) {
-            const bubble = document.getElementById('rebalanceSpeechBubble');
-            if (bubble) {
-                bubble.innerText = formatAvatarText("Huge win! Great job clearing that deadline.");
-            }
-        }
-    }
 }
