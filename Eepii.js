@@ -357,7 +357,7 @@ function finishSurvey(finalScore) {
         isRetest = false;
         goTo('view-overview');
     } else {
-        goTo('view-schedule-setup');
+        goTo('view-calendar');
     }
 }
 
@@ -378,13 +378,39 @@ function startProfileImport() {
     goTo('view-calendar');
 }
 
-function finishCalendarSetup() {
+function finishCalendarSetup(hasImported = false) {
     if (isProfileImport) {
         isProfileImport = false;
         document.getElementById('appNav').classList.add('active');
         goTo('main-profile');
     } else {
-        goTo('view-overview');
+        const syncBanner = document.getElementById('scheduleSyncBanner');
+        const bubble = document.getElementById('scheduleSpeechBubble');
+
+        if (hasImported) {
+            weeklyData.class = 15;
+            const weekClassEl = document.getElementById('week-class');
+            if (weekClassEl) weekClassEl.innerText = '15';
+            
+            if (syncBanner) {
+                syncBanner.className = 'schedule-sync-pill synced';
+                syncBanner.innerHTML = '📅 Synced from timetable_2026.ics (15h Class Hours)';
+            }
+            if (bubble) {
+                bubble.innerText = formatAvatarText("Detected 15h of classes from your timetable! Confirm or adjust below. 🧠");
+            }
+        } else {
+            if (syncBanner) {
+                syncBanner.className = 'schedule-sync-pill manual';
+                syncBanner.innerHTML = '✏️ Manual Entry Mode (No Timetable)';
+            }
+            if (bubble) {
+                bubble.innerText = formatAvatarText("No timetable? No problem! Key in your average weekly hours. ✨");
+            }
+        }
+
+        updateTotalWeeklyHours();
+        goTo('view-schedule-setup');
     }
     
     setTimeout(() => {
@@ -416,17 +442,17 @@ function simulateFileUpload() {
     dropZone.innerHTML = `
         <span style="font-size: 36px; display: block; margin-bottom: 12px;">📄</span>
         <div style="font-weight: 700; color: var(--primary); margin-bottom: 5px; font-size: 15px;">timetable_2026.ics</div>
-        <div style="font-size: 13px; color: var(--normal); font-weight: 600;">File ready to import</div>
+        <div style="font-size: 13px; color: var(--normal); font-weight: 600;">File ready to import (15h classes)</div>
     `;
     dropZone.style.borderColor = 'var(--normal)';
     dropZone.style.background = '#f0fdf4';
     
     const btn = document.getElementById('importBtn');
     if(btn) {
-        btn.innerText = 'Import Timetable';
+        btn.innerText = 'Next: Confirm Schedule';
         btn.classList.remove('disabled-btn');
         btn.disabled = false;
-        btn.onclick = () => finishCalendarSetup();
+        btn.onclick = () => finishCalendarSetup(true);
     }
 }
 
@@ -503,7 +529,7 @@ function analyzeAndShowModal() {
         urgency = "Low"; urgColor = "#e2e8f0"; urgText = "#475569";
     }
 
-    pendingTaskData = { name, dateStr, category, catIcon, catColor, catText, urgency, urgColor, urgText };
+    pendingTaskData = { name, dateStr, stress, category, catIcon, catColor, catText, urgency, urgColor, urgText };
 
     document.getElementById('modalTaskName').innerText = name;
     
@@ -523,28 +549,93 @@ function closeAiModal() {
     document.getElementById('aiConfirmModal').classList.remove('active');
 }
 
+function openLogBottomSheet() {
+    const overlay = document.getElementById('logBottomSheetOverlay');
+    if (overlay) overlay.classList.add('active');
+}
+
+function closeLogBottomSheet() {
+    const overlay = document.getElementById('logBottomSheetOverlay');
+    if (overlay) overlay.classList.remove('active');
+}
+
+function handleBottomSheetBackdrop(e) {
+    if (e.target.id === 'logBottomSheetOverlay') {
+        closeLogBottomSheet();
+    }
+}
+
+function triggerLogFromNav(btnElement) {
+    const rebalanceBtn = document.getElementById('nav-rebalance');
+    navTo('main-rebalance', rebalanceBtn || btnElement);
+    setTimeout(openLogBottomSheet, 150);
+}
+
 function confirmAndLogTask() {
-    const container = document.getElementById('currentLogContainer');
-    const newItem = document.createElement('div');
-    newItem.style.cssText = "padding: 12px 0; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;";
+    const timeline = document.getElementById('smartTimeline');
     
-    newItem.innerHTML = `
-        <div>
-            <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">${pendingTaskData.name}</div>
-            <span class="tag" style="background: ${pendingTaskData.catColor}; color: ${pendingTaskData.catText}; font-size: 10px;">${pendingTaskData.catIcon} ${pendingTaskData.category}</span>
-            <span class="tag" style="background: ${pendingTaskData.urgColor}; color: ${pendingTaskData.urgText}; font-size: 10px;">${pendingTaskData.urgency}</span>
-        </div>
-        <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">${pendingTaskData.dateStr}</div>
-    `;
-    
-    container.appendChild(newItem);
-    
+    if (timeline) {
+        const isUrgent = pendingTaskData.urgency === 'Urgent';
+        const markerClass = isUrgent ? 'task-urgent' : 'task-normal';
+        const tagBg = isUrgent ? '#fee2e2' : '#e2e8f0';
+        const tagColor = isUrgent ? '#b91c1c' : '#475569';
+
+        // 1. Insert the main task event
+        const taskEvent = document.createElement('div');
+        taskEvent.className = 'timeline-event';
+        taskEvent.innerHTML = `
+            <div class="event-time">Just Added</div>
+            <div class="event-marker ${markerClass}"></div>
+            <div class="event-card task-card" onclick="toggleTask(this)">
+                <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="tag" style="background: ${tagBg}; color: ${tagColor};">${pendingTaskData.catIcon} ${pendingTaskData.category}</span>
+                    <div class="custom-checkbox"></div>
+                </div>
+                <div class="event-title">${pendingTaskData.name}</div>
+                <div class="event-desc">Due ${pendingTaskData.dateStr} • AI-Assessed (${pendingTaskData.urgency})</div>
+            </div>
+        `;
+        timeline.appendChild(taskEvent);
+
+        // 2. If task is urgent or high stress, automatically interleave active recovery
+        if (isUrgent || pendingTaskData.stress >= 7) {
+            const recoveryEvent = document.createElement('div');
+            recoveryEvent.className = 'timeline-event';
+            recoveryEvent.innerHTML = `
+                <div class="event-time">+45 Mins</div>
+                <div class="event-marker activity-recovery"></div>
+                <div class="event-card recovery-card" onclick="toggleTask(this)">
+                    <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span class="tag" style="background: #dcfce7; color: #15803d;">🍃 AI Rebalance</span>
+                        <div class="custom-checkbox"></div>
+                    </div>
+                    <div class="event-title">Active Screen Break & Hydration</div>
+                    <div class="event-desc">15 Mins • Offsetting high cognitive load</div>
+                </div>
+            `;
+            timeline.appendChild(recoveryEvent);
+        }
+
+        // Scroll newly added task into view smoothly
+        taskEvent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Companion reaction on Rebalance screen
+    const bubble = document.getElementById('rebalanceSpeechBubble');
+    if (bubble) {
+        bubble.innerText = formatAvatarText("I've scheduled this into your flow with a recovery break! ✨");
+    }
+
+    // Reset input fields
     document.getElementById('taskNameInput').value = '';
     document.getElementById('taskDescInput').value = '';
     document.getElementById('taskStressInput').value = 5;
     document.getElementById('stressDisplay').innerText = '5';
     document.getElementById('taskDateInput').value = '';
+
+    // Close modal and bottom sheet
     closeAiModal();
+    closeLogBottomSheet();
 }
 
 

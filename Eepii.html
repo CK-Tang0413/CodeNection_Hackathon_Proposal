@@ -192,6 +192,13 @@
                 </div>
             </div>
 
+            <!-- Dynamic Sync Status Banner -->
+            <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                <div id="scheduleSyncBanner" class="schedule-sync-pill synced">
+                    📅 Synced from timetable_2026.ics (15h Class Hours)
+                </div>
+            </div>
+
             <!-- Total Hours Counter -->
             <div style="text-align: center; margin-bottom: 20px; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
                 <span style="font-size: 14px; font-weight: 600; color: var(--text-muted);">Total Weekly Load: <strong id="weeklyTotalDisplay" style="color: var(--primary); font-size: 20px; margin-left: 5px;">25</strong><span style="font-size: 14px; color: var(--primary);">h</span></span>
@@ -243,7 +250,7 @@
 
             </div>
             
-            <button class="btn" style="margin-top: 25px; width: 100%;" onclick="goTo('view-calendar')">Next: Import Calendar</button>
+            <button class="btn" style="margin-top: 25px; width: 100%;" onclick="goTo('view-overview')">Confirm & View Stress Baseline</button>
         </div>
 
 
@@ -325,7 +332,7 @@
             <div style="flex: 1;"></div>
 
             <button id="importBtn" class="btn disabled-btn" disabled>Choose a file first</button>
-            <button class="btn btn-outline" style="border: none; margin-top: 10px; color: var(--text-muted); font-weight: 600;" onclick="finishCalendarSetup()">Skip for now</button>
+            <button class="btn btn-outline" style="border: none; margin-top: 10px; color: var(--text-muted); font-weight: 600;" onclick="finishCalendarSetup(false)">Skip for now (Enter manually)</button>
         </div>
 
 
@@ -506,8 +513,16 @@
                 </div>
             </div>
 
+            <!-- Action Bar: Log Load Trigger -->
+            <div style="margin-bottom: 20px;">
+                <button class="btn btn-log-action" onclick="openLogBottomSheet()">
+                    <span style="font-size: 18px; line-height: 1;">✨</span>
+                    <span>+ Log New Task / Load</span>
+                </button>
+            </div>
+
             <!-- Rebalance Timeline Feed -->
-            <div class="smart-timeline">
+            <div class="smart-timeline" id="smartTimeline">
                 
                 <div class="timeline-event">
                     <div class="event-time">09:00 AM</div>
@@ -565,105 +580,67 @@
 
 
         <!-- ========================================== -->
-        <!-- 9. MAIN APP TAB: LOG LOAD & AI MODAL       -->
+        <!-- 9. SLIDE-UP BOTTOM SHEET: LOG LOAD         -->
         <!-- ========================================== -->
-        <div id="main-log" class="view" style="padding-top: 40px; padding-bottom: 90px;">
-            
-            <!-- Header Layout -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
-                <div style="max-width: 65%;">
-                    <h1 style="margin-top: 0; margin-bottom: 8px; font-size: 28px;">Log Load</h1>
-                    <p style="margin-bottom: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
-                        Add a new task. Eepii's AI will automatically assign its category and urgency.
-                    </p>
-                </div>
+        <div id="logBottomSheetOverlay" class="bottom-sheet-overlay" onclick="handleBottomSheetBackdrop(event)">
+            <div class="bottom-sheet-container" onclick="event.stopPropagation()">
+                <div class="bottom-sheet-handle"></div>
                 
-                <div class="robot-stage" style="position: relative; width: 100px; height: 110px; flex-shrink: 0;">
-                    <div class="log-speech-bubble">Let me analyze that! 🧠</div>
-                    <div class="robot-scaler" style="position: absolute; top: 20px; right: -25px; transform: scale(0.30); transform-origin: top center;">
-                        <div class="robot-wrapper" id="logCompanion">
-                            <div class="antenna-ball"></div><div class="antenna"></div>
-                            <div class="ear left"></div><div class="ear right"></div>
-                            <div class="robot-head">
-                                <div class="robot-face">
-                                    <div class="eye"><div class="pupil"></div></div>
-                                    <div class="eye"><div class="pupil"></div></div>
-                                    <div class="smile"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Task Input Form -->
-            <div class="card" style="padding: 20px; margin-bottom: 30px;">
-                <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">TASK NAME</label>
-                <input type="text" id="taskNameInput" placeholder="e.g. Study for AI Midterm" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; font-family: inherit; font-size: 14px; box-sizing: border-box;">
-                
-                <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px;">DESCRIPTION</label>
-                <textarea id="taskDescInput" rows="2" placeholder="Briefly describe the task..." style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; font-family: inherit; font-size: 14px; box-sizing: border-box; resize: none;"></textarea>
-
-                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                    <label style="font-size: 10px; font-weight: 700; color: var(--text-muted);">ESTIMATED STRESS (1-10)</label>
-                    <span id="stressDisplay" style="font-size: 12px; font-weight: 700; color: var(--primary);">5</span>
-                </div>
-                
-                <input type="range" id="taskStressInput" min="1" max="10" value="5" class="stress-slider" 
-                       style="--fill-pct: 44.4%;"
-                       oninput="
-                           document.getElementById('stressDisplay').innerText = this.value;
-                           this.style.setProperty('--fill-pct', ((this.value - this.min) / (this.max - this.min)) * 100 + '%');
-                       ">
-                
-                <label style="display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; margin-top: 15px;">DEADLINE</label>
-                <input type="date" id="taskDateInput" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 20px; font-family: inherit; font-size: 14px; box-sizing: border-box;">
-                
-                <button class="btn" style="margin-top: 0; width: 100%;" onclick="analyzeAndShowModal()">Add to Schedule</button>
-            </div>
-
-            <!-- Current Log List -->
-            <h2 style="font-size: 16px; margin-bottom: 15px; color: var(--text-dark);">Current Log</h2>
-            <div class="card" id="currentLogContainer" style="padding: 10px 20px;">
-                <div style="padding: 12px 0; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <div class="bottom-sheet-header">
                     <div>
-                        <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">APU Atrium Prep</div>
-                        <span class="tag" style="background: #e0e7ff; color: #4338ca; font-size: 10px;">👥 Social</span>
-                        <span class="tag" style="background: #fee2e2; color: #b91c1c; font-size: 10px;">Urgent</span>
+                        <h2 style="margin: 0; font-size: 18px; color: var(--text-dark);">Log New Task</h2>
+                        <p style="margin: 3px 0 0 0; font-size: 12px; color: var(--text-muted);">AI will estimate stress & interleave recovery</p>
                     </div>
-                    <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Due Friday</div>
+                    <button class="close-sheet-btn" onclick="closeLogBottomSheet()">✕</button>
                 </div>
-                <div style="padding: 12px 0; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px;">Gym / Light Cardio</div>
-                        <span class="tag" style="background: #dcfce7; color: #15803d; font-size: 10px;">🍃 Activity</span>
-                        <span class="tag" style="background: #ecfccb; color: #3f6212; font-size: 10px;">Physical</span>
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Today</div>
-                </div>
-            </div>
 
-            <!-- AI Confirmation Modal Popup -->
-            <div id="aiConfirmModal" class="ai-modal-overlay">
-                <div class="ai-modal-card">
-                    <div style="text-align: center; margin-bottom: 15px; font-size: 24px;">✨</div>
-                    <h3 style="text-align: center; margin-top: 0; margin-bottom: 20px; font-size: 18px;">AI Assessment Complete</h3>
+                <div class="bottom-sheet-body">
+                    <label class="sheet-label">TASK NAME</label>
+                    <input type="text" id="taskNameInput" placeholder="e.g. Study for AI Midterm" class="sheet-input">
                     
-                    <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left;">
-                        <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 12px;" id="modalTaskName">Task Name</div>
-                        
-                        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-                            <span id="modalCategory" class="tag" style="background: #e2e8f0; color: #475569;">Category</span>
-                            <span id="modalUrgency" class="tag" style="background: #e2e8f0; color: #475569;">Urgency</span>
-                        </div>
-                        
-                        <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Deadline: <span id="modalDeadline" style="color: var(--text-dark);"></span></div>
-                    </div>
+                    <label class="sheet-label">DESCRIPTION</label>
+                    <textarea id="taskDescInput" rows="2" placeholder="Briefly describe the task..." class="sheet-textarea"></textarea>
 
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-outline" style="flex: 1; margin: 0; padding: 12px;" onclick="closeAiModal()">Edit</button>
-                        <button class="btn" style="flex: 1; margin: 0; padding: 12px;" onclick="confirmAndLogTask()">Confirm & Add</button>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <label class="sheet-label" style="margin-bottom: 0;">ESTIMATED STRESS (1-10)</label>
+                        <span id="stressDisplay" style="font-size: 13px; font-weight: 700; color: var(--primary);">5</span>
                     </div>
+                    
+                    <input type="range" id="taskStressInput" min="1" max="10" value="5" class="stress-slider" 
+                           style="--fill-pct: 44.4%;"
+                           oninput="
+                               document.getElementById('stressDisplay').innerText = this.value;
+                               this.style.setProperty('--fill-pct', ((this.value - this.min) / (this.max - this.min)) * 100 + '%');
+                           ">
+                    
+                    <label class="sheet-label" style="margin-top: 15px;">DEADLINE</label>
+                    <input type="date" id="taskDateInput" class="sheet-input" style="margin-bottom: 20px;">
+                    
+                    <button class="btn" style="width: 100%;" onclick="analyzeAndShowModal()">Assess & Add to Schedule</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Confirmation Modal Popup -->
+        <div id="aiConfirmModal" class="ai-modal-overlay">
+            <div class="ai-modal-card">
+                <div style="text-align: center; margin-bottom: 15px; font-size: 24px;">✨</div>
+                <h3 style="text-align: center; margin-top: 0; margin-bottom: 20px; font-size: 18px;">AI Assessment Complete</h3>
+                
+                <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left;">
+                    <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 12px;" id="modalTaskName">Task Name</div>
+                    
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <span id="modalCategory" class="tag" style="background: #e2e8f0; color: #475569;">Category</span>
+                        <span id="modalUrgency" class="tag" style="background: #e2e8f0; color: #475569;">Urgency</span>
+                    </div>
+                    
+                    <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Deadline: <span id="modalDeadline" style="color: var(--text-dark);"></span></div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline" style="flex: 1; margin: 0; padding: 12px;" onclick="closeAiModal()">Edit</button>
+                    <button class="btn" style="flex: 1; margin: 0; padding: 12px;" onclick="confirmAndLogTask()">Confirm & Add</button>
                 </div>
             </div>
         </div>
@@ -1006,11 +983,11 @@
         
         <!-- Bottom Navigation Bar -->
         <div class="bottom-nav" id="appNav">
-            <button class="nav-btn active" onclick="navTo('main-dashboard', this)">📊<span>Dash</span></button>
-            <button class="nav-btn" onclick="navTo('main-rebalance', this)">⚡<span>Rebalance</span></button>
-            <button class="nav-btn" onclick="navTo('main-log', this)">➕<span>Log</span></button>
-            <button class="nav-btn" onclick="navTo('main-trends', this)">📈<span>Trends</span></button>
-            <button class="nav-btn" onclick="navTo('main-profile', this)">👤<span>Profile</span></button>
+            <button class="nav-btn active" id="nav-dashboard" onclick="navTo('main-dashboard', this)">📊<span>Dash</span></button>
+            <button class="nav-btn" id="nav-rebalance" onclick="navTo('main-rebalance', this)">⚡<span>Rebalance</span></button>
+            <button class="nav-btn" id="nav-log" onclick="triggerLogFromNav(this)">➕<span>Log</span></button>
+            <button class="nav-btn" id="nav-trends" onclick="navTo('main-trends', this)">📈<span>Trends</span></button>
+            <button class="nav-btn" id="nav-profile" onclick="navTo('main-profile', this)">👤<span>Profile</span></button>
         </div>
 
         <!-- AI Chatbot Circle -->
