@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eepii - App Prototype</title>
+    <link rel="stylesheet" href="Eepii.css">
+</head>
+<body>
+
+    <div class="mobile-frame">
+        
+        <!-- ========================================== -->
+        <!-- 1. ONBOARDING: WELCOME & AVATAR SELECTION  -->
+        <!-- ========================================== -->
+        <div id="view-welcome" class="view active">
+            <h1 style="text-align: center; margin-top: 20px;">Eepii</h1>
+            <p style="text-align: center;">Welcome! Before we start balancing your schedule, we need to establish your baseline load.</p>
+            
+            <div class="avatar-selection">
+                <h2 id="avatarTitle" style="text-align: center; margin-top: 0;">Pick a companion</h2>
+                <div class="speech-bubble" id="welcomeSpeechBubble">Hi! Swipe to pick your companion.</div>
+                
+                <!-- Avatar Carousel -->
+                <div class="carousel" id="avatarCarousel">
+                    
+                    <!-- Avatar: Original Robot -->
+                    <div class="carousel-slide">
+                        <div class="robot-wrapper">
+                            <div class="antenna-ball"></div><div class="antenna"></div>
+                            <div class="ear left"></div><div class="ear right"></div>
+                            <div class="robot-head">
+                                <div class="robot-face">
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar: Bao Bun -->
+                    <div class="carousel-slide">
+                        <div class="bao-wrapper">
+                            <div class="bao-head">
+                                <div class="bao-pleats">
+                                    <div class="pleat"></div><div class="pleat"></div><div class="pleat"></div>
+                                    <div class="pleat"></div><div class="pleat"></div>
+                                </div>
+                                <div class="bao-blush left"></div><div class="bao-blush right"></div>
+                                <div class="bao-face">
+                                    <div class="bao-eye-socket"><div class="bao-eye pupil"></div></div>
+                                    <div class="bao-eye-socket"><div class="bao-eye pupil"></div></div>
+                                    <div class="bao-smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Avatar: Cat -->
+                    <div class="carousel-slide">
+                        <div class="cat-wrapper">
+                            <div class="cat-ear left"><div class="cat-ear-inner"></div></div>
+                            <div class="cat-ear right"><div class="cat-ear-inner"></div></div>
+                            <div class="cat-head">
+                                <div class="cat-tuft"></div><div class="cat-tuft"></div><div class="cat-tuft"></div>
+                                <div class="whisker left-1"></div><div class="whisker left-2"></div>
+                                <div class="whisker right-1"></div><div class="whisker right-2"></div>
+                                <div class="cat-face">
+                                    <div class="cat-eye-socket"><div class="cat-eye pupil"></div></div>
+                                    <div class="cat-mouth"></div>
+                                    <div class="cat-eye-socket"><div class="cat-eye pupil"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Avatar: Dog -->
+                    <div class="carousel-slide">
+                        <div class="dog-wrapper">
+                            <div class="dog-ear left"></div>
+                            <div class="dog-ear right"></div>
+                            <div class="dog-head">
+                                <div class="dog-blush left"></div><div class="dog-blush right"></div>
+                                <div class="dog-face">
+                                    <div class="dog-eyes">
+                                        <div class="dog-eye-socket"><div class="dog-eye pupil"></div></div>
+                                        <div class="dog-eye-socket"><div class="dog-eye pupil"></div></div>
+                                    </div>
+                                    <div class="dog-nose"></div>
+                                    <div class="dog-smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+                
+                <button class="btn btn-outline" id="pickAvatarBtn" onclick="selectAvatar()" style="margin-top: 30px; width: 100%;">Pick This Companion</button>
+            </div>
+
+            <button class="btn hidden" id="startSetupBtn" onclick="goTo('view-profile-setup')" style="width: 100%;">Start Setup</button>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 2. ONBOARDING: PROFILE SETUP               -->
+        <!-- ========================================== -->
+        <div id="view-profile-setup" class="view" style="justify-content: center; padding-bottom: 30px;">
+            <div style="position: relative;">
+                <h1 style="max-width: 60%; margin-top: 0;">Profile Setup</h1>
+                <p>Tell us a bit about yourself.</p>
+                
+                <!-- Interactive Mini Companion -->
+                <div class="robot-stage">
+                    <div class="robot-mover" id="miniCompanionMover">
+                        <div class="robot-scaler" style="transform: scale(0.22); transform-origin: top right; pointer-events: auto; cursor: pointer;">
+                            <div class="robot-wrapper walking" id="miniCompanion">
+                                <div class="zzz z1">Z</div>
+                                <div class="zzz z2">z</div>
+                                <div class="zzz z3">z</div>
+
+                                <div class="antenna-ball"></div><div class="antenna"></div>
+                                <div class="ear left"></div><div class="ear right"></div>
+                                <div class="robot-head">
+                                    <div class="robot-face">
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="smile"></div>
+                                    </div>
+                                </div>
+                                <div class="robot-body">
+                                    <div class="robot-arm left"></div>
+                                    <div class="robot-arm right"></div>
+                                    <div class="robot-chest"></div>
+                                </div>
+                                <div class="robot-leg left"></div>
+                                <div class="robot-leg right"></div>
+                            </div> 
+                        </div> 
+                    </div> 
+                </div> 
+            </div> 
+            
+            <!-- Setup Form -->
+            <div class="input-group"><label>Name</label><input type="text" placeholder="Your Name" class="idle-tracker"></div>
+            <div class="input-group"><label>Age</label><input type="number" placeholder="e.g. 21" class="idle-tracker"></div>
+            <div class="input-group"><label>Field of Study</label><input type="text" value="BSc Computer Science (AI)" class="idle-tracker"></div>
+            <div class="input-group"><label>Year of Study</label>
+                <select class="idle-tracker"><option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option></select>
+            </div>
+            
+            <button class="btn" style="margin-top: 20px;" onclick="goTo('view-survey')">Next: Stress Survey</button>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 3. ONBOARDING: WEEKLY SCHEDULE SETUP       -->
+        <!-- ========================================== -->
+        <div id="view-schedule-setup" class="view">
+            <!-- Header Layout -->
+            <div style="position: relative; margin-bottom: 20px; margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-start;">
+                <div style="max-width: 170px;">
+                    <h1 style="margin-top: 0; margin-bottom: 4px; font-size: 22px; line-height: 1.2;">Weekly Schedule</h1>
+                    <p style="margin-bottom: 0; font-size: 13px;">Plan your average week.</p>
+                </div>
+                
+                <div class="robot-stage" style="position: relative; top: 0; right: 0; width: 110px; height: 100px; flex-shrink: 0;">
+                    <div class="schedule-speech-bubble" id="scheduleSpeechBubble">
+                        Lots of classes! You're expanding your mind. 🧠
+                    </div>
+                    
+                    <div class="robot-scaler" style="transform: scale(0.24); transform-origin: top right; position: absolute; top: 0; right: 0;">
+                        <div class="robot-wrapper" id="scheduleCompanion">
+                            <div class="antenna-ball"></div><div class="antenna"></div>
+                            <div class="ear left"></div><div class="ear right"></div>
+                            <div class="robot-head">
+                                <div class="robot-face">
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="smile"></div>
+                                </div>
+                            </div>
+                            <div class="robot-body" style="transform: translateX(-50%) translateY(20px);">
+                                <div class="robot-arm left"></div>
+                                <div class="robot-arm right"></div>
+                                <div class="robot-chest"></div>
+                            </div>
+                            <div class="robot-leg left" style="transform: translateY(20px);"></div>
+                            <div class="robot-leg right" style="transform: translateY(20px);"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Sync Status Banner -->
+            <div style="display: flex; justify-content: center; margin-bottom: 12px;">
+                <div id="scheduleSyncBanner" class="schedule-sync-pill synced">
+                    📅 Synced from timetable_2026.ics (15h Class Hours)
+                </div>
+            </div>
+
+            <!-- Total Hours Counter -->
+            <div style="text-align: center; margin-bottom: 20px; background: white; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                <span style="font-size: 14px; font-weight: 600; color: var(--text-muted);">Total Weekly Load: <strong id="weeklyTotalDisplay" style="color: var(--primary); font-size: 20px; margin-left: 5px;">25</strong><span style="font-size: 14px; color: var(--primary);">h</span></span>
+            </div>
+
+            <!-- Weekly Inputs -->
+            <div class="weekly-inputs" style="display: flex; flex-direction: column; gap: 15px;">
+                
+                <div class="input-card" style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 2px;">🎓 Class Hours</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Lectures, programming labs, and tutorials</div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 12px;">
+                        <button class="ctrl-btn" onclick="updateWeekly('class', -1)">-</button>
+                        <span style="font-size: 16px; font-weight: 700;"><span id="week-class">15</span> hrs</span>
+                        <button class="ctrl-btn" onclick="updateWeekly('class', 1)">+</button>
+                    </div>
+                </div>
+
+                <div class="input-card" style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 2px;">💼 Working</div>
+                            <div style="font-size: 11px; color: var(--text-muted);">Internships, freelance, or part-time roles</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="workToggle" onchange="toggleWorkUI(this.checked)">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <div id="workControls" style="display: none; margin-top: 15px; border-top: 1px solid #f1f5f9; padding-top: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 12px;">
+                            <button class="ctrl-btn" onclick="updateWeekly('work', -1)">-</button>
+                            <span style="font-size: 16px; font-weight: 700;"><span id="week-work">10</span> hrs</span>
+                            <button class="ctrl-btn" onclick="updateWeekly('work', 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-card" style="background: white; padding: 15px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                    <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 2px;">📚 Self-Study</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">Assignments, coding practice, and revision</div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px 12px; border-radius: 12px;">
+                        <button class="ctrl-btn" onclick="updateWeekly('study', -1)">-</button>
+                        <span style="font-size: 16px; font-weight: 700;"><span id="week-study">10</span> hrs</span>
+                        <button class="ctrl-btn" onclick="updateWeekly('study', 1)">+</button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <button class="btn" style="margin-top: 25px; width: 100%;" onclick="goTo('view-overview')">Confirm & View Stress Baseline</button>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 4. ONBOARDING: CHATBOT STRESS SURVEY       -->
+        <!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-- 4. ONBOARDING: CHATBOT STRESS SURVEY       -->
+        <!-- ========================================== -->
+        <div id="view-survey" class="view" style="padding: 0; background: var(--bg-color); height: 100%;">
+            <div style="display: flex; flex-direction: column; height: 100vh; width: 100%;">
+                
+                <!-- Chat Header -->
+                <div style="padding: 20px 20px 15px 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <span id="surveyProgressHeader" style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Question 1 of 10</span>
+                    <button onclick="skipSurvey()" style="padding: 6px 14px; font-size: 11px; font-weight: 700; background: #FBEFEE; color: var(--urgent); border: 1px solid #F5DCD9; border-radius: 20px; cursor: pointer; transition: all 0.2s;">Skip (Demo)</button>
+                </div>
+
+                <!-- Chat Content -->
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;">
+                    <div id="surveyActiveChatBubble" class="active-chat-bubble" style="position: relative; margin-bottom: 40px; top: 0; left: 0; transform: none; width: 100%; text-align: center; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(47, 54, 50, 0.04);">
+                        How often do you feel mentally overwhelmed by academic demands?
+                    </div>
+                    
+                    <div class="robot-scaler" style="transform: scale(0.65); transform-origin: center;">
+                        <div class="robot-wrapper" id="surveyCompanion">
+                            <div class="antenna-ball"></div><div class="antenna"></div>
+                            <div class="ear left"></div><div class="ear right"></div>
+                            <div class="robot-head">
+                                <div class="robot-face">
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Input Area -->
+                <div style="padding: 20px; background: var(--surface); border-top: 1px solid var(--border); padding-bottom: 40px; border-radius: 30px 30px 0 0; box-shadow: 0 -10px 30px rgba(47, 54, 50, 0.04);">
+                    
+                    <div id="surveyQuickReplies" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 15px; transition: opacity 0.3s;">
+                        <button class="quick-reply-btn" onclick="processSurveyAnswer(1)">Never</button>
+                        <button class="quick-reply-btn" onclick="processSurveyAnswer(2)">Rarely</button>
+                        <button class="quick-reply-btn" onclick="processSurveyAnswer(3)">Sometimes</button>
+                        <button class="quick-reply-btn" onclick="processSurveyAnswer(4)">Often</button>
+                        <button class="quick-reply-btn" style="flex-basis: 100%;" onclick="processSurveyAnswer(5)">Always</button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; border: 1px solid var(--border); border-radius: 30px; padding: 6px 6px 6px 15px; background: var(--bg-color);">
+                        <input type="text" id="surveyChatInput" placeholder="Type your answer..." onkeypress="handleSurveyEnter(event)" style="flex: 1; border: none; outline: none; background: transparent; font-size: 14px; font-family: inherit; min-width: 0; color: var(--text-dark);">
+                        <button onclick="submitSurveyInput()" class="send-btn" style="flex-shrink: 0; margin-left: 10px;">➤</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 5. ONBOARDING: CALENDAR IMPORT (.ICS)      -->
+        <!-- ========================================== -->
+        <div id="view-calendar" class="view" style="padding-top: 40px;">
+            <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Class Schedule</p>
+            <h1 style="margin-top: 0; margin-bottom: 15px; font-size: 28px;">Import your timetable</h1>
+            <p style="margin-bottom: 30px;">Export your university calendar as a .ics file and import it here. Eepii will use it to understand your class density.</p>
+            
+            <div class="drop-zone" id="calendarDropZone" onclick="simulateFileUpload()">
+                <span style="font-size: 36px; display: block; margin-bottom: 12px;">📅</span>
+                <div style="font-weight: 700; color: var(--text-dark); margin-bottom: 5px; font-size: 15px;">Drop your .ics file here</div>
+                <div style="font-size: 13px; color: var(--text-muted);">or tap to browse files</div>
+            </div>
+
+            <div class="info-box">
+                <div style="font-weight: 700; color: #1e40af; font-size: 13px; margin-bottom: 6px;">How to export from your uni portal</div>
+                <div style="font-size: 12px; color: #475569; line-height: 1.6;">
+                    Most university portals (like APSpace, Outlook, or Canvas) let you export your timetable as an .ics file from Settings → Export or Download calendar.
+                </div>
+            </div>
+
+            <div style="flex: 1;"></div>
+
+            <button id="importBtn" class="btn disabled-btn" disabled>Choose a file first</button>
+            <button class="btn btn-outline" style="border: none; margin-top: 10px; color: var(--text-muted); font-weight: 600;" onclick="finishCalendarSetup(false)">Skip for now (Enter manually)</button>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 6. ONBOARDING: FINAL OVERVIEW              -->
+        <!-- ========================================== -->
+        <div id="view-overview" class="view" style="justify-content: center; align-items: center; text-align: center;">
+            <div class="robot-stage" style="position: relative; width: 100%; height: 75px; margin-bottom: 5px;">
+                <div class="robot-scaler" style="position: absolute; top: 0; left: 50%; transform: translateX(-50%) scale(0.45); transform-origin: top center;">
+                    <div class="robot-wrapper" id="overviewCompanion">
+                        <div class="antenna-ball"></div><div class="antenna"></div>
+                        <div class="ear left"></div><div class="ear right"></div>
+                        <div class="robot-head">
+                            <div class="robot-face">
+                                <div class="eye"><div class="pupil"></div></div>
+                                <div class="eye"><div class="pupil"></div></div>
+                                <div class="smile"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Result Summary -->
+            <h2 style="margin-bottom: 5px; color: var(--text-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Stress Level</h2>
+            <h1 id="overviewLevel" style="font-size: 42px; color: var(--urgent); margin-top: 0; margin-bottom: 12px;">High</h1>
+            
+            <p id="overviewText" style="max-width: 90%; margin: 0 auto 25px auto; font-size: 15px; color: var(--text-dark); font-weight: 500; line-height: 1.5;">
+                Maintaining a perfect academic record takes immense dedication. You're already carrying a heavy load, so your Rebalance tab will be crucial — check it daily.
+            </p>
+
+            <div style="display: flex; gap: 15px; width: 100%; margin-bottom: 25px;">
+                <div class="card stat-card" style="flex: 1; margin-bottom: 0;">
+                    <div class="stat-value" id="overviewHours">25h</div>
+                    <div class="stat-label">Weekly Commitment</div>
+                </div>
+                <div class="card stat-card" style="flex: 1; margin-bottom: 0;">
+                    <div class="stat-value" id="overviewScore" style="color: var(--urgent);">90%</div>
+                    <div class="stat-label">Stress Score</div>
+                </div>
+            </div>
+            
+            <button class="btn" style="margin-top: 0;" onclick="launchApp()">Enter Dashboard</button>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 7. MAIN APP TAB: DASHBOARD                 -->
+        <!-- ========================================== -->
+        <div id="main-dashboard" class="view" style="padding-top: 30px; padding-bottom: 90px;">
+            
+            <!-- Dark Hero Overview (Tap to toggle load breakdown) -->
+            <div class="dark-hero-card" onclick="toggleLoadBreakdown()" style="cursor: pointer; position: relative;">
+                
+                <div style="font-size: 12px; font-weight: 800; color: #ffffff; letter-spacing: 1.5px; margin-bottom: 8px;">BURNOUT RISK</div>
+                
+                <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px;">
+                    <div id="dashScore" style="font-size: 48px; font-family: Georgia, serif; color: white; line-height: 1;">61</div>
+                    <div id="dashStatus" style="font-size: 14px; font-weight: 700; color: #d97706;">Elevated</div>
+                </div>
+                
+                <p style="font-size: 12px; color: #d6d3d1; max-width: 65%; margin: 0 0 12px 0; line-height: 1.4;">
+                    You're carrying a lot. Tap this card to inspect your load breakdown.
+                </p>
+
+                <!-- Interactive Dashboard Robot in Hero Card -->
+                <div class="dash-speech-bubble" id="dashSpeechBubble">Tap me for a quick check-in!</div>
+                
+                <div class="robot-scaler" style="position: absolute; top: 20px; right: 15px; transform: scale(0.38); transform-origin: top right;">
+                    <div class="robot-wrapper" id="dashCompanion" onclick="event.stopPropagation(); interactDashRobot();" style="height: 110px;">
+                        <div class="antenna-ball"></div><div class="antenna"></div>
+                        <div class="ear left"></div><div class="ear right"></div>
+                        <div class="robot-head">
+                            <div class="robot-face">
+                                <div class="eye"><div class="pupil"></div></div>
+                                <div class="eye"><div class="pupil"></div></div>
+                                <div class="smile"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expand / Collapse Pill Indicator -->
+                <div class="hero-expand-pill" id="heroExpandPill" onclick="event.stopPropagation(); toggleLoadBreakdown();">
+                    <span id="heroExpandText">View Load Breakdown</span>
+                    <span id="heroExpandChevron" class="hero-chevron">&#9662;</span>
+                </div>
+
+                <!-- Collapsible Load Distribution Breakdown -->
+                <div id="loadDistributionBreakdown" class="load-breakdown-drawer" onclick="event.stopPropagation();">
+                    <div class="breakdown-divider"></div>
+                    <div style="font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: 1px; margin-bottom: 14px; text-transform: uppercase;">
+                        5-Axis Load Distribution
+                    </div>
+
+                    <!-- Radar Chart SVG Container -->
+                    <div class="breakdown-radar-box">
+                        <svg viewBox="0 0 120 115" style="width: 100%; max-width: 230px; overflow: visible;">
+                            <polygon points="60,20 98,47.6 83.5,92.4 36.5,92.4 22,47.6" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <polygon points="60,40 79,53.8 71.7,76.2 48.2,76.2 41,53.8" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="60" y2="20" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="98" y2="47.6" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="83.5" y2="92.4" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="36.5" y2="92.4" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <line x1="60" y1="60" x2="22" y2="47.6" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+                            <polygon points="60,24 82.8,52.5 69.4,72.9 45.8,79.4 48.5,56.2" fill="rgba(45, 212, 191, 0.22)" stroke="#2dd4bf" stroke-width="1.8" stroke-linejoin="round"/>
+                            <circle cx="60" cy="24" r="3.5" fill="#38bdf8" /> 
+                            <circle cx="82.8" cy="52.5" r="3.5" fill="#2dd4bf" /> 
+                            <circle cx="69.4" cy="72.9" r="3.5" fill="#a3e635" /> 
+                            <circle cx="45.8" cy="79.4" r="3.5" fill="#fb923c" /> 
+                            <circle cx="48.5" cy="56.2" r="3.5" fill="#facc15" /> 
+                            <text x="60" y="12" font-size="5" text-anchor="middle" fill="#cbd5e1" font-weight="700">Mental</text>
+                            <text x="102" y="50" font-size="5" text-anchor="start" fill="#cbd5e1" font-weight="700">Time</text>
+                            <text x="86" y="102" font-size="5" text-anchor="middle" fill="#cbd5e1" font-weight="700">Physical</text>
+                            <text x="34" y="102" font-size="5" text-anchor="middle" fill="#cbd5e1" font-weight="700">Social</text>
+                            <text x="18" y="50" font-size="5" text-anchor="end" fill="#cbd5e1" font-weight="700">Errands</text>
+                        </svg>
+                    </div>
+
+                    <!-- Category Status Rings Grid -->
+                    <div class="category-grid breakdown-cat-grid">
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #38bdf8; --c-track: #1e293b; --pct: 90%; --c-text: #38bdf8;">
+                            <div class="cat-ring"><span>90%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Mental</div><div class="cat-status" style="color: #94a3b8;">Overloaded</div></div>
+                        </div>
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #2dd4bf; --c-track: #134e4a; --pct: 60%; --c-text: #2dd4bf;">
+                            <div class="cat-ring"><span>60%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Time</div><div class="cat-status" style="color: #94a3b8;">Heavy</div></div>
+                        </div>
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #a3e635; --c-track: #365314; --pct: 40%; --c-text: #a3e635;">
+                            <div class="cat-ring"><span>40%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Physical</div><div class="cat-status" style="color: #94a3b8;">Moderate</div></div>
+                        </div>
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #fb923c; --c-track: #7c2d12; --pct: 60%; --c-text: #fb923c;">
+                            <div class="cat-ring"><span>60%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Social</div><div class="cat-status" style="color: #94a3b8;">Heavy</div></div>
+                        </div>
+                        <div class="cat-card dark-cat-card" style="--c-bg: #292524; --c-fill: #facc15; --c-track: #713f12; --pct: 30%; --c-text: #facc15;">
+                            <div class="cat-ring"><span>30%</span></div>
+                            <div><div class="cat-title" style="color: #f8fafc;">Errands</div><div class="cat-status" style="color: #94a3b8;">Moderate</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Embedded Dashboard AI Chatbot Card -->
+            <div class="card dash-chat-card" id="dashboardChatCard">
+                
+                <!-- Chatbot Header -->
+                <div class="dash-chat-header">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="status-pulse-dot"></span>
+                        <div style="font-size: 11px; font-weight: 800; color: var(--primary); letter-spacing: 1.2px; text-transform: uppercase;">
+                            Eepii AI Companion
+                        </div>
+                    </div>
+                    <span class="chat-status-pill">Ready to help</span>
+                </div>
+
+                <!-- Companion Dialogue Area -->
+                <div class="dash-chat-dialogue-area">
+                    <!-- Dialogue Bubble -->
+                    <div class="dash-chat-speech-bubble" id="dashChatSpeechBubble">
+                        Hi! I'm watching your stress balance. Tap a quick question or tell me what's on your mind! ✨
+                    </div>
+
+                    <!-- Centered Scaled Companion -->
+                    <div class="robot-scaler" style="transform: scale(0.48); transform-origin: center; margin: 12px auto 6px auto; height: 110px; display: flex; justify-content: center; align-items: center;">
+                        <div class="robot-wrapper" id="dashChatCompanion" onclick="interactDashChatCompanion()" style="cursor: pointer;">
+                            <div class="antenna-ball"></div><div class="antenna"></div>
+                            <div class="ear left"></div><div class="ear right"></div>
+                            <div class="robot-head">
+                                <div class="robot-face">
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Action Prompt Chips -->
+                <div class="dash-quick-chips">
+                    <button class="dash-chip" onclick="handleQuickChip('5-min breather')">🍃 5-Min Breather</button>
+                    <button class="dash-chip" onclick="handleQuickChip('feeling overwhelmed')">😫 Overwhelmed</button>
+                    <button class="dash-chip" onclick="handleQuickChip('prioritize tasks')">🎯 Prioritize</button>
+                    <button class="dash-chip" onclick="handleQuickChip('explain score')">📊 My Score</button>
+                </div>
+
+                <!-- Chat Input Row -->
+                <div class="dash-chat-input-bar">
+                    <input type="text" id="dashChatInput" placeholder="Ask Eepii for advice, break tips..." onkeypress="handleDashChatEnter(event)">
+                    <button class="dash-chat-send-btn" onclick="sendDashChatMessage()">➤</button>
+                </div>
+            </div>
+
+            <!-- Task List Widget -->
+            <div class="card">
+                <h2>Current Tasks</h2>
+                <div class="task-item">
+                    <div><div style="font-size:14px; font-weight:600; color:var(--text-dark);">Anti-Scam Chatbot NLP</div><span class="tag tag-urgent">Urgent</span><span class="tag tag-area">🧠 Mental</span></div>
+                </div>
+                <div class="task-item">
+                    <div><div style="font-size:14px; font-weight:600; color:var(--text-dark);">Tour Management Slides</div><span class="tag tag-normal">Normal</span><span class="tag tag-area">⏱️ Time</span></div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 8. MAIN APP TAB: REBALANCE                 -->
+        <!-- ========================================== -->
+        <div id="main-rebalance" class="view" style="padding-top: 40px; padding-bottom: 90px;">
+            
+            <!-- Header Layout -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
+                <div style="max-width: 65%;">
+                    <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Today's Flow</p>
+                    <h1 style="margin-top: 0; margin-bottom: 10px; font-size: 28px;">Smart Schedule</h1>
+                    <p style="margin-bottom: 0; font-size: 13px; color: var(--text-muted); line-height: 1.5;">
+                        We've interleaved your urgent deadlines with active recovery to keep you at your best.
+                    </p>
+                </div>
+                
+                <div class="robot-stage" style="position: relative; width: 80px; height: 80px; flex-shrink: 0;">
+                    <div class="rebalance-speech-bubble">Rest is productive too! 💤</div>
+                    <div class="robot-scaler" style="position: absolute; top: 20px; right: 25px; transform: scale(0.30); transform-origin: top right;">
+                        <div class="robot-wrapper" id="rebalanceCompanion">
+                            <div class="antenna-ball"></div><div class="antenna"></div>
+                            <div class="ear left"></div><div class="ear right"></div>
+                            <div class="robot-head">
+                                <div class="robot-face">
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="eye"><div class="pupil"></div></div>
+                                    <div class="smile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Bar: Log Load Trigger -->
+            <div style="margin-bottom: 20px;">
+                <button class="btn btn-log-action" onclick="openLogBottomSheet()">
+                    <span style="font-size: 18px; line-height: 1;">✨</span>
+                    <span>+ Log New Task / Load</span>
+                </button>
+            </div>
+
+            <!-- Rebalance Timeline Feed -->
+            <div class="smart-timeline" id="smartTimeline">
+                
+                <div class="timeline-event">
+                    <div class="event-time">09:00 AM</div>
+                    <div class="event-marker task-urgent"></div>
+                    <div class="event-card task-card" onclick="toggleTask(this)">
+                        <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="tag" style="background: #fee2e2; color: #b91c1c;">Urgent Task</span>
+                            <div class="custom-checkbox"></div>
+                        </div>
+                        <div class="event-title">Anti-Scam Chatbot Risk Scoring Module</div>
+                        <div class="event-desc">2 Hours • Deep Work</div>
+                    </div>
+                </div>
+
+                <div class="timeline-event">
+                    <div class="event-time">11:00 AM</div>
+                    <div class="event-marker activity-recovery"></div>
+                    <div class="event-card recovery-card" onclick="toggleTask(this)">
+                        <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="tag" style="background: #dcfce7; color: #15803d;">🍃 Rebalance</span>
+                            <div class="custom-checkbox"></div>
+                        </div>
+                        <div class="event-title">Screen Break & Short Walk</div>
+                        <div class="event-desc">20 Mins • Step away from the desk</div>
+                    </div>
+                </div>
+
+                <div class="timeline-event">
+                    <div class="event-time">01:00 PM</div>
+                    <div class="event-marker task-normal"></div>
+                    <div class="event-card task-card" onclick="toggleTask(this)">
+                        <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="tag" style="background: #e2e8f0; color: #475569;">Task</span>
+                            <div class="custom-checkbox"></div>
+                        </div>
+                        <div class="event-title">Tour Management System Prototype</div>
+                        <div class="event-desc">1.5 Hours • Medium Focus</div>
+                    </div>
+                </div>
+
+                <div class="timeline-event">
+                    <div class="event-time">02:30 PM</div>
+                    <div class="event-marker activity-recovery"></div>
+                    <div class="event-card recovery-card" onclick="toggleTask(this)">
+                        <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
+                            <span class="tag" style="background: #fef3c7; color: #b45309;">☕ Rebalance</span>
+                            <div class="custom-checkbox"></div>
+                        </div>
+                        <div class="event-title">Grab a snack (Nuggets & fries?)</div>
+                        <div class="event-desc">30 Mins • Mental reset</div>
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+
+        <!-- ========================================== -->
+        <!-- 9. SLIDE-UP BOTTOM SHEET: LOG LOAD         -->
+        <!-- ========================================== -->
+        <div id="logBottomSheetOverlay" class="bottom-sheet-overlay" onclick="handleBottomSheetBackdrop(event)">
+            <div class="bottom-sheet-container" onclick="event.stopPropagation()">
+                <div class="bottom-sheet-handle"></div>
+                
+                <div class="bottom-sheet-header">
+                    <div>
+                        <h2 style="margin: 0; font-size: 18px; color: var(--text-dark);">Log New Task</h2>
+                        <p style="margin: 3px 0 0 0; font-size: 12px; color: var(--text-muted);">AI will estimate stress & interleave recovery</p>
+                    </div>
+                    <button class="close-sheet-btn" onclick="closeLogBottomSheet()">✕</button>
+                </div>
+
+                <div class="bottom-sheet-body">
+                    <label class="sheet-label">TASK NAME</label>
+                    <input type="text" id="taskNameInput" placeholder="e.g. Study for AI Midterm" class="sheet-input">
+                    
+                    <label class="sheet-label">DESCRIPTION</label>
+                    <textarea id="taskDescInput" rows="2" placeholder="Briefly describe the task..." class="sheet-textarea"></textarea>
+
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <label class="sheet-label" style="margin-bottom: 0;">ESTIMATED STRESS (1-10)</label>
+                        <span id="stressDisplay" style="font-size: 13px; font-weight: 700; color: var(--primary);">5</span>
+                    </div>
+                    
+                    <input type="range" id="taskStressInput" min="1" max="10" value="5" class="stress-slider" 
+                           style="--fill-pct: 44.4%;"
+                           oninput="
+                               document.getElementById('stressDisplay').innerText = this.value;
+                               this.style.setProperty('--fill-pct', ((this.value - this.min) / (this.max - this.min)) * 100 + '%');
+                           ">
+                    
+                    <label class="sheet-label" style="margin-top: 15px;">DEADLINE</label>
+                    <input type="date" id="taskDateInput" class="sheet-input" style="margin-bottom: 20px;">
+                    
+                    <button class="btn" style="width: 100%;" onclick="analyzeAndShowModal()">Assess & Add to Schedule</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Confirmation Modal Popup -->
+        <div id="aiConfirmModal" class="ai-modal-overlay">
+            <div class="ai-modal-card">
+                <div style="text-align: center; margin-bottom: 15px; font-size: 24px;">✨</div>
+                <h3 style="text-align: center; margin-top: 0; margin-bottom: 20px; font-size: 18px;">AI Assessment Complete</h3>
+                
+                <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left;">
+                    <div style="font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 12px;" id="modalTaskName">Task Name</div>
+                    
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <span id="modalCategory" class="tag" style="background: #e2e8f0; color: #475569;">Category</span>
+                        <span id="modalUrgency" class="tag" style="background: #e2e8f0; color: #475569;">Urgency</span>
+                    </div>
+                    
+                    <div style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Deadline: <span id="modalDeadline" style="color: var(--text-dark);"></span></div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-outline" style="flex: 1; margin: 0; padding: 12px;" onclick="closeAiModal()">Edit</button>
+                    <button class="btn" style="flex: 1; margin: 0; padding: 12px;" onclick="confirmAndLogTask()">Confirm & Add</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 10. MAIN APP TAB: TRENDS & CHARTS          -->
+        <!-- ========================================== -->
+        <!-- ========================================== -->
+        <!-- 10. MAIN APP TAB: TRENDS & CHARTS          -->
+        <!-- ========================================== -->
+        <div id="main-trends" class="view" style="padding-top: 40px; padding-bottom: 90px; background: var(--bg-color);">
+            
+            <!-- Header Layout -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 20px;">
+                <div style="flex: 1;">
+                    <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px;">Stress Over Time</p>
+                    <h1 style="margin-top: 0; margin-bottom: 0; font-size: 28px; font-family: Georgia, serif;">Trends</h1>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <div class="trend-speech-bubble">Your CS workload peaked on Thursday! 📉</div>
+                    
+                    <div class="robot-stage" style="position: relative; width: 60px; height: 50px; flex-shrink: 0;">
+                        <div class="robot-scaler" style="position: absolute; top: 10px; right: 0; transform: scale(0.30); transform-origin: top right;">
+                            <div class="robot-wrapper" id="trendCompanion">
+                                <div class="antenna-ball"></div><div class="antenna"></div>
+                                <div class="ear left"></div><div class="ear right"></div>
+                                <div class="robot-head">
+                                    <div class="robot-face">
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="smile"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Scroller -->
+            <div style="text-align: center; margin-bottom: 20px; padding: 0 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <button class="icon-btn" onclick="switchWeek('prev')">❮</button>
+                    <div>
+                        <div id="trendWeekTitle" style="font-size: 15px; font-weight: 700; color: var(--text-dark);">This week</div>
+                        <div id="trendWeekDate" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Aug 30 – Sep 5</div>
+                    </div>
+                    <button class="icon-btn" onclick="switchWeek('next')">❯</button>
+                </div>
+                <div style="display: flex; justify-content: center; gap: 4px; margin-bottom: 6px;">
+                    <span class="dot active" style="background: var(--primary);"></span><span class="dot" style="background: var(--border);"></span><span class="dot" style="background: var(--border);"></span>
+                </div>
+                <div style="font-size: 10px; color: var(--text-muted);">Swipe left / right to change week</div>
+            </div>
+
+            <!-- Stat Metric Cards -->
+            <div style="display: flex; gap: 10px; padding: 0 20px; margin-bottom: 20px;">
+                <div class="card stat-card" style="flex: 1; padding: 15px 5px; text-align: center; box-shadow: none;">
+                    <div id="trendAvg" style="font-size: 22px; font-weight: 700; color: var(--primary); font-family: Georgia, serif;">60%</div>
+                    <div class="stat-label">AVG LOAD</div>
+                </div>
+                <div class="card stat-card" style="flex: 1; padding: 15px 5px; text-align: center; box-shadow: none;">
+                    <div id="trendPeak" style="font-size: 22px; font-weight: 700; color: var(--urgent); font-family: Georgia, serif;">Thu</div>
+                    <div class="stat-label">PEAK DAY</div>
+                </div>
+                <div class="card stat-card" style="flex: 1; padding: 15px 5px; text-align: center; box-shadow: none;">
+                    <div id="trendTop" style="font-size: 22px; font-weight: 700; color: var(--c-social); font-family: Georgia, serif;">Social</div>
+                    <div class="stat-label">TOP LOAD</div>
+                </div>
+            </div>
+
+            <!-- Graph Container -->
+            <div class="card" style="margin: 0 20px 20px 20px; padding: 20px 15px;">
+                
+                <!-- Unified Category Filter Pills -->
+                <div id="trendFilters" style="display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; white-space: nowrap; padding-bottom: 5px; scrollbar-width: none;">
+                    <span class="tag trend-filter active" onclick="setTrendCategory('Overall', this)" style="background: var(--primary); color: white; cursor: pointer;">Overall</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('All', this)" style="background: var(--bg-color); color: var(--text-muted); cursor: pointer;">All</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Mental', this)" style="background: var(--bg-color); color: var(--text-muted); cursor: pointer;">Mental</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Time', this)" style="background: var(--bg-color); color: var(--text-muted); cursor: pointer;">Time</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Physical', this)" style="background: var(--bg-color); color: var(--text-muted); cursor: pointer;">Physical</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Social', this)" style="background: var(--bg-color); color: var(--text-muted); cursor: pointer;">Social</span>
+                    <span class="tag trend-filter" onclick="setTrendCategory('Errands', this)" style="background: var(--bg-color); color: var(--text-muted); cursor: pointer;">Errands</span>
+                </div>
+                <div id="trendAllLabel" style="display: none; font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;">All Categories</div>
+
+                <!-- SVG Area Chart (Single Category) -->
+                <svg id="chartSingle" viewBox="0 0 300 120" style="width: 100%; height: auto; overflow: visible; transition: all 0.3s ease;">
+                    <line x1="20" y1="10" x2="300" y2="10" stroke="var(--border)" stroke-width="1"/>
+                    <line x1="20" y1="45" x2="300" y2="45" stroke="var(--border)" stroke-width="1"/>
+                    <line x1="20" y1="80" x2="300" y2="80" stroke="var(--border)" stroke-width="1"/>
+                    <line x1="20" y1="115" x2="300" y2="115" stroke="var(--border)" stroke-width="1"/>
+                    
+                    <text x="15" y="13" font-size="8" fill="var(--text-muted)" text-anchor="end">100</text>
+                    <text x="15" y="48" font-size="8" fill="var(--text-muted)" text-anchor="end">75</text>
+                    <text x="15" y="83" font-size="8" fill="var(--text-muted)" text-anchor="end">50</text>
+                    <text x="15" y="118" font-size="8" fill="var(--text-muted)" text-anchor="end">25</text>
+                    
+                    <polygon id="singleChartArea" points="20,115 20,85 70,55 120,30 170,35 220,15 270,22 300,45 300,115" fill="rgba(56, 85, 70, 0.1)" style="transition: all 0.3s ease;"/>
+                    <polyline id="singleChartLine" points="20,85 70,55 120,30 170,35 220,15 270,22 300,45" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linejoin="round" style="transition: all 0.3s ease;"/>
+                    
+                    <circle class="singleChartPoint" cx="20" cy="85" r="3" fill="white" stroke="var(--primary)" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="70" cy="55" r="3" fill="white" stroke="var(--primary)" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="120" cy="30" r="3" fill="white" stroke="var(--primary)" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="170" cy="35" r="3" fill="white" stroke="var(--primary)" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="220" cy="15" r="3" fill="white" stroke="var(--primary)" stroke-width="2" style="transition: all 0.3s ease;"/>
+                    <circle class="singleChartPoint" cx="270" cy="22" r="3" fill="white" stroke="var(--primary)" stroke-width="2" style="transition: all 0.3s ease;"/>
+
+                    <text x="20" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Sun</text>
+                    <text x="70" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Mon</text>
+                    <text x="120" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Tue</text>
+                    <text x="170" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Wed</text>
+                    <text x="220" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Thu</text>
+                    <text x="270" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Fri</text>
+                </svg>
+
+                <!-- SVG Line Chart (All Categories) -->
+                <svg id="chartAll" viewBox="0 0 300 120" style="width: 100%; height: auto; overflow: visible; display: none;">
+                    <line x1="20" y1="10" x2="300" y2="10" stroke="var(--border)" stroke-width="1"/>
+                    <line x1="20" y1="45" x2="300" y2="45" stroke="var(--border)" stroke-width="1"/>
+                    <line x1="20" y1="80" x2="300" y2="80" stroke="var(--border)" stroke-width="1"/>
+                    <line x1="20" y1="115" x2="300" y2="115" stroke="var(--border)" stroke-width="1"/>
+                    
+                    <polyline points="20,105 70,55 120,60 170,65 220,55 270,25 300,55" fill="none" stroke="var(--c-mental)" stroke-width="2"/>
+                    <polyline points="20,85 70,75 120,80 170,75 220,15 270,52 300,85" fill="none" stroke="var(--c-time)" stroke-width="2"/>
+                    <polyline points="20,110 70,95 120,60 170,45 220,45 270,82 300,105" fill="none" stroke="var(--c-physical)" stroke-width="2"/>
+                    <polyline points="20,95 70,85 120,30 170,30 220,30 270,35 300,40" fill="none" stroke="var(--c-social)" stroke-width="2"/>
+                    <polyline points="20,115 70,75 120,20 170,65 220,45 270,22 300,35" fill="none" stroke="var(--c-errands)" stroke-width="2"/>
+                    
+                    <text x="20" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Sun</text>
+                    <text x="70" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Mon</text>
+                    <text x="120" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Tue</text>
+                    <text x="170" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Wed</text>
+                    <text x="220" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Thu</text>
+                    <text x="270" y="135" font-size="9" fill="var(--text-muted)" text-anchor="middle">Fri</text>
+                </svg>
+
+                <div id="trendLegend" style="display: none; justify-content: space-between; margin-top: 35px; font-size: 9px; font-weight: 700;">
+                    <div style="color: var(--c-mental);">■ Mental</div>
+                    <div style="color: var(--c-time);">■ Time</div>
+                    <div style="color: var(--c-physical);">■ Physical</div>
+                    <div style="color: var(--c-social);">■ Social</div>
+                    <div style="color: var(--c-errands);">■ Errands</div>
+                </div>
+            </div>
+
+            <!-- Day by Day Breakdown Feed -->
+            <div class="card" style="margin: 0 20px; padding: 20px;">
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px;">Day by Day</div>
+                
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Sun</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">30</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 25%; background: var(--c-mental);"></div>
+                        <div class="t-bar" style="width: 30%; background: var(--c-time);"></div>
+                        <div class="t-bar" style="width: 20%; background: var(--c-physical);"></div>
+                        <div class="t-bar" style="width: 35%; background: var(--c-social);"></div>
+                        <div class="t-bar" style="width: 30%; background: var(--c-errands);"></div>
+                    </div>
+                    <div class="score-col" style="color: var(--normal);">32</div>
+                </div>
+                
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Mon</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">31</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 35%; background: var(--c-mental);"></div>
+                        <div class="t-bar" style="width: 35%; background: var(--c-time);"></div>
+                        <div class="t-bar" style="width: 25%; background: var(--c-physical);"></div>
+                        <div class="t-bar" style="width: 40%; background: var(--c-social);"></div>
+                        <div class="t-bar" style="width: 35%; background: var(--c-errands);"></div>
+                    </div>
+                    <div class="score-col" style="color: var(--c-social);">51</div>
+                </div>
+
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Tue</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">1</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 40%; background: var(--c-mental);"></div>
+                        <div class="t-bar" style="width: 40%; background: var(--c-time);"></div>
+                        <div class="t-bar" style="width: 35%; background: var(--c-physical);"></div>
+                        <div class="t-bar" style="width: 45%; background: var(--c-social);"></div>
+                        <div class="t-bar" style="width: 40%; background: var(--c-errands);"></div>
+                    </div>
+                    <div class="score-col" style="color: var(--c-social);">66</div>
+                </div>
+
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Wed</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">2</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 35%; background: var(--c-mental);"></div>
+                        <div class="t-bar" style="width: 35%; background: var(--c-time);"></div>
+                        <div class="t-bar" style="width: 40%; background: var(--c-physical);"></div>
+                        <div class="t-bar" style="width: 40%; background: var(--c-social);"></div>
+                        <div class="t-bar" style="width: 30%; background: var(--c-errands);"></div>
+                    </div>
+                    <div class="score-col" style="color: var(--c-social);">63</div>
+                </div>
+
+                <div class="day-row">
+                    <div class="day-col">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-dark);">Thu</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">3</div>
+                    </div>
+                    <div class="bar-col">
+                        <div class="t-bar" style="width: 45%; background: var(--c-mental);"></div>
+                        <div class="t-bar" style="width: 50%; background: var(--c-time);"></div>
+                        <div class="t-bar" style="width: 40%; background: var(--c-physical);"></div>
+                        <div class="t-bar" style="width: 45%; background: var(--c-social);"></div>
+                        <div class="t-bar" style="width: 45%; background: var(--c-errands);"></div>
+                    </div>
+                    <div class="score-col" style="color: var(--urgent);">78</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 11. MAIN APP TAB: PROFILE SETTINGS         -->
+        <!-- ========================================== -->
+        <div id="main-profile" class="view" style="padding-top: 40px; padding-bottom: 90px;">
+            <p style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px;">Account</p>
+            <h1 style="margin-top: 0; margin-bottom: 20px; font-size: 28px;">Profile</h1>
+            
+            <div class="dark-hero-card" style="padding: 20px; display: flex; align-items: center; gap: 15px; height: auto; min-height: 95px; border-radius: 24px; margin-bottom: 25px;">
+                <div style="width: 55px; height: 55px; border-radius: 16px; background: #292524; border: 1px solid #44403c; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; flex-shrink: 0;">
+                    <span style="font-size: 22px;">👨‍💻</span>
+                </div>
+                <div>
+                    <div style="font-size: 18px; font-weight: 700; color: white; margin-bottom: 4px; line-height: 1.2;">Alex Wong</div>
+                    <div style="font-size: 12px; color: #d6d3d1;">BSc Computer Science (AI)</div>
+                    <div style="font-size: 11px; color: #a8a29e; margin-top: 4px; font-weight: 600;">Latest CGPA: 4.0</div>
+                </div>
+            </div>
+
+            <!-- Stress Baseline Result Display -->
+            <div class="card" style="padding: 20px; margin-bottom: 25px;">
+                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 15px;">Stress Baseline</div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="profileStressBadge" style="width: 65px; height: 65px; border-radius: 50%; background: #1c1917; color: #ea580c; display: flex; justify-content: center; align-items: center; font-size: 22px; font-family: Georgia, serif; flex-shrink: 0;">90</div>
+                    <div>
+                        <div id="profileStressLabel" style="font-size: 16px; font-weight: 700; color: #ea580c; margin-bottom: 4px;">High</div>
+                        <div id="profileStressDesc" style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">You're already carrying a lot. Your Rebalance tab will be important — check it daily.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Weekly Schedule Editor -->
+            <div class="card" style="padding: 24px; margin-bottom: 25px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 25px;">
+                    <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1.5px; text-transform: uppercase;">Weekly Schedule</div>
+                    <div style="font-size: 13px; font-weight: 800; color: var(--text-dark);"><span id="profileWeeklyTotal">0</span>h / week</div>
+                </div>
+                
+                <!-- Dynamic Chart -->
+                <div id="profileWeeklyChart" style="display: flex; justify-content: space-between; align-items: flex-end; height: 45px; margin-bottom: 20px; gap: 8px;"></div>
+                
+                <!-- Quick Toggle Day Pills -->
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-dark); margin-bottom: 12px;">Active Days</div>
+                <div id="profileDayPills" style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 25px;">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div style="height: 1px; background: var(--border); margin-bottom: 24px;"></div>
+
+                <!-- Master Weekly Distribution -->
+                <div style="font-size: 11px; font-weight: 700; color: var(--text-dark); margin-bottom: 12px;">Total Load</div>
+                
+                <div id="profileMasterInputs" style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div style="text-align: center; margin-top: 25px;">
+                    <span onclick="openDailyEditSheet()" style="font-size: 12px; font-weight: 700; color: var(--primary); cursor: pointer; border-bottom: 1px dotted var(--primary); padding-bottom: 2px;">Edit Daily Breakdown</span>
+                </div>
+            </div>
+
+            <div class="card" style="padding: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 10px; font-weight: 700; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">Class Schedule (.ICS)</div>
+                <button class="btn" style="margin: 0; padding: 6px 16px; font-size: 12px; background: #eff6ff; color: #1e40af; border-radius: 20px; box-shadow: none;" onclick="startProfileImport()">Import</button>
+            </div>
+
+            <button class="btn btn-outline" style="width: 100%; border: 2px solid #fee2e2; color: #ef4444; background: #fff5f5; font-weight: 700;" onclick="startRetest()">Re-do setup & quiz</button>
+        </div>
+
+
+        <!-- ========================================== -->
+        <!-- 12. GLOBAL APP SHELL WIDGETS               -->
+        <!-- ========================================== -->
+        
+        <!-- Bottom Navigation Bar -->
+        <div class="bottom-nav" id="appNav">
+            <button class="nav-btn active" id="nav-dashboard" onclick="navTo('main-dashboard', this)">📊<span>Dash</span></button>
+            <button class="nav-btn" id="nav-rebalance" onclick="navTo('main-rebalance', this)">⚡<span>Rebalance</span></button>
+            <!-- <button class="nav-btn" id="nav-log" onclick="triggerLogFromNav(this)">➕<span>Log</span></button> -->
+            <button class="nav-btn" id="nav-trends" onclick="navTo('main-trends', this)">📈<span>Trends</span></button>
+            <button class="nav-btn" id="nav-profile" onclick="navTo('main-profile', this)">👤<span>Profile</span></button>
+        </div>
+
+        <!-- AI Chatbot Circle -->
+        <div id="globalChatWidget" style="display: none; position: absolute; z-index: 100; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+            
+            <div id="chatFab" onclick="toggleGlobalChat()">
+                <div class="robot-scaler" style="transform: scale(0.16); transform-origin: center; margin-top: 15px;">
+                    <div class="robot-wrapper" id="fabCompanion">
+                        <div class="antenna-ball"></div><div class="antenna"></div>
+                        <div class="ear left"></div><div class="ear right"></div>
+                        <div class="robot-head">
+                            <div class="robot-face">
+                                <div class="eye"><div class="pupil"></div></div>
+                                <div class="eye"><div class="pupil"></div></div>
+                                <div class="smile"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Expanded Global Chat View -->
+            <div id="chatOverlay" class="chat-overlay">
+                <div class="chat-container card">
+                    <button onclick="toggleGlobalChat()" class="close-chat-btn">✖</button>
+                    
+                    <div class="chat-content">
+                        <div id="activeChatBubble" class="active-chat-bubble">I'm here! How can I help you balance your workload today?</div>
+                        
+                        <div class="robot-scaler" style="transform: scale(0.65); transform-origin: center; margin: 30px auto 0 auto;">
+                            <div class="robot-wrapper" id="expandedCompanion">
+                                <div class="antenna-ball"></div><div class="antenna"></div>
+                                <div class="ear left"></div><div class="ear right"></div>
+                                <div class="robot-head">
+                                    <div class="robot-face">
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="eye"><div class="pupil"></div></div>
+                                        <div class="smile"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="globalChatInput" placeholder="Ask me anything..." onkeypress="handleChatEnter(event)">
+                        <button onclick="sendChatMessage()" class="send-btn">➤</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE-UP BOTTOM SHEET: EDIT DAILY HOURS    -->
+        <!-- ========================================== -->
+        <div id="dailyEditSheetOverlay" class="bottom-sheet-overlay" onclick="if(event.target.id === 'dailyEditSheetOverlay') closeDailyEditSheet()">
+            <div class="bottom-sheet-container" onclick="event.stopPropagation()">
+                <div class="bottom-sheet-handle"></div>
+                
+                <div class="bottom-sheet-header">
+                    <div>
+                        <h2 style="margin: 0; font-size: 18px; color: var(--text-dark);">Daily Breakdown</h2>
+                        <p style="margin: 3px 0 0 0; font-size: 12px; color: var(--text-muted);">Fine-tune specific days</p>
+                    </div>
+                    <button class="close-sheet-btn" onclick="closeDailyEditSheet()">✕</button>
+                </div>
+
+                <!-- Content populated dynamically by JS -->
+                <div class="bottom-sheet-body" id="dailyEditContent" style="padding-bottom: 20px;"></div>
+            </div>
+        </div>
+
+    </div>
+    
+    <script src="Eepii.js"></script>
+</body>
+</html>
