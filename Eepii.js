@@ -733,38 +733,85 @@ function confirmAndLogTask() {
 // ==========================================
 // 9. PROFILE PAGE & DATA SYNC
 // ==========================================
-function buildProfileScheduleUI() {
-    const accordionContainer = document.getElementById('profileScheduleAccordion');
-    const chartContainer = document.getElementById('profileWeeklyChart');
-    if (!accordionContainer || !chartContainer) return;
+
+function toggleProfileDayPill(day) {
+    scheduleData[day].active = !scheduleData[day].active;
+    distributeProfileHours();
+    buildProfileScheduleUI();
+}
+
+function updateProfileMasterHours(category, change) {
+    let newVal = weeklyData[category] + change;
+    if (newVal < 0) newVal = 0;
+    if (newVal > 80) newVal = 80;
+    weeklyData[category] = newVal;
     
-    accordionContainer.innerHTML = ''; 
+    distributeProfileHours();
+    buildProfileScheduleUI();
+}
+
+function distributeProfileHours() {
+    let activeCount = 0;
+    daysOfWeek.forEach(day => { if (scheduleData[day].active) activeCount++; });
+    
+    if (activeCount === 0) return; // Prevent division by zero
+
+    // Distribute weekly totals evenly among active days automatically
+    const dailyClass = Math.round(weeklyData.class / activeCount);
+    const dailyWork = weeklyData.hasWork ? Math.round(weeklyData.work / activeCount) : 0;
+    const dailyStudy = Math.round(weeklyData.study / activeCount);
+
+    daysOfWeek.forEach(day => {
+        if (scheduleData[day].active) {
+            scheduleData[day].class = dailyClass;
+            scheduleData[day].work = dailyWork;
+            scheduleData[day].study = dailyStudy;
+        } else {
+            scheduleData[day].class = 0;
+            scheduleData[day].work = 0;
+            scheduleData[day].study = 0;
+        }
+    });
+}
+
+function buildProfileScheduleUI() {
+    const chartContainer = document.getElementById('profileWeeklyChart');
+    const pillsContainer = document.getElementById('profileDayPills');
+    const masterInputsContainer = document.getElementById('profileMasterInputs');
+    
+    if (!chartContainer || !pillsContainer || !masterInputsContainer) return;
+    
     chartContainer.innerHTML = '';
+    pillsContainer.innerHTML = '';
+    masterInputsContainer.innerHTML = '';
     
     let maxHours = 8;
+    let weeklyTotal = 0;
+    
+    // 1. Calculate max hours for chart scaling
     daysOfWeek.forEach(day => {
-        if(scheduleData[day].active) {
+        if (scheduleData[day].active) {
             const total = scheduleData[day].class + scheduleData[day].work + scheduleData[day].study;
             if (total > maxHours) maxHours = total;
+            weeklyTotal += total;
         }
     });
 
-    let weeklyTotal = 0;
-
+    // 2. Build Dynamic Chart & Day Selection Pills
     daysOfWeek.forEach(day => {
         const data = scheduleData[day];
         const total = data.active ? (data.class + data.work + data.study) : 0;
-        if (data.active) weeklyTotal += total;
         
+        // Render Chart Bar
         let heightPct = '3px'; 
-        let bgColor = '#e2e8f0'; 
+        let bgColor = 'var(--border)'; 
         
         if (data.active && total > 0) {
             heightPct = Math.max((total / maxHours) * 100, 15) + '%';
-            bgColor = '#293a34'; 
+            bgColor = 'var(--primary)'; 
         } else if (data.active && total === 0) {
             heightPct = '6px'; 
-            bgColor = '#293a34';
+            bgColor = 'var(--primary)';
         }
 
         const barColumn = document.createElement('div');
@@ -777,81 +824,44 @@ function buildProfileScheduleUI() {
         `;
         chartContainer.appendChild(barColumn);
 
-        const card = document.createElement('div');
-        card.className = `day-card ${data.expanded ? 'expanded' : ''} ${!data.active ? 'inactive' : ''}`;
-        card.id = `p-card-${day}`; 
-        
-        card.innerHTML = `
-            <div class="day-header" onclick="toggleProfileDayExpand('${day}')">
-                <div class="day-toggle">
-                    <input type="checkbox" id="p-toggle-${day}" ${data.active ? 'checked' : ''} onclick="event.stopPropagation(); toggleProfileDayActive('${day}', this.checked)">
-                    <label for="p-toggle-${day}" class="toggle-label"></label>
-                </div>
-                <span class="day-name">${day}</span>
-                <div class="day-summary">
-                    <span class="day-total" id="p-total-${day}">${data.active ? total + 'h total' : ''}</span>
-                    <span class="day-arrow">▼</span>
-                </div>
-            </div>
-            <div class="day-body">
-                <div class="hour-row"><span class="dot" style="background: #3b82f6;"></span> Class hours
-                    <div class="hour-controls">
-                        <button onclick="updateProfileHours('${day}', 'class', -1)">-</button>
-                        <span id="p-${day}-class">${data.class}</span>
-                        <button onclick="updateProfileHours('${day}', 'class', 1)">+</button>
-                    </div>
-                </div>
-                <div class="hour-row"><span class="dot" style="background: #a8a29e;"></span> Work / part-time
-                    <div class="hour-controls">
-                        <button onclick="updateProfileHours('${day}', 'work', -1)">-</button>
-                        <span id="p-${day}-work">${data.work}</span>
-                        <button onclick="updateProfileHours('${day}', 'work', 1)">+</button>
-                    </div>
-                </div>
-                <div class="hour-row"><span class="dot" style="background: #84cc16;"></span> Self-study
-                    <div class="hour-controls">
-                        <button onclick="updateProfileHours('${day}', 'study', -1)">-</button>
-                        <span id="p-${day}-study">${data.study}</span>
-                        <button onclick="updateProfileHours('${day}', 'study', 1)">+</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        accordionContainer.appendChild(card);
+        // Render Circular Pill
+        const pill = document.createElement('div');
+        pill.className = `day-pill ${data.active ? 'active' : ''}`;
+        pill.innerText = day.charAt(0); // Display M, T, W, etc.
+        pill.onclick = () => toggleProfileDayPill(day);
+        pillsContainer.appendChild(pill);
     });
     
+    // Update total label
     document.getElementById('profileWeeklyTotal').innerText = weeklyTotal;
-}
 
-function toggleProfileDayExpand(day) {
-    if(!scheduleData[day].active) return;
-    scheduleData[day].expanded = !scheduleData[day].expanded;
-    document.getElementById(`p-card-${day}`).classList.toggle('expanded');
-}
+    // 3. Render Master Weekly Inputs
+    // 3. Render Master Weekly Inputs (Read-Only Summary)
+    const categories = [
+        { id: 'class', label: 'Class hours', color: 'var(--c-mental)', val: weeklyData.class },
+        { id: 'work', label: 'Work / part-time', color: 'var(--c-social)', val: weeklyData.work, condition: weeklyData.hasWork },
+        { id: 'study', label: 'Self-study', color: 'var(--c-errands)', val: weeklyData.study }
+    ];
 
-function toggleProfileDayActive(day, isActive) {
-    scheduleData[day].active = isActive;
-    const card = document.getElementById(`p-card-${day}`);
-    
-    if(!isActive) {
-        card.classList.add('inactive');
-        card.classList.remove('expanded');
-        scheduleData[day].expanded = false;
-        document.getElementById(`p-total-${day}`).innerText = '';
-    } else {
-        card.classList.remove('inactive');
-        const total = scheduleData[day].class + scheduleData[day].work + scheduleData[day].study;
-        document.getElementById(`p-total-${day}`).innerText = total + 'h total';
-    }
-    
-    buildProfileScheduleUI(); 
-}
-
-function updateProfileHours(day, category, change) {
-    let newVal = scheduleData[day][category] + change;
-    if(newVal < 0) newVal = 0;
-    scheduleData[day][category] = newVal;
-    buildProfileScheduleUI();
+    categories.forEach(cat => {
+        if (cat.condition === false) return; // Hide work input if it's toggled off
+        
+        const row = document.createElement('div');
+        row.className = 'master-input-row';
+        
+        // Render just the label and the total number, removing the +/- buttons
+        row.innerHTML = `
+            <div class="master-input-label">
+                <span class="dot" style="background: ${cat.color};"></span>
+                ${cat.label}
+            </div>
+            <div style="display: flex; align-items: baseline; gap: 4px; padding-right: 8px;">
+                <span style="font-weight: 800; font-size: 18px; color: var(--text-dark);">${cat.val}</span>
+                <span style="font-size: 13px; font-weight: 700; color: var(--text-muted);">h</span>
+            </div>
+        `;
+        masterInputsContainer.appendChild(row);
+    });
 }
 
 function syncProfileData() {
@@ -879,10 +889,14 @@ function syncProfileData() {
             desc.innerText = "Your baseline is healthy! Let's keep your schedule balanced.";
         }
     }
+    distributeProfileHours();
     buildProfileScheduleUI();
 }
 
 
+// ==========================================
+// 10. TRENDS & CHARTS
+// ==========================================
 // ==========================================
 // 10. TRENDS & CHARTS
 // ==========================================
@@ -912,73 +926,75 @@ function switchWeek(direction) {
     }
 }
 
-function toggleTrendView(viewType) {
-    const btnSingle = document.getElementById('btnSingleCat');
-    const btnAll = document.getElementById('btnAllCat');
-    const filters = document.getElementById('trendFilters');
-    const allLabel = document.getElementById('trendAllLabel');
+const trendDataMap = {
+    'Overall': { color: '#385546', bg: 'rgba(56, 85, 70, 0.1)', pts: [85, 55, 30, 35, 15, 22, 45] },
+    'Mental':  { color: '#8A7B9B', bg: 'rgba(138, 123, 155, 0.1)', pts: [105, 55, 60, 65, 55, 25, 55] },
+    'Time':    { color: '#385546', bg: 'rgba(56, 85, 70, 0.1)', pts: [85, 75, 80, 75, 15, 52, 85] },
+    'Physical':{ color: '#D3634F', bg: 'rgba(211, 99, 79, 0.1)', pts: [110, 95, 60, 45, 45, 82, 105] },
+    'Social':  { color: '#D99559', bg: 'rgba(217, 149, 89, 0.1)', pts: [95, 85, 30, 30, 30, 35, 40] },
+    'Errands': { color: '#5C876D', bg: 'rgba(92, 135, 109, 0.1)',  pts: [115, 75, 20, 65, 45, 22, 35] }
+};
+
+function setTrendCategory(catName, btnElement) {
+    // 1. Reset all pills to default warm sand inactive state
+    document.querySelectorAll('.trend-filter').forEach(btn => {
+        btn.style.background = 'var(--bg-color)';
+        btn.style.color = 'var(--text-muted)';
+        btn.classList.remove('active');
+    });
+    
+    btnElement.classList.add('active');
+
     const chartSingle = document.getElementById('chartSingle');
     const chartAll = document.getElementById('chartAll');
     const legend = document.getElementById('trendLegend');
 
-    if (viewType === 'single') {
-        btnSingle.classList.add('active'); btnAll.classList.remove('active');
-        filters.style.display = 'flex'; allLabel.style.display = 'none';
-        chartSingle.style.display = 'block'; chartAll.style.display = 'none'; legend.style.display = 'none';
-    } else {
-        btnAll.classList.add('active'); btnSingle.classList.remove('active');
-        filters.style.display = 'none'; allLabel.style.display = 'block';
-        chartSingle.style.display = 'none'; chartAll.style.display = 'block'; legend.style.display = 'flex';
-    }
-}
-
-const trendDataMap = {
-    'Overall': { color: '#293a34', bg: 'rgba(41, 58, 52, 0.1)', pts: [85, 55, 30, 35, 15, 22, 45] },
-    'Mental':  { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)', pts: [105, 55, 60, 65, 55, 25, 55] },
-    'Time':    { color: '#0f766e', bg: 'rgba(15, 118, 110, 0.1)', pts: [85, 75, 80, 75, 15, 52, 85] },
-    'Physical':{ color: '#84cc16', bg: 'rgba(132, 204, 22, 0.1)', pts: [110, 95, 60, 45, 45, 82, 105] },
-    'Social':  { color: '#ea580c', bg: 'rgba(234, 88, 12, 0.1)', pts: [95, 85, 30, 30, 30, 35, 40] },
-    'Errands': { color: '#a16207', bg: 'rgba(161, 98, 7, 0.1)',  pts: [115, 75, 20, 65, 45, 22, 35] }
-};
-
-function setTrendCategory(catName, btnElement) {
-    document.querySelectorAll('.trend-filter').forEach(btn => {
-        btn.style.background = '#f1f5f9';
-        btn.style.color = '#64748b';
-        btn.classList.remove('active');
-    });
-    
-    const data = trendDataMap[catName];
-    btnElement.style.background = data.color;
-    btnElement.style.color = 'white';
-    btnElement.classList.add('active');
-
-    const xCoords = [20, 70, 120, 170, 220, 270, 300]; 
-    const pts = data.pts;
-    
-    let polylineStr = "";
-    let polygonStr = `20,115 `; 
-    
-    const circles = document.querySelectorAll('.singleChartPoint');
-    
-    for(let i=0; i<xCoords.length; i++) {
-        polylineStr += `${xCoords[i]},${pts[i]} `;
-        polygonStr += `${xCoords[i]},${pts[i]} `;
+    // 2. Handle Display Logic
+    if (catName === 'All') {
+        // Show Multi-Line Chart
+        btnElement.style.background = 'var(--primary)';
+        btnElement.style.color = 'white';
         
-        if(i < circles.length) {
-            circles[i].setAttribute('cy', pts[i]);
-            circles[i].setAttribute('stroke', data.color);
-        }
-    }
-    polygonStr += `300,115`; 
+        chartSingle.style.display = 'none';
+        chartAll.style.display = 'block';
+        legend.style.display = 'flex';
+    } else {
+        // Show Single Category Area Chart
+        chartAll.style.display = 'none';
+        legend.style.display = 'none';
+        chartSingle.style.display = 'block';
 
-    const line = document.getElementById('singleChartLine');
-    line.setAttribute('points', polylineStr.trim());
-    line.setAttribute('stroke', data.color);
-    
-    const area = document.getElementById('singleChartArea');
-    area.setAttribute('points', polygonStr.trim());
-    area.setAttribute('fill', data.bg);
+        const data = trendDataMap[catName];
+        btnElement.style.background = data.color;
+        btnElement.style.color = 'white';
+
+        const xCoords = [20, 70, 120, 170, 220, 270, 300]; 
+        const pts = data.pts;
+        
+        let polylineStr = "";
+        let polygonStr = `20,115 `; 
+        
+        const circles = document.querySelectorAll('.singleChartPoint');
+        
+        for(let i=0; i<xCoords.length; i++) {
+            polylineStr += `${xCoords[i]},${pts[i]} `;
+            polygonStr += `${xCoords[i]},${pts[i]} `;
+            
+            if(i < circles.length) {
+                circles[i].setAttribute('cy', pts[i]);
+                circles[i].setAttribute('stroke', data.color);
+            }
+        }
+        polygonStr += `300,115`; 
+
+        const line = document.getElementById('singleChartLine');
+        line.setAttribute('points', polylineStr.trim());
+        line.setAttribute('stroke', data.color);
+        
+        const area = document.getElementById('singleChartArea');
+        area.setAttribute('points', polygonStr.trim());
+        area.setAttribute('fill', data.bg);
+    }
 }
 
 
@@ -1015,3 +1031,112 @@ function sendChatMessage() {
         bubble.innerText = formatAvatarText(replies[Math.floor(Math.random() * replies.length)]);
     }, 800);
 }
+
+// ==========================================
+// DAILY BREAKDOWN EDIT SHEET
+// ==========================================
+
+function openDailyEditSheet() {
+    renderDailyEditContent();
+    document.getElementById('dailyEditSheetOverlay').classList.add('active');
+}
+
+function closeDailyEditSheet() {
+    document.getElementById('dailyEditSheetOverlay').classList.remove('active');
+}
+
+function renderDailyEditContent() {
+    const container = document.getElementById('dailyEditContent');
+    container.innerHTML = '';
+    
+    let hasActiveDays = false;
+
+    // Build edit cards only for days that are toggled ON
+    daysOfWeek.forEach(day => {
+        if (!scheduleData[day].active) return;
+        hasActiveDays = true;
+        
+        const dayBlock = document.createElement('div');
+        dayBlock.style.cssText = "margin-bottom: 16px; background: var(--bg-color); padding: 16px; border-radius: 16px;";
+        
+        let html = `<div style="font-weight: 800; color: var(--text-dark); margin-bottom: 12px; font-size: 15px;">${day}</div>`;
+        
+        const cats = [
+            { id: 'class', label: 'Class', color: 'var(--c-mental)' },
+            { id: 'work', label: 'Work', color: 'var(--c-social)', condition: weeklyData.hasWork },
+            { id: 'study', label: 'Study', color: 'var(--c-errands)' }
+        ];
+
+        cats.forEach(cat => {
+            if (cat.condition === false) return;
+            html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center;">
+                        <span class="dot" style="background: ${cat.color}; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px;"></span>
+                        ${cat.label}
+                    </div>
+                    <div class="master-controls" style="transform: scale(0.85); transform-origin: right center;">
+                        <button onclick="updateSpecificDayHour('${day}', '${cat.id}', -1)">-</button>
+                        <span>${scheduleData[day][cat.id]}</span>
+                        <button onclick="updateSpecificDayHour('${day}', '${cat.id}', 1)">+</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        dayBlock.innerHTML = html;
+        container.appendChild(dayBlock);
+    });
+
+    if (!hasActiveDays) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); font-size: 13px; margin-top: 20px;">No active days selected. Toggle a day pill first.</p>';
+    }
+}
+
+// Intercepts granular changes, updates the background chart, and updates weekly totals
+function updateSpecificDayHour(day, category, change) {
+    let newVal = scheduleData[day][category] + change;
+    if (newVal < 0) newVal = 0;
+    scheduleData[day][category] = newVal;
+    
+    // Recalculate master weekly totals so the main view stays accurate
+    let newWeeklyTotal = 0;
+    daysOfWeek.forEach(d => {
+        if (scheduleData[d].active) {
+            newWeeklyTotal += scheduleData[d][category];
+        }
+    });
+    weeklyData[category] = newWeeklyTotal;
+    
+    // Re-render UI simultaneously
+    renderDailyEditContent(); 
+    buildProfileScheduleUI(); 
+}
+
+// Enable click-and-drag horizontal scrolling for desktop testing
+const slider = document.getElementById('trendFilters');
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener('mousedown', (e) => {
+    isDown = true;
+    slider.style.cursor = 'grabbing';
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+});
+slider.addEventListener('mouseleave', () => {
+    isDown = false;
+    slider.style.cursor = 'pointer';
+});
+slider.addEventListener('mouseup', () => {
+    isDown = false;
+    slider.style.cursor = 'pointer';
+});
+slider.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2; // The * 2 determines scroll speed
+    slider.scrollLeft = scrollLeft - walk;
+});
