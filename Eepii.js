@@ -461,6 +461,8 @@ function simulateFileUpload() {
 // ==========================================
 // 7. DASHBOARD & REBALANCE 
 // ==========================================
+let dashRobotTimer;
+
 function interactDashRobot() {
     const bubble = document.getElementById('dashSpeechBubble');
     if(!bubble) return;
@@ -468,10 +470,21 @@ function interactDashRobot() {
     const phrases = [
         "I'm keeping an eye on your load! 📊",
         "Don't forget to take a breather. 🍃",
-        "You're doing great today! ✨",
+        "You're doing great today, CK! ✨",
         "Check Rebalance if you feel stuck! ⚡"
     ];
-    bubble.innerText = formatAvatarText(phrases[Math.floor(Math.random() * phrases.length)]);
+    
+    // Inject text directly without the formatter
+    bubble.innerText = phrases[Math.floor(Math.random() * phrases.length)];
+    
+    // Show the bubble by adding the CSS active class
+    bubble.classList.add('active');
+    
+    // Hide it automatically after 8 seconds
+    clearTimeout(dashRobotTimer);
+    dashRobotTimer = setTimeout(() => {
+        bubble.classList.remove('active');
+    }, 3000);
 }
 
 function toggleLoadBreakdown() {
