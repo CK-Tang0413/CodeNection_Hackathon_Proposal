@@ -729,18 +729,128 @@ function interactDashRobot() {
 
 
 
-function toggleTask(cardElement) {
-    cardElement.classList.toggle('completed');
+let currentActiveTaskCard = null;
+
+let breathInterval;
+
+function openTaskDetails(cardElement) {
+    currentActiveTaskCard = cardElement;
     
-    if (cardElement.classList.contains('completed')) {
-        const isUrgent = cardElement.innerHTML.includes('#fee2e2'); 
-        if (isUrgent) {
-            const bubble = document.getElementById('rebalanceSpeechBubble');
-            if (bubble) bubble.innerText = formatAvatarText("Huge win! Great job clearing that deadline.");
+    const title = cardElement.querySelector('.event-title').innerText;
+    const desc = cardElement.querySelector('.event-desc').innerText;
+    const tag = cardElement.querySelector('.tag');
+    
+    document.getElementById('detailTaskTitle').innerText = title;
+    document.getElementById('detailTaskDesc').innerText = desc;
+    
+    const sheetTag = document.getElementById('detailTaskTag');
+    sheetTag.innerText = tag.innerText;
+    sheetTag.style.background = tag.style.background;
+    sheetTag.style.color = tag.style.color;
+    
+    // Check if this is a Rebalance / Wellness task to trigger the breathing widget
+    const breathingContainer = document.getElementById('breathingContainer');
+    const actionBtn = document.getElementById('detailTaskActionBtn');
+    
+    if (tag.innerText.includes('Rebalance') || title.toLowerCase().includes('break') || title.toLowerCase().includes('walk') || title.toLowerCase().includes('snack')) {
+        breathingContainer.style.display = 'block';
+        actionBtn.innerText = "Complete Session ✓";
+        startBreathingSession();
+    } else {
+        breathingContainer.style.display = 'none';
+        if (cardElement.classList.contains('completed')) {
+            actionBtn.innerText = "Undo Completion";
+            actionBtn.style.background = "#e7e5e4";
+            actionBtn.style.color = "var(--text-dark)";
+        } else {
+            actionBtn.innerText = "Mark as Done ✓";
+            actionBtn.style.background = "linear-gradient(135deg, var(--primary) 0%, #4b7a5d 100%)";
+            actionBtn.style.color = "white";
         }
     }
+
+    document.getElementById('taskDetailsBottomSheetOverlay').classList.add('active');
 }
 
+function startBreathingSession() {
+    clearInterval(breathInterval);
+    
+    const circle = document.getElementById('breathCircle');
+    const instruction = document.getElementById('breathInstruction');
+    const timerText = document.getElementById('breathTimer');
+    const subtext = document.getElementById('breathSubtext');
+    
+    let isHabitInhale = true;
+    let timeLeft = 4;
+    
+    function runCycle() {
+        if (isHabitInhale) {
+            instruction.innerText = "Inhale";
+            subtext.innerText = "Breathe in slowly through your nose...";
+            circle.style.transform = "scale(1.25)";
+            circle.style.background = "var(--primary)"; // Soft green
+        } else {
+            instruction.innerText = "Exhale";
+            subtext.innerText = "Release tension softly through your mouth...";
+            circle.style.transform = "scale(1.0)";
+            circle.style.background = "#d97706"; // Warm amber/coral accent
+        }
+        
+        timerText.innerText = timeLeft;
+        
+        breathInterval = setInterval(() => {
+            timeLeft--;
+            timerText.innerText = timeLeft;
+            
+            if (timeLeft < 0) {
+                clearInterval(breathInterval);
+                isHabitInhale = !isHabitInhale;
+                timeLeft = isHabitInhale ? 4 : 6; // 4s inhale, 6s exhale rule for deep calming
+                runCycle();
+            }
+        }, 1000);
+    }
+    
+    runCycle();
+}
+
+function stopBreathingExercise() {
+    clearInterval(breathInterval);
+    closeTaskDetails();
+}
+
+function handleTaskActionFromSheet() {
+    clearInterval(breathInterval);
+    markTaskDoneFromSheet();
+}
+
+function closeTaskDetails() {
+    clearInterval(breathInterval);
+    document.getElementById('taskDetailsBottomSheetOverlay').classList.remove('active');
+    currentActiveTaskCard = null;
+}
+
+function markTaskDoneFromSheet() {
+    if (!currentActiveTaskCard) return;
+    
+    // Toggle the completed class on the saved card
+    currentActiveTaskCard.classList.toggle('completed');
+    
+    // Trigger companion praise for urgent tasks
+    if (currentActiveTaskCard.classList.contains('completed')) {
+        const isUrgent = currentActiveTaskCard.innerHTML.includes('#fee2e2'); 
+        if (isUrgent) {
+            const bubble = document.getElementById('rebalanceSpeechBubble');
+            if (bubble) {
+                bubble.innerText = formatAvatarText("Huge win! Great job clearing that deadline. 🎯");
+                bubble.classList.add('active');
+                setTimeout(() => bubble.classList.remove('active'), 4000);
+            }
+        }
+    }
+    
+    closeTaskDetails();
+}
 
 // ==========================================
 // 8. LOG LOAD & AI MODAL
@@ -842,7 +952,7 @@ function confirmAndLogTask() {
         taskEvent.innerHTML = `
             <div class="event-time">Just Added</div>
             <div class="event-marker ${markerClass}"></div>
-            <div class="event-card task-card" onclick="toggleTask(this)">
+            <div class="event-card task-card" onclick="openTaskDetails(this)">
                 <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <span class="tag" style="background: ${tagBg}; color: ${tagColor};">${pendingTaskData.catIcon} ${pendingTaskData.category}</span>
                     <div class="custom-checkbox"></div>
@@ -860,7 +970,7 @@ function confirmAndLogTask() {
             recoveryEvent.innerHTML = `
                 <div class="event-time">+45 Mins</div>
                 <div class="event-marker activity-recovery"></div>
-                <div class="event-card recovery-card" onclick="toggleTask(this)">
+                <div class="event-card recovery-card" onclick="openTaskDetails(this)">
                     <div class="event-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <span class="tag" style="background: #dcfce7; color: #15803d;">🍃 AI Rebalance</span>
                         <div class="custom-checkbox"></div>

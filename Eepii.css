@@ -667,7 +667,6 @@ p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 
 .event-card.completed .custom-checkbox::after { opacity: 1; transform: scale(1); }
 .event-card.completed .event-title { text-decoration: line-through; color: #a8a29e; }
 
-
 /* ========================================== */
 /* 8. CONTROLS, TOGGLES, & SLIDERS            */
 /* ========================================== */
