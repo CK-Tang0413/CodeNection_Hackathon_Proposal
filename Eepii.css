@@ -185,6 +185,23 @@ p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 
     background: var(--primary-light); 
 }
 
+/* ========================================== */
+/* NAV BAR BOTTOM MASK                        */
+/* ========================================== */
+/* Hides scrolling content in the gap below the floating navigation bar */
+.bottom-nav::before {
+    content: '';
+    position: absolute;
+    bottom: -35px;         /* Pulls the mask down to the bottom of the screen */
+    left: -20px;           /* Stretches to the left edge */
+    right: -20px;          /* Stretches to the right edge */
+    height: 35px;          /* Tall enough to tuck securely behind the pill */
+    background: var(--bg-color); /* Matches your warm sand background perfectly */
+    z-index: -1;           /* Keeps it behind the navigation buttons */
+    border-radius: 0 0 40px 40px; /* Matches the curve of your phone frame */
+    pointer-events: none;
+}
+
 
 /* ========================================== */
 /* 4. COMPANION AVATARS & ANIMATIONS          */
@@ -358,11 +375,11 @@ p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 
 .dash-speech-bubble::after {
     content: '';
     position: absolute;
-    top: 14px;
-    right: -6px;
-    border-width: 6px 0 6px 8px;
+    bottom: -6px;
+    right: 15px; /* Aligns perfectly with the center of the robot head */
+    border-width: 6px 6px 0 6px;
     border-style: solid;
-    border-color: transparent transparent transparent var(--surface);
+    border-color: var(--surface) transparent transparent transparent;
 }
 
 
@@ -695,7 +712,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .send-btn { background: var(--primary); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 10px rgba(44, 76, 59, 0.3); }
 
 #chatFab {
-    position: absolute; bottom: 90px; right: 20px; width: 60px; height: 60px; 
+    position: absolute; bottom: 100px; right: 20px; width: 60px; height: 60px; 
     background: white; border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.15); 
     display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.2s; pointer-events: auto;
 }
@@ -722,6 +739,13 @@ input:checked + .slider:before { transform: translateX(20px); }
 }
 .chat-content { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 20px; }
 
+/* ========================================== */
+/* FAB OVERLAP FIX                            */
+/* ========================================== */
+/* Adds invisible scroll space so the last item clears the chat circle */
+#main-rebalance, #main-trends, #main-profile {
+    padding-bottom: 180px !important;
+}
 
 /* ========================================== */
 /* 10. PROFILE ACCORDION & CALENDAR IMPORT    */

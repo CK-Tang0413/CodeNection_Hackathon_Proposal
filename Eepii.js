@@ -26,6 +26,12 @@ function selectAvatar() {
     const types = ['robot', 'bao', 'cat', 'dog'];
     currentAvatarType = types[activeIndex];
 
+    // --- NEW: Update the speech bubble text to something cute ---
+    const welcomeBubble = document.getElementById('welcomeSpeechBubble');
+    if (welcomeBubble) {
+        welcomeBubble.innerText = formatAvatarText("Yay! I can't wait to be your study buddy! ✨");
+    }
+
     const companions = [
         'miniCompanion', 'scheduleCompanion', 'surveyCompanion', 'overviewCompanion', 
         'dashCompanion', 'rebalanceCompanion', 'logCompanion', 'trendCompanion', 
@@ -54,9 +60,9 @@ let isDizzy = false;
 
 // Auto-show welcome bubble on load
 setTimeout(() => {
-    if(welcomeBubble) {
-        welcomeBubble.classList.add('active');
-        setTimeout(() => welcomeBubble.classList.remove('active'), 3000);
+    const welcomeBubble = document.getElementById('welcomeSpeechBubble');
+    if (welcomeBubble) {
+        welcomeBubble.classList.add('active'); // It will now stay visible permanently
     }
 }, 1000);
 
@@ -99,20 +105,89 @@ if (miniCompanion) {
     miniCompanion.addEventListener('click', pokeRobot);
 }
 
+// --- DIZZY ANIMATION LOGIC (DOUBLE CLICK) ---
+document.querySelectorAll('.robot-wrapper, .bao-wrapper, .cat-wrapper, .dog-wrapper').forEach(companion => {
+    
+    if (companion.id === 'miniCompanion' || companion.id === 'fabCompanion') return;
+
+    companion.addEventListener('dblclick', function() {
+        if (isDizzy) return; 
+        
+        // Kill all page timers immediately so they don't hide the dizzy text
+        if (typeof dashRobotTimer !== 'undefined') clearTimeout(dashRobotTimer);
+        if (typeof dashChatTimer !== 'undefined') clearTimeout(dashChatTimer);
+        if (typeof profileIdleTimer !== 'undefined') clearTimeout(profileIdleTimer);
+        if (typeof welcomeTimer !== 'undefined') clearTimeout(welcomeTimer);
+
+        isDizzy = true;
+        this.classList.add('dizzy');
+        
+        const bubble = this.closest('.view').querySelector('[class*="speech-bubble"], [class*="chat-bubble"]');
+        let originalText = "";
+
+        if (bubble) {
+            originalText = bubble.innerText;
+            bubble.innerText = formatAvatarText("Whoa, everything is spinning! 😵‍💫");
+            bubble.classList.add('active');
+        }
+        
+        // This 2.5s outer timeout stops the shaking and triggers the "Phew" text
+        setTimeout(() => {
+            this.classList.remove('dizzy');
+            isDizzy = false;
+
+            if (bubble) {
+                bubble.innerText = formatAvatarText("Phew, back to work! 😅");
+                bubble.classList.add('active'); // Force visible in case a rogue timer hid it
+                
+                // This 2.0s inner timeout restores the original text
+                setTimeout(() => {
+                    // Only revert if a new action hasn't already changed the text
+                    if (bubble.innerText.includes("back to work")) {
+                        bubble.innerText = originalText;
+                        
+                        // Hide the bubble gracefully ONLY on the Profile page
+                        if (this.id === 'dashCompanion') {
+                            bubble.classList.remove('active');
+                            interactDashRobot(); // Restart profile loop
+                        }
+                    }
+                }, 2000); 
+            }
+        }, 2500);
+    });
+});
 
 // ==========================================
 // 3. CORE NAVIGATION & ROUTING
 // ==========================================
+// Add the new timer variable here
 let isRetest = false; 
+let profileIdleTimer; 
 
 function goTo(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById(viewId).classList.add('active');
+    
+    const targetView = document.getElementById(viewId);
+    targetView.classList.add('active');
+    targetView.scrollTop = 0; // --- NEW: Instantly scroll to the top of the view ---
 
     if (viewId === 'view-profile-setup') {
         if (miniMover) miniMover.classList.remove('sleeping');
         clearTimeout(sleepTimer);
         sleepTimer = setTimeout(putRobotToSleep, 2000);
+    }
+
+    // Reset and trigger the 5-second idle timer
+    clearTimeout(profileIdleTimer);
+    if (viewId === 'main-profile') {
+        profileIdleTimer = setTimeout(() => {
+            const bubble = document.getElementById('dashSpeechBubble');
+            if (bubble) {
+                bubble.innerText = "Click me! ✨";
+                bubble.classList.add('active');
+            }
+        }, 5000);
     }
 
     if (viewId === 'main-dashboard') setTimeout(interactDashRobot, 500);
@@ -126,8 +201,24 @@ function goTo(viewId) {
 function navTo(viewId, btnElement) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(viewId).classList.add('active');
+    
+    const targetView = document.getElementById(viewId);
+    targetView.classList.add('active');
+    targetView.scrollTop = 0; // --- NEW: Instantly scroll to the top of the view ---
+    
     btnElement.classList.add('active');
+
+    // Reset and trigger the 5-second idle timer
+    clearTimeout(profileIdleTimer);
+    if (viewId === 'main-profile') {
+        profileIdleTimer = setTimeout(() => {
+            const bubble = document.getElementById('dashSpeechBubble');
+            if (bubble) {
+                bubble.innerText = "Click me! ✨";
+                bubble.classList.add('active');
+            }
+        }, 5000);
+    }
 
     if (viewId === 'main-dashboard') setTimeout(interactDashRobot, 500);
 
@@ -172,6 +263,28 @@ function startRetest() {
     
     const chatWidget = document.getElementById('globalChatWidget');
     if (chatWidget) chatWidget.style.display = 'none';
+    
+    // --- NEW: Reset Survey State to Question 1 ---
+    currentQuestionIndex = 0;
+    surveyTotalScore = 0;
+    
+    const progressHeader = document.getElementById('surveyProgressHeader');
+    if (progressHeader) progressHeader.innerText = "Question 1 of 10";
+    
+    const bubble = document.getElementById('surveyActiveChatBubble');
+    if (bubble) bubble.innerText = formatAvatarText(surveyQuestions[0].text);
+    
+    const replies = document.getElementById('surveyQuickReplies');
+    if (replies) {
+        replies.style.opacity = '1';
+        replies.style.pointerEvents = 'auto';
+    }
+    
+    const input = document.getElementById('surveyChatInput');
+    if (input) {
+        input.disabled = false;
+        input.value = '';
+    }
     
     goTo('view-survey');
 }
@@ -464,6 +577,9 @@ function simulateFileUpload() {
 let dashRobotTimer;
 
 function interactDashRobot() {
+    // Cancel the "Click me" prompt if the user clicked manually
+    if (typeof profileIdleTimer !== 'undefined') clearTimeout(profileIdleTimer);
+
     const bubble = document.getElementById('dashSpeechBubble');
     if(!bubble) return;
     
@@ -474,16 +590,24 @@ function interactDashRobot() {
         "Check Rebalance if you feel stuck! ⚡"
     ];
     
-    // Inject text directly without the formatter
+    // Inject text and show the bubble
     bubble.innerText = phrases[Math.floor(Math.random() * phrases.length)];
-    
-    // Show the bubble by adding the CSS active class
     bubble.classList.add('active');
     
-    // Hide it automatically after 8 seconds
+    // Hide it automatically after 3 seconds, then restart the idle loop
     clearTimeout(dashRobotTimer);
     dashRobotTimer = setTimeout(() => {
         bubble.classList.remove('active');
+        
+        // --- NEW: Restart the 5-second idle timer once the text disappears ---
+        profileIdleTimer = setTimeout(() => {
+            // Check to make sure the user didn't navigate away while the robot was talking
+            if (document.getElementById('main-profile').classList.contains('active')) {
+                bubble.innerText = "Click me! ✨";
+                bubble.classList.add('active');
+            }
+        }, 5000);
+        
     }, 3000);
 }
 
@@ -557,25 +681,53 @@ function sendDashChatMessage() {
     }, 500);
 }
 
+let dashChatTimer; // Global timer for the dashboard chat
+
 function respondDashChat(reply) {
     const bubble = document.getElementById('dashChatSpeechBubble');
     if (bubble) {
         bubble.innerText = "...";
-        setTimeout(() => {
+        if (typeof dashChatTimer !== 'undefined') clearTimeout(dashChatTimer);
+        
+        dashChatTimer = setTimeout(() => {
+            if (isDizzy) return; // Prevent overwriting if they double-clicked!
             bubble.innerText = formatAvatarText(reply);
         }, 300);
     }
 }
 
-function interactDashChatCompanion() {
+function interactDashRobot() {
+    if (typeof profileIdleTimer !== 'undefined') clearTimeout(profileIdleTimer);
+    if (isDizzy) return; // Prevent new clicks while dizzy
+
+    const bubble = document.getElementById('dashSpeechBubble');
+    if(!bubble) return;
+    
     const phrases = [
-        "I'm keeping your day balanced! ✨",
-        "Deep breath in... and slow breath out. 🍃",
-        "Don't forget to hydrate! 💧",
-        "Tap the top card if you want to inspect your 5-axis load breakdown! 📊"
+        "I'm keeping an eye on your load! 📊",
+        "Don't forget to take a breather. 🍃",
+        "You're doing great today, CK! ✨",
+        "Check Rebalance if you feel stuck! ⚡"
     ];
-    respondDashChat(phrases[Math.floor(Math.random() * phrases.length)]);
+    
+    bubble.innerText = formatAvatarText(phrases[Math.floor(Math.random() * phrases.length)]);
+    bubble.classList.add('active');
+    
+    if (typeof dashRobotTimer !== 'undefined') clearTimeout(dashRobotTimer);
+    dashRobotTimer = setTimeout(() => {
+        if (isDizzy) return; // Don't hide the bubble if they are currently dizzy!
+        
+        bubble.classList.remove('active');
+        profileIdleTimer = setTimeout(() => {
+            if (document.getElementById('main-profile').classList.contains('active')) {
+                bubble.innerText = "Click me! ✨";
+                bubble.classList.add('active');
+            }
+        }, 5000);
+    }, 3000);
 }
+
+
 
 function toggleTask(cardElement) {
     cardElement.classList.toggle('completed');
@@ -720,8 +872,12 @@ function confirmAndLogTask() {
             timeline.appendChild(recoveryEvent);
         }
 
-        // Scroll newly added task into view smoothly
-        taskEvent.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Smoothly scroll only the Rebalance view container to the bottom
+        const rebalanceView = document.getElementById('main-rebalance');
+        rebalanceView.scrollTo({
+            top: rebalanceView.scrollHeight,
+            behavior: 'smooth'
+        });
     }
 
     // Companion reaction on Rebalance screen
