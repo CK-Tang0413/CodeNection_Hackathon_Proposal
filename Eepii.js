@@ -727,6 +727,134 @@ function interactDashRobot() {
     }, 3000);
 }
 
+function explainProfileScore() {
+    const score = document.getElementById('dashScore').innerText;
+    const status = document.getElementById('dashStatus').innerText;
+    const bubble = document.getElementById('dashSpeechBubble');
+    
+    if(!bubble) return;
+    
+    // Clear existing idle timers so the bubble doesn't disappear too quickly
+    if (typeof profileIdleTimer !== 'undefined') clearTimeout(profileIdleTimer);
+    if (typeof dashRobotTimer !== 'undefined') clearTimeout(dashRobotTimer);
+    
+    let explanation = "";
+    const scoreNum = parseInt(score);
+    
+    // Generate contextual explanation based on the score
+    if (scoreNum >= 70) {
+        explanation = `A ${score}% means your load is critical. We need to prioritize active recovery blocks right now! 🛑`;
+    } else if (scoreNum >= 50) {
+        explanation = `At ${score}% (${status}), your schedule is heavy. Stick strictly to your Rebalance timeline today! ⚡`;
+    } else {
+        explanation = `A ${score}% is perfectly healthy! You are balancing your studies and rest like a pro. ✨`;
+    }
+    
+    // Inject text and show the bubble
+    bubble.innerText = formatAvatarText(explanation);
+    bubble.classList.add('active');
+    
+    // Hide after 5 seconds (giving them time to read the longer text)
+    dashRobotTimer = setTimeout(() => {
+        if (isDizzy) return; // Don't interrupt if they double-clicked to make it dizzy
+        bubble.classList.remove('active');
+        
+        // Restart the idle "Click me!" prompt loop
+        profileIdleTimer = setTimeout(() => {
+            if (document.getElementById('main-profile').classList.contains('active')) {
+                bubble.innerText = "Click me! ✨";
+                bubble.classList.add('active');
+            }
+        }, 5000);
+    }, 5000); 
+}
+
+// --- PETTING METER LOGIC ---
+let isPetting = false;
+let petProgress = 0;
+let lastPointerX = 0;
+let petDecayTimer;
+
+const dashCompanion = document.getElementById('dashChatCompanion');
+const meterContainer = document.getElementById('pettingMeterContainer');
+const meterFill = document.getElementById('pettingMeterFill');
+const dashBubble = document.getElementById('dashChatSpeechBubble');
+
+if (dashCompanion) {
+    // 1. Start petting
+    dashCompanion.addEventListener('pointerdown', (e) => {
+        isPetting = true;
+        lastPointerX = e.clientX;
+        if (meterContainer) meterContainer.style.opacity = '1';
+        clearInterval(petDecayTimer);
+    });
+
+    // 2. Stop petting & drain meter if not full
+    document.addEventListener('pointerup', () => {
+        if (!isPetting) return;
+        isPetting = false;
+        
+        if (petProgress < 100 && petProgress > 0) {
+            petDecayTimer = setInterval(() => {
+                petProgress = Math.max(0, petProgress - 5);
+                updatePetMeter();
+                if (petProgress === 0) {
+                    clearInterval(petDecayTimer);
+                    if (meterContainer) meterContainer.style.opacity = '0';
+                }
+            }, 100);
+        }
+    });
+
+    // 3. Track movement back and forth
+    dashCompanion.addEventListener('pointermove', (e) => {
+        if (!isPetting) return;
+        
+        const deltaX = Math.abs(e.clientX - lastPointerX);
+        lastPointerX = e.clientX;
+        
+        // Require actual movement (swiping back and forth) to fill
+        if (deltaX > 2) {
+            petProgress += deltaX * 0.4; // Adjust this multiplier to make it fill faster/slower
+            if (petProgress >= 100) {
+                petProgress = 100;
+                triggerHappyReaction();
+            }
+            updatePetMeter();
+        }
+    });
+}
+
+function updatePetMeter() {
+    if (meterFill) meterFill.style.width = `${petProgress}%`;
+}
+
+function triggerHappyReaction() {
+    isPetting = false; 
+    
+    // Animate the jump
+    dashCompanion.classList.add('happy-jump');
+    setTimeout(() => dashCompanion.classList.remove('happy-jump'), 800);
+    
+    // Hide and reset meter
+    setTimeout(() => {
+        if (meterContainer) meterContainer.style.opacity = '0';
+        setTimeout(() => { petProgress = 0; updatePetMeter(); }, 300);
+    }, 1000);
+
+    // Provide a hit of positive reinforcement
+    const affirmations = [
+        "Aww, thank you! I'm feeling energized! ✨",
+        "Best. Study break. Ever! 💖",
+        "Hehe! Okay, let's crush our next task! 🚀",
+        "I needed that! We've got this! 🌟"
+    ];
+    
+    if (dashBubble) {
+        if (typeof dashChatTimer !== 'undefined') clearTimeout(dashChatTimer);
+        dashBubble.innerText = formatAvatarText(affirmations[Math.floor(Math.random() * affirmations.length)]);
+    }
+}
 
 
 let currentActiveTaskCard = null;

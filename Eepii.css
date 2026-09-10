@@ -3,16 +3,18 @@
 /* ========================================== */
 :root {
     /* Base & Surface */
-    --bg-color: #F6F4ED;
+    /* --bg-color: #fbf3ff; */
+    --bg-color: #EEE4E1;
     --surface: #FFFFFF;
     
     /* Brand & Accents */
-    --primary: #385546;
-    --primary-light: #EBF0EC;
+    /* --primary: #a984b9; */
+    --primary: #916e60;
+    --primary-light: #ECF8F8;
     
     /* Typography & UI */
-    --text-dark: #2F3632;
-    --text-muted: #808682;
+    --text-dark: #28587B;
+    --text-muted: #8fa2b3;
     --border: #E8E4DB;
     
     /* Status Colors */
@@ -323,7 +325,18 @@ p { color: var(--text-muted); font-size: 14px; line-height: 1.5; margin-bottom: 
 .robot-mover.sleeping .z3 { animation: snore 3s infinite 1s; }
 @keyframes snore { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 50% { opacity: 1; transform: translateY(-30px) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(1.2); } }
 
+/* Petting Happiness Jump */
+@keyframes happyJump {
+    0%, 100% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-35px) scale(1.05); }
+    50% { transform: translateY(0) scale(0.95); }
+    70% { transform: translateY(-15px) scale(1.02); }
+    85% { transform: translateY(0) scale(0.98); }
+}
 
+.happy-jump {
+    animation: happyJump 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) both !important;
+}
 /* ========================================== */
 /* 5. COMPANION SPEECH BUBBLES                */
 /* ========================================== */
